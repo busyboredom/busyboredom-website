@@ -1,0 +1,17 @@
+[package]
+name = "busyboredom"
+version = "0.1.0"
+authors = ["Charlie Wilkin <cwilkin@protonmail.com>"]
+edition = "2018"
+
+[dependencies]
+actix-rt = "1"
+actix-web = "2"
+actix-files = "0"
+actix-session = "0"
+
+futures = "0"
+env_logger = "0"
+
+[profile.release]
+lto = true
