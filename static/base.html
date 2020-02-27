@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon"/>
+</head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+<body>
+  <div id="page">
+  </div>
+</body>
+<script type="module">
+  // Import the init function from the generated JS bindings and call it.
+  import init from '/api/bindings';
+  async function run() {
+    // Load the wasm file
+    await init('/api/wasm');
+  }
+  run();  
+</script>
+</html>

@@ -1,3 +1,4 @@
 /target
+/wasm/target
 *.swo
 *.swp
