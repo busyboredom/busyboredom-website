@@ -43,8 +43,17 @@ async fn frontend_wasm() -> Result<HttpResponse> {
         .body(&include_bytes!("../wasm/pkg/frontend_bg.wasm")[..]))
 }
 
+/// Coming Soon handler
+#[get("/api/coming_soon")]
+async fn coming_soon() -> Result<HttpResponse> {
+    Ok(HttpResponse::build(StatusCode::OK)
+        .content_type("text/html; charset=utf-8")
+        .body(include_str!("../static/coming_soon.html")))
+}
+
+
 /// 404 handler
-#[get("/api/error-404")]
+#[get("/api/error_404")]
 async fn p404() -> Result<HttpResponse> {
     Ok(HttpResponse::build(StatusCode::OK)
         .content_type("text/html; charset=utf-8")
@@ -112,6 +121,8 @@ async fn main() -> io::Result<()> {
             .service(frontend_wasm)
             // Register favicon
             .service(favicon)
+            // Register 404
+            .service(coming_soon)
             // Register 404
             .service(p404)
             // With path parameters

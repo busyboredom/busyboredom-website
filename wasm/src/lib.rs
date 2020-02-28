@@ -135,6 +135,50 @@ pub async fn welcome() {
 }
 
 #[wasm_bindgen]
+pub async fn coming_soon() {
+    // Set active tab
+    active_tab("");
+    let window = web_sys::window().expect("No global `window` exists");
+    let document = window.document().expect("Should have a document on window");
+    let history = window.history().expect("Could not get history");
+
+    let mut req = RequestInit::new();
+    req.method("GET");
+    let request =
+        Request::new_with_str_and_init(
+            "/api/coming_soon", 
+            &req).expect("Request could not be created");
+    request.headers().set("Accept", "text/html").expect("Headers could not be set");
+
+    let response = JsFuture::from(window.fetch_with_request(&request))
+        .await
+        .expect("Could not unwrap response");
+
+    // `response` is a `Response` object.
+    assert!(response.is_instance_of::<Response>());
+    let resp: Response = response.dyn_into().unwrap();
+
+    // Convert this other `Promise` into a rust `Future`.
+    let page = JsFuture::from(resp.text().unwrap()).await.unwrap().as_string().unwrap();
+
+    // Show the new content.
+    document
+        .get_element_by_id("page")
+        .unwrap()
+        .set_inner_html(&page);
+
+    // Remove the history entry pushed on page load, and replace it.
+    if history.state().expect("Could not get history state") != "/coming_soon" {
+        history
+            .push_state(&JsValue::from_str("/coming_soon"), "Coming Soon!")
+            .expect("Could not push state to history");
+    }
+
+    document.set_title("Coming Soon!!");
+}
+
+
+#[wasm_bindgen]
 pub async fn error_404() {
     let window = web_sys::window().expect("No global `window` exists");
     let document = window.document().expect("Should have a document on window");
@@ -144,7 +188,7 @@ pub async fn error_404() {
     req.method("GET");
     let request =
         Request::new_with_str_and_init(
-            "/api/error-404", 
+            "/api/error_404", 
             &req).expect("Request could not be created");
     request.headers().set("Accept", "text/html").expect("Headers could not be set");
 
@@ -166,9 +210,9 @@ pub async fn error_404() {
         .set_inner_html(&page);
     
     // Remove the history entry pushed on page load, and replace it.
-    if history.state().expect("Could not get history state") != "/error-404" {
-        history.push_state(&JsValue::from_str("/error-404"), "Welcome!")
-            .expect("Could not push state (with URL) to history");
+    if history.state().expect("Could not get history state") != "/error_404" {
+        history.push_state(&JsValue::from_str("/error_404"), "404: Page Not Found")
+            .expect("Could not push state to history");
     }
 
     document.set_title("404: Page Not Found");
