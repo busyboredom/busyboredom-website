@@ -6,15 +6,15 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
 <body>
   <nav class="nav" id="nav">
-    <a href="#" onclick="window.busy.welcome()">
+    <button onclick="window.busy.welcome()">
       <img width="32px" height="32px" src="data:image/x-icon;base64,AAABAAEAICAQAAEABADoAgAAFgAAACgAAAAgAAAAQAAAAAEABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADyiwUAAHf/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERAAAAAAAAAAAAAAAAEREREQAAAAAAAAAAAAAAABEREREAAAAAAAAAAAAAAAARERERAAAAAAAAAAAAAAAAEREREQAAEREREREREREAABEREREAABERERERERERAAARERERAAARAAAREQAAEQAAEREREQAAEQAAEREAABEAABEREREAABEAABERAAARAAARERERAAARAAAREQAAEQAAEREREQAAEREREREREREAABEREREAABERERERERERAAARERERAAAAAAAAAAAAAAAAEREREQAAAAAAAAAAAAAAABEREREAAAAAAAAAAAAAAAARERERAAAAAAAAAAAAAAAAEREREREAABEREREREQAAERERERERAAAREREREREAABERERERAAAAABEREREAAAAAEREREQAAAAARERERAAAAABEREREAAAAAEREREQAAAAARERERAAAAABEREREAAAAAEREREQAAAAARERERAAAAABEREREAAAAAEREREQAAAAAREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==" alt="Robot Logo"/>
-    </a>
-    <a href="#" class="tab" id="projects">Projects</a>
-    <a href="#" class="tab" id="resume" onclick="window.busy.resume()">Résumé</a>
-    <a href="#" class="tab" id="contact">Contact</a>
-    <a href="#" class="icon" onclick="window.busy.nav_expand()">
+    </button>
+    <button class="tab" id="projects">Projects</button>
+    <button class="tab" id="resume" onclick="window.busy.resume()">Résumé</button>
+    <button class="tab" id="contact">Contact</button>
+    <button class="icon" onclick="window.busy.nav_expand()">
       <img width="24px" height="24px" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAABmJLR0QA/wD/AP+gvaeTAAAAKElEQVRIiWNgGAXDHjAisf/TwmwmKhs6CgYhGE1Fo4ByMJqKRsEQAADWCQMKYvEFtQAAAABJRU5ErkJggg==" alt="Hamburger Menu"/>
-    </a>
+    </button>
   </nav>
   <div id="page">
   </div>
@@ -51,9 +51,11 @@ body, html {
   background-color: #ff7700;
 }
 
-.nav a:first-child {
+.nav button:first-child {
   float: left;
-  padding-top: 3px;
+  border: none;
+  background-color: #ff7700;
+  padding-top: 4px;
   padding-left: 3px;
   padding-right: 3px;
 }
@@ -61,7 +63,9 @@ body, html {
 .nav .tab {
   float: left;
   display: block;
+  border: none;
   color: #000000;
+  background-color: #ff7700;
   text-align: center;
   padding: 10px 16px;
   text-decoration: none;
@@ -69,22 +73,24 @@ body, html {
   font-family: Arial;
 }
 
-.nav a:hover {
+.nav button:hover {
   background-color: #058bf2;
 }
 
-.nav a.active {
+.nav button.active {
   background-color: #058bf2;
 }
 
 .nav .icon {
   display: none;
   padding: 6px 16px;
+  border: none;
+  background-color: #ff7700;
 }
 
 @media screen and (max-width: 600px) {
-  .nav a:not(:first-child) {display: none;}
-  .nav a.icon {
+  .nav button:not(:first-child) {display: none;}
+  .nav button.icon {
     float: right;
     display: block;
   }
@@ -97,9 +103,10 @@ body, html {
     right: 0;
     top: 0;
   }
-  .nav.responsive a {
+  .nav.responsive button.tab {
     float: none;
     display: block;
+    width: 100%;
     text-align: left;
   }
 }

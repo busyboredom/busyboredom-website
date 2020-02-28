@@ -84,7 +84,7 @@ pub async fn resume() {
     // Remove the history entry pushed on page load, and replace it.
     if history.state().expect("Could not get history state") != "/resume" {
         history
-            .replace_state_with_url(&JsValue::from_str("/resume"), "Résumé", Some("/resume"))
+            .push_state_with_url(&JsValue::from_str("/resume"), "Résumé", Some("/resume"))
             .expect("Could not push state (with URL) to history");
     }
 
@@ -127,7 +127,7 @@ pub async fn welcome() {
     // Remove the history entry pushed on page load, and replace it.
     if history.state().expect("Could not get history state") != "/welcome" {
         history
-            .replace_state_with_url(&JsValue::from_str("/welcome"), "Welcome!", Some("/welcome"))
+            .push_state_with_url(&JsValue::from_str("/welcome"), "Welcome!", Some("/welcome"))
             .expect("Could not push state (with URL) to history");
     }
 
@@ -167,7 +167,7 @@ pub async fn error_404() {
     
     // Remove the history entry pushed on page load, and replace it.
     if history.state().expect("Could not get history state") != "/error-404" {
-        history.replace_state(&JsValue::from_str("/error-404"), "Welcome!")
+        history.push_state(&JsValue::from_str("/error-404"), "Welcome!")
             .expect("Could not push state (with URL) to history");
     }
 
