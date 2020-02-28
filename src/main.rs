@@ -10,7 +10,16 @@ use actix_web::{
     Result,
 };
 
-/// welcome page
+/// Resume
+#[get("/api/resume")]
+async fn resume() -> Result<HttpResponse> {
+    Ok(HttpResponse::build(StatusCode::OK)
+        .content_type("application/pdf")
+        .body(&include_bytes!("../static/resume.html")[..]))
+}
+
+
+/// Welcome page
 #[get("/api/welcome")]
 async fn welcome() -> Result<HttpResponse> {
     Ok(HttpResponse::build(StatusCode::OK)
@@ -18,7 +27,7 @@ async fn welcome() -> Result<HttpResponse> {
         .body(include_str!("../static/welcome.html")))
 }
 
-/// wasm binding handler
+/// Wasm binding handler
 #[get("/api/bindings")]
 async fn bindings() -> Result<HttpResponse> {
     Ok(HttpResponse::build(StatusCode::OK)
@@ -26,7 +35,7 @@ async fn bindings() -> Result<HttpResponse> {
         .body(include_str!("../wasm/pkg/frontend.js")))
 }
 
-/// wasm handler
+/// Wasm handler
 #[get("/api/wasm")]
 async fn frontend_wasm() -> Result<HttpResponse> {
     Ok(HttpResponse::build(StatusCode::OK)
@@ -42,36 +51,36 @@ async fn p404() -> Result<HttpResponse> {
         .body(include_str!("../static/404.html")))
 }
 
-/// favicon handler
+/// Favicon handler
 #[get("/favicon")]
 async fn favicon() -> Result<&'static [u8]> {
     Ok(include_bytes!("../static/favicon.ico"))
 }
 
 
-/// simple index handler
+/// Simple index handler
 async fn base(session: Session, _req: HttpRequest) -> Result<HttpResponse> {
     // Print content of request if compiled with debug profile. 
     #[cfg(debug_assertions)]
     println!("{:?}", _req);
 
-    // session
+    // Session
     let mut counter = 1;
     if let Some(count) = session.get::<i32>("counter")? {
         println!("SESSION value: {}", count);
         counter = count + 1;
     }
 
-    // set counter to session
+    // Set counter to session
     session.set("counter", counter)?;
 
-    // response
+    // Response
     Ok(HttpResponse::build(StatusCode::OK)
         .content_type("text/html; charset=utf-8")
         .body(include_str!("../static/base.html")))
 }
 
-/// handler with path parameters like `/user/{name}/`
+/// Handler with path parameters like `/user/{name}/`
 async fn with_param(req: HttpRequest, path: web::Path<(String,)>) -> HttpResponse {
     println!("{:?}", req);
 
@@ -87,29 +96,31 @@ async fn main() -> io::Result<()> {
 
     HttpServer::new(|| {
         App::new()
-            // comression middleware
+            // Comression middleware
             .wrap(middleware::Compress::default())
-            // cookie session middleware
+            // Cookie session middleware
             .wrap(CookieSession::signed(&[0; 32]).secure(false))
-            // enable logger - always register actix-web Logger middleware last
+            // Enable logger - always register actix-web Logger middleware last
             .wrap(middleware::Logger::default())
-            // register welcome page
+            // Register resume page
+            .service(resume)
+            // Register welcome page
             .service(welcome)
-            // register bindings
+            // Register bindings
             .service(bindings)
-            // register wasm
+            // Register wasm
             .service(frontend_wasm)
-            // register favicon
+            // Register favicon
             .service(favicon)
-            // register 404
+            // Register 404
             .service(p404)
-            // with path parameters
+            // With path parameters
             .service(web::resource("/user/{name}").route(web::get().to(with_param)))
-            // default
+            // Default
             .default_service(
                 web::resource("")
                     .route(web::get().to(base))
-                    // all requests that are not `GET`
+                    // All requests that are not `GET`
                     .route(
                         web::route()
                             .guard(guard::Not(guard::Get()))

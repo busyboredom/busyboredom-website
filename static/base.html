@@ -5,16 +5,111 @@
 </head>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
 <body>
+  <nav class="nav" id="nav">
+    <a href="#" onclick="window.busy.welcome()">
+      <img width="32px" height="32px" src="data:image/x-icon;base64,AAABAAEAICAQAAEABADoAgAAFgAAACgAAAAgAAAAQAAAAAEABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADyiwUAAHf/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERAAAAAAAAAAAAAAAAEREREQAAAAAAAAAAAAAAABEREREAAAAAAAAAAAAAAAARERERAAAAAAAAAAAAAAAAEREREQAAEREREREREREAABEREREAABERERERERERAAARERERAAARAAAREQAAEQAAEREREQAAEQAAEREAABEAABEREREAABEAABERAAARAAARERERAAARAAAREQAAEQAAEREREQAAEREREREREREAABEREREAABERERERERERAAARERERAAAAAAAAAAAAAAAAEREREQAAAAAAAAAAAAAAABEREREAAAAAAAAAAAAAAAARERERAAAAAAAAAAAAAAAAEREREREAABEREREREQAAERERERERAAAREREREREAABERERERAAAAABEREREAAAAAEREREQAAAAARERERAAAAABEREREAAAAAEREREQAAAAARERERAAAAABEREREAAAAAEREREQAAAAARERERAAAAABEREREAAAAAEREREQAAAAAREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==" alt="Robot Logo"/>
+    </a>
+    <a href="#" class="tab" id="projects">Projects</a>
+    <a href="#" class="tab" id="resume" onclick="window.busy.resume()">Résumé</a>
+    <a href="#" class="tab" id="contact">Contact</a>
+    <a href="#" class="icon" onclick="window.busy.nav_expand()">
+      <img width="24px" height="24px" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAABmJLR0QA/wD/AP+gvaeTAAAAKElEQVRIiWNgGAXDHjAisf/TwmwmKhs6CgYhGE1Fo4ByMJqKRsEQAADWCQMKYvEFtQAAAABJRU5ErkJggg==" alt="Hamburger Menu"/>
+    </a>
+  </nav>
   <div id="page">
   </div>
 </body>
 <script type="module">
+
   // Import the init function from the generated JS bindings and call it.
-  import init from '/api/bindings';
+  import init, * as busy from '/api/bindings';
   async function run() {
     // Load the wasm file
-    await init('/api/wasm');
+     await init('/api/wasm');
   }
-  run();  
+  run();
+
+  // Store wasm functions in window to make them accessible outside this script.
+  window.busy = busy;
+
+  // Add popstate event handler.
+  window.onpopstate = function(event) {
+    if (event.state) {
+      window.busy.route(event.state);
+    }
+  };
 </script>
+<style>
+
+body, html {
+  margin: 0;
+  background-color: #555555;
+}
+
+.nav {
+  overflow: hidden;
+  background-color: #ff7700;
+}
+
+.nav a:first-child {
+  float: left;
+  padding-top: 3px;
+  padding-left: 3px;
+  padding-right: 3px;
+}
+
+.nav .tab {
+  float: left;
+  display: block;
+  color: #000000;
+  text-align: center;
+  padding: 10px 16px;
+  text-decoration: none;
+  font-size: 16px;
+  font-family: Arial;
+}
+
+.nav a:hover {
+  background-color: #058bf2;
+}
+
+.nav a.active {
+  background-color: #058bf2;
+}
+
+.nav .icon {
+  display: none;
+  padding: 6px 16px;
+}
+
+@media screen and (max-width: 600px) {
+  .nav a:not(:first-child) {display: none;}
+  .nav a.icon {
+    float: right;
+    display: block;
+  }
+}
+
+@media screen and (max-width: 600px) {
+  .nav.responsive {position: relative;}
+  .nav.responsive .icon {
+    position: absolute;
+    right: 0;
+    top: 0;
+  }
+  .nav.responsive a {
+    float: none;
+    display: block;
+    text-align: left;
+  }
+}
+
+a:link {
+  color: #ff7700;
+}
+
+a:visited {
+  color: #d64500;
+}
+</style>
 </html>
