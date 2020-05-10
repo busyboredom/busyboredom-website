@@ -7,12 +7,20 @@ use actix_session::{CookieSession, Session};
 use actix_web::http::StatusCode;
 use actix_web::{guard, middleware, web, App, HttpRequest, HttpResponse, HttpServer, Result};
 
-/// Resume
+/// Resume page
 #[get("/api/resume")]
 async fn resume() -> Result<HttpResponse> {
     Ok(HttpResponse::build(StatusCode::OK)
         .content_type("application/pdf")
         .body(&include_bytes!("../static/resume.html")[..]))
+}
+
+/// Resume PDF
+#[get("/resume.pdf")]
+async fn resume_pdf() -> Result<HttpResponse> {
+    Ok(HttpResponse::build(StatusCode::OK)
+        .content_type("application/pdf")
+        .body(&include_bytes!("../static/resume.pdf")[..]))
 }
 
 /// Welcome page
@@ -121,6 +129,8 @@ async fn main() -> io::Result<()> {
             .wrap(middleware::Logger::default())
             // Register resume page
             .service(resume)
+            // Register resume pdf
+            .service(resume_pdf)
             // Register welcome page
             .service(welcome)
             // Register contact page
