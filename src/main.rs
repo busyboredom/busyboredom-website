@@ -5,10 +5,7 @@ use std::{env, io};
 
 use actix_session::{CookieSession, Session};
 use actix_web::http::StatusCode;
-use actix_web::{
-    guard, middleware, web, App, HttpRequest, HttpResponse, HttpServer,
-    Result,
-};
+use actix_web::{guard, middleware, web, App, HttpRequest, HttpResponse, HttpServer, Result};
 
 /// Resume
 #[get("/api/resume")]
@@ -18,13 +15,26 @@ async fn resume() -> Result<HttpResponse> {
         .body(&include_bytes!("../static/resume.html")[..]))
 }
 
-
 /// Welcome page
 #[get("/api/welcome")]
 async fn welcome() -> Result<HttpResponse> {
     Ok(HttpResponse::build(StatusCode::OK)
         .content_type("text/html; charset=utf-8")
         .body(include_str!("../static/welcome.html")))
+}
+
+/// Contact page
+#[get("/api/contact")]
+async fn contact() -> Result<HttpResponse> {
+    Ok(HttpResponse::build(StatusCode::OK)
+        .content_type("text/html; charset=utf-8")
+        .body(include_str!("../static/contact.html")))
+}
+
+/// Contact image
+#[get("/contact.png")]
+async fn contact_image() -> Result<&'static [u8]> {
+    Ok(include_bytes!("../static/contact.png"))
 }
 
 /// Wasm binding handler
@@ -51,7 +61,6 @@ async fn coming_soon() -> Result<HttpResponse> {
         .body(include_str!("../static/coming_soon.html")))
 }
 
-
 /// 404 handler
 #[get("/api/error_404")]
 async fn p404() -> Result<HttpResponse> {
@@ -66,10 +75,9 @@ async fn favicon() -> Result<&'static [u8]> {
     Ok(include_bytes!("../static/favicon.ico"))
 }
 
-
 /// Simple index handler
 async fn base(session: Session, _req: HttpRequest) -> Result<HttpResponse> {
-    // Print content of request if compiled with debug profile. 
+    // Print content of request if compiled with debug profile.
     #[cfg(debug_assertions)]
     println!("{:?}", _req);
 
@@ -115,6 +123,10 @@ async fn main() -> io::Result<()> {
             .service(resume)
             // Register welcome page
             .service(welcome)
+            // Register contact page
+            .service(contact)
+            // Register contact image
+            .service(contact_image)
             // Register bindings
             .service(bindings)
             // Register wasm

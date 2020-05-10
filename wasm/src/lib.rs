@@ -1,6 +1,6 @@
 use wasm_bindgen::prelude::*;
-use wasm_bindgen_futures::{JsFuture, spawn_local};
 use wasm_bindgen::{JsCast, JsValue};
+use wasm_bindgen_futures::{spawn_local, JsFuture};
 use web_sys::{Request, RequestInit, Response};
 
 // Called when the wasm module is instantiated
@@ -28,7 +28,7 @@ pub fn active_tab(tab: &str) {
         let element = tabs.item(index).unwrap();
         if element.id() == tab {
             element.set_class_name("tab active");
-        }else {
+        } else {
             element.set_class_name("tab");
         }
     }
@@ -38,7 +38,9 @@ pub fn active_tab(tab: &str) {
 pub fn nav_expand() {
     let window = web_sys::window().expect("No global `window` exists");
     let document = window.document().expect("Should have a document on window");
-    let nav = document.get_element_by_id("nav").expect("Could not get 'nav' element");
+    let nav = document
+        .get_element_by_id("nav")
+        .expect("Could not get 'nav' element");
 
     if nav.class_name() == "nav" {
         nav.set_class_name("nav responsive");
@@ -59,10 +61,11 @@ pub async fn resume() {
     let mut req = RequestInit::new();
     req.method("GET");
     let request =
-        Request::new_with_str_and_init(
-            "/api/resume", 
-            &req).expect("Request could not be created");
-    request.headers().set("Accept", "text/html").expect("Headers could not be set");
+        Request::new_with_str_and_init("/api/resume", &req).expect("Request could not be created");
+    request
+        .headers()
+        .set("Accept", "text/html")
+        .expect("Headers could not be set");
 
     let response = JsFuture::from(window.fetch_with_request(&request))
         .await
@@ -73,7 +76,11 @@ pub async fn resume() {
     let resp: Response = response.dyn_into().unwrap();
 
     // Convert this other `Promise` into a rust `Future`.
-    let page = JsFuture::from(resp.text().unwrap()).await.unwrap().as_string().unwrap();
+    let page = JsFuture::from(resp.text().unwrap())
+        .await
+        .unwrap()
+        .as_string()
+        .unwrap();
 
     // Show the new content.
     document
@@ -102,10 +109,11 @@ pub async fn welcome() {
     let mut req = RequestInit::new();
     req.method("GET");
     let request =
-        Request::new_with_str_and_init(
-            "/api/welcome", 
-            &req).expect("Request could not be created");
-    request.headers().set("Accept", "text/html").expect("Headers could not be set");
+        Request::new_with_str_and_init("/api/welcome", &req).expect("Request could not be created");
+    request
+        .headers()
+        .set("Accept", "text/html")
+        .expect("Headers could not be set");
 
     let response = JsFuture::from(window.fetch_with_request(&request))
         .await
@@ -116,7 +124,11 @@ pub async fn welcome() {
     let resp: Response = response.dyn_into().unwrap();
 
     // Convert this other `Promise` into a rust `Future`.
-    let page = JsFuture::from(resp.text().unwrap()).await.unwrap().as_string().unwrap();
+    let page = JsFuture::from(resp.text().unwrap())
+        .await
+        .unwrap()
+        .as_string()
+        .unwrap();
 
     // Show the new content.
     document
@@ -135,9 +147,9 @@ pub async fn welcome() {
 }
 
 #[wasm_bindgen]
-pub async fn coming_soon() {
+pub async fn contact() {
     // Set active tab
-    active_tab("");
+    active_tab("contact");
     let window = web_sys::window().expect("No global `window` exists");
     let document = window.document().expect("Should have a document on window");
     let history = window.history().expect("Could not get history");
@@ -145,10 +157,11 @@ pub async fn coming_soon() {
     let mut req = RequestInit::new();
     req.method("GET");
     let request =
-        Request::new_with_str_and_init(
-            "/api/coming_soon", 
-            &req).expect("Request could not be created");
-    request.headers().set("Accept", "text/html").expect("Headers could not be set");
+        Request::new_with_str_and_init("/api/contact", &req).expect("Request could not be created");
+    request
+        .headers()
+        .set("Accept", "text/html")
+        .expect("Headers could not be set");
 
     let response = JsFuture::from(window.fetch_with_request(&request))
         .await
@@ -159,7 +172,59 @@ pub async fn coming_soon() {
     let resp: Response = response.dyn_into().unwrap();
 
     // Convert this other `Promise` into a rust `Future`.
-    let page = JsFuture::from(resp.text().unwrap()).await.unwrap().as_string().unwrap();
+    let page = JsFuture::from(resp.text().unwrap())
+        .await
+        .unwrap()
+        .as_string()
+        .unwrap();
+
+    // Show the new content.
+    document
+        .get_element_by_id("page")
+        .unwrap()
+        .set_inner_html(&page);
+
+    // Remove the history entry pushed on page load, and replace it.
+    if history.state().expect("Could not get history state") != "/contact" {
+        history
+            .push_state_with_url(&JsValue::from_str("/contact"), "Contact", Some("/contact"))
+            .expect("Could not push state to history");
+    }
+
+    document.set_title("Contact");
+}
+
+#[wasm_bindgen]
+pub async fn coming_soon() {
+    // Set active tab
+    active_tab("");
+    let window = web_sys::window().expect("No global `window` exists");
+    let document = window.document().expect("Should have a document on window");
+    let history = window.history().expect("Could not get history");
+
+    let mut req = RequestInit::new();
+    req.method("GET");
+    let request = Request::new_with_str_and_init("/api/coming_soon", &req)
+        .expect("Request could not be created");
+    request
+        .headers()
+        .set("Accept", "text/html")
+        .expect("Headers could not be set");
+
+    let response = JsFuture::from(window.fetch_with_request(&request))
+        .await
+        .expect("Could not unwrap response");
+
+    // `response` is a `Response` object.
+    assert!(response.is_instance_of::<Response>());
+    let resp: Response = response.dyn_into().unwrap();
+
+    // Convert this other `Promise` into a rust `Future`.
+    let page = JsFuture::from(resp.text().unwrap())
+        .await
+        .unwrap()
+        .as_string()
+        .unwrap();
 
     // Show the new content.
     document
@@ -177,7 +242,6 @@ pub async fn coming_soon() {
     document.set_title("Coming Soon!!");
 }
 
-
 #[wasm_bindgen]
 pub async fn error_404() {
     let window = web_sys::window().expect("No global `window` exists");
@@ -186,11 +250,12 @@ pub async fn error_404() {
 
     let mut req = RequestInit::new();
     req.method("GET");
-    let request =
-        Request::new_with_str_and_init(
-            "/api/error_404", 
-            &req).expect("Request could not be created");
-    request.headers().set("Accept", "text/html").expect("Headers could not be set");
+    let request = Request::new_with_str_and_init("/api/error_404", &req)
+        .expect("Request could not be created");
+    request
+        .headers()
+        .set("Accept", "text/html")
+        .expect("Headers could not be set");
 
     let response = JsFuture::from(window.fetch_with_request(&request))
         .await
@@ -201,17 +266,22 @@ pub async fn error_404() {
     let resp: Response = response.dyn_into().unwrap();
 
     // Convert this other `Promise` into a rust `Future`.
-    let page = JsFuture::from(resp.text().unwrap()).await.unwrap().as_string().unwrap();
+    let page = JsFuture::from(resp.text().unwrap())
+        .await
+        .unwrap()
+        .as_string()
+        .unwrap();
 
     // Show the new content.
     document
         .get_element_by_id("page")
         .unwrap()
         .set_inner_html(&page);
-    
+
     // Remove the history entry pushed on page load, and replace it.
     if history.state().expect("Could not get history state") != "/error_404" {
-        history.push_state(&JsValue::from_str("/error_404"), "404: Page Not Found")
+        history
+            .push_state(&JsValue::from_str("/error_404"), "404: Page Not Found")
             .expect("Could not push state to history");
     }
 
@@ -225,6 +295,7 @@ pub fn route(rt: &str) {
         "/" => spawn_local(welcome()),
         "/welcome" => spawn_local(welcome()),
         "/resume" => spawn_local(resume()),
+        "/contact" => spawn_local(contact()),
         _ => spawn_local(error_404()),
     }
 }
