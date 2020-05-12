@@ -95,7 +95,7 @@ pub async fn resume() {
             .expect("Could not push state (with URL) to history");
     }
 
-    document.set_title("Resume");
+    document.set_title("Résumé");
 }
 
 #[wasm_bindgen]
