@@ -6,10 +6,19 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
 <body>
   <nav class="nav" id="nav">
-    <button onclick="window.busy.welcome()">
+    <button id="logo" onclick="window.busy.welcome()">
       <img width="32px" height="32px" src="data:image/x-icon;base64,AAABAAEAICAQAAEABADoAgAAFgAAACgAAAAgAAAAQAAAAAEABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADyiwUAAHf/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERAAAAAAAAAAAAAAAAEREREQAAAAAAAAAAAAAAABEREREAAAAAAAAAAAAAAAARERERAAAAAAAAAAAAAAAAEREREQAAEREREREREREAABEREREAABERERERERERAAARERERAAARAAAREQAAEQAAEREREQAAEQAAEREAABEAABEREREAABEAABERAAARAAARERERAAARAAAREQAAEQAAEREREQAAEREREREREREAABEREREAABERERERERERAAARERERAAAAAAAAAAAAAAAAEREREQAAAAAAAAAAAAAAABEREREAAAAAAAAAAAAAAAARERERAAAAAAAAAAAAAAAAEREREREAABEREREREQAAERERERERAAAREREREREAABERERERAAAAABEREREAAAAAEREREQAAAAARERERAAAAABEREREAAAAAEREREQAAAAARERERAAAAABEREREAAAAAEREREQAAAAARERERAAAAABEREREAAAAAEREREQAAAAAREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==" alt="Robot Logo"/>
     </button>
-    <button class="tab" id="projects" onclick="window.busy.coming_soon()">Projects</button>
+    <div class="dropdown">
+      <button class="dropbtn" onclick="window.busy.proj_expand()">Projects
+        <img width="12px" height="12px" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAQAAAC1+jfqAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAAAmJLR0QAAKqNIzIAAAAJcEhZcwAADsQAAA7EAZUrDhsAAAAHdElNRQfkBQ4UBwVNOmKTAAAAN0lEQVQoz2NgGAygnOE/HliPX0k9flPq8VtUj98t9fidi1UaoQRFmhlFwVEGRoaDDI0DHfLoAADCH0COZ5Ot8AAAACV0RVh0ZGF0ZTpjcmVhdGUAMjAyMC0wNS0xNFQyMDowNzowNSswMDowMDALnP8AAAAldEVYdGRhdGU6bW9kaWZ5ADIwMjAtMDUtMTRUMjA6MDc6MDUrMDA6MDBBViRDAAAAGXRFWHRTb2Z0d2FyZQB3d3cuaW5rc2NhcGUub3Jnm+48GgAAAABJRU5ErkJggg==" alt="Dropdown Symbol"/>
+      </button>
+      <div class="dropdown-content" id="projects_dropdown">
+        <button class="proj_drop" id="this_website" onclick="window.busy.resume()">This Website</button>
+        <button class="proj_drop" id="quadcopter" onclick="window.busy.resume()">Quadcopter</button>
+        <button class="proj_drop" id="amplifier_optimizer" onclick="window.busy.resume()">Amplifier Optimizer</button>
+      </div>
+    </div>
     <button class="tab" id="resume" onclick="window.busy.resume()">Résumé</button>
     <button class="tab" id="contact" onclick="window.busy.contact()">Contact</button>
     <button class="icon" onclick="window.busy.nav_expand()">
@@ -56,13 +65,14 @@ body, html {
   background-color: #ff7700;
 }
 
-.nav button:first-child {
+.nav button:first-child{
   float: left;
   border: none;
   background-color: #ff7700;
+}
+
+.nav #logo {
   padding-top: 4px;
-  padding-left: 3px;
-  padding-right: 3px;
 }
 
 .nav .tab {
@@ -78,7 +88,34 @@ body, html {
   font-family: Arial;
 }
 
-.nav button:hover {
+/* Dropdown container */
+.nav .dropdown {
+  float: left;
+  overflow: hidden;
+}
+
+/* Make [rpject dropdown button fit inside the navbar */
+.nav .dropdown .dropbtn {
+  outline: none;
+  border: none;
+  color: #000000;
+  padding: 10px 16px; 
+  text-decoration: none;
+  font-size: 16px;
+  font-family: Arial;
+  margin: 0;
+}
+
+ .nav .dropdown-content {
+  display: none;
+  position: absolute;
+  background-color: #ff7700;
+  min-width: 10em;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  z-index: 1;
+}
+
+.nav button:hover, .dropdown:hover, .dropbtn, .dropbtn:focus {
   background-color: #058bf2;
 }
 
