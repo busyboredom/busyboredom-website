@@ -50,6 +50,21 @@ pub fn nav_expand() {
 }
 
 #[wasm_bindgen]
+pub fn proj_expand() {
+    let window = web_sys::window().expect("No global `window` exists");
+    let document = window.document().expect("Should have a document on window");
+    let nav = document
+        .get_element_by_id("projects_dropdown")
+        .expect("Could not get 'dropdown' element");
+
+    if nav.class_name() == "dropdown" {
+        nav.set_class_name("dropdown show");
+    } else {
+        nav.set_class_name("dropdown");
+    }
+}
+
+#[wasm_bindgen]
 pub async fn resume() {
     //Set active tab
     active_tab("resume");
