@@ -66,7 +66,7 @@ body, html {
   background-color: #ff7700;
 }
 
-.nav button:first-child{
+.nav #logo{
   float: left;
   border: none;
   background-color: #ff7700;
@@ -132,7 +132,7 @@ body, html {
 }
 
 @media screen and (max-width: 600px) {
-  .nav button:not(:first-child) {display: none;}
+  .nav :not(:first-child) {display: none;}
   .nav button.icon {
     float: right;
     display: block;
@@ -154,8 +154,10 @@ body, html {
   }
 }
 
-.show {
+.dropdown .show {
     display: block;
+    position: absolute;
+    float: right;
 }
 
 a:link {
