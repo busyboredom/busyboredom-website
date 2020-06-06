@@ -57,10 +57,10 @@ pub fn proj_expand() {
         .get_element_by_id("projects_dropdown")
         .expect("Could not get 'dropdown' element");
 
-    if nav.class_name() == "dropdown" {
-        nav.set_class_name("dropdown show");
+    if nav.class_name() == "dropdown-content" {
+        nav.set_class_name("dropdown-content show");
     } else {
-        nav.set_class_name("dropdown");
+        nav.set_class_name("dropdown-content");
     }
 }
 
