@@ -62,7 +62,7 @@ body, html {
 }
 
 .nav {
-  overflow: hidden;
+  overflow-x: hidden;
   background-color: #ff7700;
 }
 
@@ -109,8 +109,7 @@ body, html {
  .nav .dropdown-content {
   display: none;
   position: absolute;
-  padding-top: 1px;
-  padding-bottom: 1px;
+  padding: 1px;
   background-color: #353535;
   min-width: 10em;
 }
@@ -121,6 +120,7 @@ body, html {
   color: #000000;
   background: #ff7700;
   border: 1px solid #353535;
+  padding: 0.5em;
   text-align: left;
   font-size: 14px;
  }
@@ -152,11 +152,29 @@ body, html {
   .nav.responsive .tab {
     display: block;
     width: 100%;
+    padding: 0.5em 1em;
     text-align: left;
   }
   .nav.responsive .dropdown {
     display: block;
     width: 100%;
+  }
+
+  .nav.responsive .dropbtn {
+    padding: 0,5em 1em;
+  }
+
+  .nav.responsive .dropdown-content {
+    position: relative;
+    margin-left: 2em;
+    width: 100%;
+    padding: 0px;
+  }
+
+  .nav.responsive .proj_drop {
+    display: block;
+    padding: 0.5em;
+    border: none;
   }
 }
 
@@ -170,7 +188,6 @@ body, html {
 
 .dropdown .show {
     display: block;
-    float: right;
 }
 
 a:link {
