@@ -7,6 +7,10 @@ use actix_session::{CookieSession, Session};
 use actix_web::http::StatusCode;
 use actix_web::{guard, middleware, web, App, HttpRequest, HttpResponse, HttpServer, Result};
 
+mod projects;
+
+use projects::*;
+
 /// Resume page
 #[get("/api/resume")]
 async fn resume() -> Result<HttpResponse> {
@@ -127,6 +131,8 @@ async fn main() -> io::Result<()> {
             .wrap(CookieSession::signed(&[0; 32]).secure(false))
             // Enable logger - always register actix-web Logger middleware last
             .wrap(middleware::Logger::default())
+            // Register project "This Website"
+            .service(this_website)
             // Register resume page
             .service(resume)
             // Register resume pdf

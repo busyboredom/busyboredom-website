@@ -1,3 +1,7 @@
+pub mod projects;
+
+use projects::*;
+
 use wasm_bindgen::prelude::*;
 use wasm_bindgen::{JsCast, JsValue};
 use wasm_bindgen_futures::{spawn_local, JsFuture};
@@ -311,6 +315,7 @@ pub fn route(rt: &str) {
         "/welcome" => spawn_local(welcome()),
         "/resume" => spawn_local(resume()),
         "/contact" => spawn_local(contact()),
+        "/projects/this_website" => spawn_local(this_website()),
         _ => spawn_local(error_404()),
     }
 }
