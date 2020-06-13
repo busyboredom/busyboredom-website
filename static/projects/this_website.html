@@ -9,18 +9,22 @@
       The sluggish performance, common 
       <a href="https://en.wikipedia.org/wiki/Dependency_hell">dependency hell</a> and incredible
       fragmentation of modern web development prompted me to try something new. To force myself out
-      of the current ecosystem, I set out to build a modern website without Javascript.
+      of the current ecosystem, I set out to build a modern website without JavaScript.
     </p>
 
     <p>
-      I got pretty close. Aside from javascript bindings generated with 
+      I got pretty close. Aside from JavaScript bindings generated with 
       <a href="https://github.com/rustwasm/wasm-bindgen">wasm-bindgen</a> for the necessary DOM 
-      access, <em>this website uses only 7 lines of Javascript</em>. The rest is done in 
-      <a href="https://webassembly.org/">webassembly</a>, accomplishing rudamentary client-side
+      access, <em>this website uses only 8 lines of JavaScript</em>. The rest is done in 
+      <a href="https://WebAssembly.org/">WebAssembly</a>, accomplishing rudamentary client-side
       routing and interactivity.
+    </p>
 
-      The entire website -- including the <a href="https://actix.rs/">Actix-based</a> backend -- 
-      compiles to a single 9MB executable for easy deployment.
+    <p>
+      The entire website -- including the <a href="https://actix.rs/">Actix</a>-based backend -- 
+      compiles to a single 9MB executable for easy deployment. You can view the source code 
+      <a href="https://github.com/busyboredom/busyboredom-website">here</a> if you're thinking of
+      doing something similar yourself.
     </p>
 
   <h2>The Problem</h2>
@@ -44,7 +48,7 @@
       </ul>
     </li>
     <li>
-      Looked for slimmer alternatives (oh hey, maybe <a href=""https://reactjs.org/>React?</a>).
+      Looked for slimmer alternatives (oh hey, maybe <a href="https://reactjs.org/">React</a>?).
     </li>
   </ol>
   
@@ -84,10 +88,146 @@
     There's a 
     <a href="https://almanac.httparchive.org/en/2019/page-weight#introduction">great writeup</a> 
     by HTTP Archive on why web bloat and complexity is a problem if you'd like to learn more. 
-
   </p>
 
   <h2>The Solution</h2>
+
+  <p>
+    If the problem is the ecosystem as a whole pushing us towards unsustainable development 
+    practices, then solution is to get away from the ecosystem. Instead of JavaScript, this website
+    was created using WebAssembly compiled from <a href="https://www.rust-lang.org/">Rust</a>. 
+    Tools like <a href="https://getbootstrap.com/">Bootstrap</a> and NPM were left on the sidelines
+    while I made my own interactive elements and relied on the Rust-native dependency manager and
+    build tool, <a href="https://github.com/rust-lang/cargo/">Cargo</a>.
+  </p>
+
+  <p>
+    WebAssembly, however, lacks many of the privilages of JavaScript (like DOM access). To get
+    around this, a total of 8 lines of JavaScript were used to load the WebAssembly, and some more
+    auto-generated as glue code by wasm-bindgen (mentioned earlier). These 8 lines load the glue
+    and pass events to my WebAssembly.
+  </p>
+
+  <pre>
+    <code>
+// Import the init function from the 
+// generated JS bindings and call it.
+import init, * as busy from '/api/bindings';
+async function run() {
+  // Load the wasm file
+  await init('/api/wasm');
+}
+run();
+
+// Store wasm functions in window to make 
+// them accessible outside this script.
+window.busy = busy;
+
+// Add popstate event handler.
+window.onpopstate = function(event) {
+  if (event.state) {
+    window.busy.route(event.state);
+  }
+};
+    </code>
+  </pre>
+  
+  <p>
+    With this out of the way, I was able to start working on the fun stuff. Routing boiled down
+    to a very simple function run on every request.
+  </p>
+
+  <pre>
+    <code>
+/// Get current URL and load the resulting page.
+#[wasm_bindgen]
+pub fn route(rt: &str) {
+    match rt {
+        "/" => spawn_local(welcome()),
+        "/welcome" => spawn_local(welcome()),
+        "/resume" => spawn_local(resume()),
+        "/contact" => spawn_local(contact()),
+        "/projects/this_website" => 
+            spawn_local(this_website()),
+        _ => spawn_local(error_404()),
+    }
+}
+    </code>
+  </pre>
+
+  <p>
+    Meanwhile, browser history is manipulated from within each page's associated function as 
+    shown below for the welcome page.
+  </p>
+
+  <pre>
+    <code>
+if history
+    .state().expect("Could not get history state") != "/welcome" {
+    history
+        .push_state_with_url(
+            &JsValue::from_str("/welcome"), 
+            "Welcome!", 
+            Some("/welcome"))
+        .expect("Could not push state (with URL) to history");
+}
+    </code>
+  </pre>
+
+  <p>
+    The actual content of pages (when not loaded on first contact) is retrieved as-needed by HTTP 
+    request.
+  </p>
+
+  <pre>
+    <code>
+let mut req = RequestInit::new();
+req.method("GET");
+let request =
+    Request::new_with_str_and_init("/api/welcome", &req)
+        .expect("Request could not be created");
+request
+    .headers()
+    .set("Accept", "text/html")
+    .expect("Headers could not be set");
+
+let response = JsFuture::from(window.fetch_with_request(&request))
+    .await
+    .expect("Could not unwrap response");
+
+// `response` is a `Response` object.
+assert!(response.is_instance_of::&ltResponse&gt());
+let resp: Response = response.dyn_into().unwrap();
+
+// Convert this other `Promise` into a rust `Future`.
+let page = JsFuture::from(resp.text().unwrap())
+    .await
+    .unwrap()
+    .as_string()
+    .unwrap();
+
+// Show the new content.
+document
+    .get_element_by_id("page")
+    .unwrap()
+    .set_inner_html(&page);
+    </code>
+  </pre>
+
+  <p>
+    The frontend is served by an actix-web backend, with the entire frontend compiled seperately 
+    and embedded in the final executable using the <code>include_bytes!()</code> macro. while this
+    method is less than ideal for compile times, it makes single-file deployment a possibility.
+  </p>
+
+  <h2>Closing Remarks</h2>
+
+  <p>
+     This has been a fun project, and I plan on using this website to host my projects for a long 
+     time. That said, <em>I would never use a setup like this for a serious production website</em>.
+     As cool as this is, it's just too far from standard.
+  </p>
+
 </div>
 <style>
 #this-website-text {
@@ -98,6 +238,25 @@
 
 #this-website-text p {
   text-align: left;
+}
+
+code {
+  font-family: Consolas,"courier new";
+  background: #202020;
+  color: green;
+}
+
+pre {
+  background: #202020;
+  border-left: 0.25em solid #FF7700;
+  page-break-inside: avoid;
+  font-family: monospace;
+  line-height: 1.5;
+  max-width: 100%;
+  overflow: auto;
+  padding: 0em 1.5em;
+  display: block;
+  word-wrap: break-word;
 }
 
 </style>
