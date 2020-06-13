@@ -1,4 +1,4 @@
-<div id="this-website-text">
+<div class="this-website">
   <h1>This Website</h1>
 
   <h2>Summary</h2>
@@ -94,7 +94,7 @@
 
   <p>
     If the problem is the ecosystem as a whole pushing us towards unsustainable development 
-    practices, then solution is to get away from the ecosystem. Instead of JavaScript, this website
+    practices, then the solution is to get away from the ecosystem. Instead of JavaScript, this website
     was created using WebAssembly compiled from <a href="https://www.rust-lang.org/">Rust</a>. 
     Tools like <a href="https://getbootstrap.com/">Bootstrap</a> and NPM were left on the sidelines
     while I made my own interactive elements and relied on the Rust-native dependency manager and
@@ -103,9 +103,8 @@
 
   <p>
     WebAssembly, however, lacks many of the privilages of JavaScript (like DOM access). To get
-    around this, a total of 8 lines of JavaScript were used to load the WebAssembly, and some more
-    auto-generated as glue code by wasm-bindgen (mentioned earlier). These 8 lines load the glue
-    and pass events to my WebAssembly.
+    around this, some javascript was auto-generated as glue code by wasm-bindgen (mentioned 
+    earlier) and these 8 lines of JavaScript were used to load the WebAssembly and glue code.
   </p>
 
   <pre>
@@ -216,28 +215,41 @@ document
 
   <p>
     The frontend is served by an actix-web backend, with the entire frontend compiled seperately 
-    and embedded in the final executable using the <code>include_bytes!()</code> macro. while this
+    and embedded in the final executable using the <code>include_bytes!()</code> macro. While this
     method is less than ideal for compile times, it makes single-file deployment a possibility.
   </p>
 
   <h2>Closing Remarks</h2>
 
   <p>
-     This has been a fun project, and I plan on using this website to host my projects for a long 
-     time. That said, <em>I would never use a setup like this for a serious production website</em>.
-     As cool as this is, it's just too far from standard.
+    This has been a fun project, and I plan on using this website to host my projects for a long 
+    time. 
+  </p>
+
+  <p>
+    That said, <em>I would never use a setup like this for a serious production website</em>.
+    As cool as this is, it's just too far from standard.
+  </p>
+
+  <p class="center">
+    <i>See a bug or typo?</i> <a onclick="window.busy.contact()">Contact Me</a>
   </p>
 
 </div>
 <style>
-#this-website-text {
+.this-website {
   max-width: 80ch;
   margin: 0 auto;
   padding: 0 1em;
 }
 
-#this-website-text p {
+.this-website p {
   text-align: left;
+}
+
+.this-website p.center {
+  text-align: center;
+  margin-top: 10em;
 }
 
 code {
