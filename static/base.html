@@ -11,7 +11,9 @@
     </button>
     <div class="dropdown">
       <button id="dropbtn" class="dropbtn" onclick="window.busy.proj_expand()">Projects
-        <img width="12px" height="12px" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAQAAAC1+jfqAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAAAmJLR0QAAKqNIzIAAAAJcEhZcwAADsQAAA7EAZUrDhsAAAAHdElNRQfkBQ4UBwVNOmKTAAAAN0lEQVQoz2NgGAygnOE/HliPX0k9flPq8VtUj98t9fidi1UaoQRFmhlFwVEGRoaDDI0DHfLoAADCH0COZ5Ot8AAAACV0RVh0ZGF0ZTpjcmVhdGUAMjAyMC0wNS0xNFQyMDowNzowNSswMDowMDALnP8AAAAldEVYdGRhdGU6bW9kaWZ5ADIwMjAtMDUtMTRUMjA6MDc6MDUrMDA6MDBBViRDAAAAGXRFWHRTb2Z0d2FyZQB3d3cuaW5rc2NhcGUub3Jnm+48GgAAAABJRU5ErkJggg==" alt="Dropdown Symbol"/>
+        <div id="drop_symbol" class="">
+          <img width="12px" height="12px" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAQAAAC1+jfqAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAAAmJLR0QAAKqNIzIAAAAJcEhZcwAADsQAAA7EAZUrDhsAAAAHdElNRQfkBQ4UBwVNOmKTAAAAN0lEQVQoz2NgGAygnOE/HliPX0k9flPq8VtUj98t9fidi1UaoQRFmhlFwVEGRoaDDI0DHfLoAADCH0COZ5Ot8AAAACV0RVh0ZGF0ZTpjcmVhdGUAMjAyMC0wNS0xNFQyMDowNzowNSswMDowMDALnP8AAAAldEVYdGRhdGU6bW9kaWZ5ADIwMjAtMDUtMTRUMjA6MDc6MDUrMDA6MDBBViRDAAAAGXRFWHRTb2Z0d2FyZQB3d3cuaW5rc2NhcGUub3Jnm+48GgAAAABJRU5ErkJggg==" alt="Dropdown Symbol"/>
+        </div>
       </button>
       <div class="dropdown-content" id="projects_dropdown">
         <button class="proj_drop" id="this_website" onclick="window.busy.this_website()">This Website</button>
@@ -118,7 +120,12 @@ em {
   min-width: 10em;
 }
 
- .nav .proj_drop{
+.nav .dropdown .dropbtn #drop_symbol {
+  display: inline;
+  float: right;
+}
+
+.nav .proj_drop{
   display: block;
   width: 100%;
   color: #000000;
@@ -127,7 +134,7 @@ em {
   padding: 0.5em;
   text-align: left;
   font-size: 14px;
- }
+}
 
 .nav .icon {
   display: none;
@@ -190,8 +197,12 @@ em {
   background-color: #058bf2;
 }
 
-.dropdown .show {
+.nav .dropdown .show {
     display: block;
+}
+
+.nav .dropdown #drop_symbol.upside-down {
+  transform: rotate(180deg);
 }
 
 a:link {

@@ -57,14 +57,20 @@ pub fn nav_expand() {
 pub fn proj_expand() {
     let window = web_sys::window().expect("No global `window` exists");
     let document = window.document().expect("Should have a document on window");
-    let nav = document
+
+    let dropdown = document
         .get_element_by_id("projects_dropdown")
         .expect("Could not get 'dropdown' element");
+    let drop_symbol = document
+        .get_element_by_id("drop_symbol")
+        .expect("Could not get 'drop_symbol' element");
 
-    if nav.class_name() == "dropdown-content" {
-        nav.set_class_name("dropdown-content show");
+    if dropdown.class_name() == "dropdown-content" {
+        dropdown.set_class_name("dropdown-content show");
+        drop_symbol.set_class_name("upside-down")
     } else {
-        nav.set_class_name("dropdown-content");
+        dropdown.set_class_name("dropdown-content");
+        drop_symbol.set_class_name("")
     }
 }
 
