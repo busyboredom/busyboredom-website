@@ -67,10 +67,10 @@ pub fn proj_expand() {
 
     if dropdown.class_name() == "dropdown-content" {
         dropdown.set_class_name("dropdown-content show");
-        drop_symbol.set_class_name("upside-down")
+        drop_symbol.set_class_name("arrow up")
     } else {
         dropdown.set_class_name("dropdown-content");
-        drop_symbol.set_class_name("")
+        drop_symbol.set_class_name("arrow down")
     }
 }
 

@@ -10,10 +10,8 @@
       <img width="32px" height="32px" src="data:image/x-icon;base64,AAABAAEAICAQAAEABADoAgAAFgAAACgAAAAgAAAAQAAAAAEABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADyiwUAAHf/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERAAAAAAAAAAAAAAAAEREREQAAAAAAAAAAAAAAABEREREAAAAAAAAAAAAAAAARERERAAAAAAAAAAAAAAAAEREREQAAEREREREREREAABEREREAABERERERERERAAARERERAAARAAAREQAAEQAAEREREQAAEQAAEREAABEAABEREREAABEAABERAAARAAARERERAAARAAAREQAAEQAAEREREQAAEREREREREREAABEREREAABERERERERERAAARERERAAAAAAAAAAAAAAAAEREREQAAAAAAAAAAAAAAABEREREAAAAAAAAAAAAAAAARERERAAAAAAAAAAAAAAAAEREREREAABEREREREQAAERERERERAAAREREREREAABERERERAAAAABEREREAAAAAEREREQAAAAARERERAAAAABEREREAAAAAEREREQAAAAARERERAAAAABEREREAAAAAEREREQAAAAARERERAAAAABEREREAAAAAEREREQAAAAAREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==" alt="Robot Logo"/>
     </button>
     <div class="dropdown">
-      <button id="dropbtn" class="dropbtn" onclick="window.busy.proj_expand()">Projects
-        <div id="drop_symbol" class="">
-          <img width="12px" height="12px" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAQAAAC1+jfqAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAAAmJLR0QAAKqNIzIAAAAJcEhZcwAADsQAAA7EAZUrDhsAAAAHdElNRQfkBQ4UBwVNOmKTAAAAN0lEQVQoz2NgGAygnOE/HliPX0k9flPq8VtUj98t9fidi1UaoQRFmhlFwVEGRoaDDI0DHfLoAADCH0COZ5Ot8AAAACV0RVh0ZGF0ZTpjcmVhdGUAMjAyMC0wNS0xNFQyMDowNzowNSswMDowMDALnP8AAAAldEVYdGRhdGU6bW9kaWZ5ADIwMjAtMDUtMTRUMjA6MDc6MDUrMDA6MDBBViRDAAAAGXRFWHRTb2Z0d2FyZQB3d3cuaW5rc2NhcGUub3Jnm+48GgAAAABJRU5ErkJggg==" alt="Dropdown Symbol"/>
-        </div>
+      <button id="dropbtn" class="dropbtn" onclick="window.busy.proj_expand()">
+        Projects<i id="drop_symbol" class="arrow down"></i>
       </button>
       <div class="dropdown-content" id="projects_dropdown">
         <button class="proj_drop" id="this_website" onclick="window.busy.this_website()">This Website</button>
@@ -112,17 +110,32 @@ em {
   margin: 0;
 }
 
- .nav .dropdown-content {
+.nav .dropdown .dropbtn .arrow {
+  border: solid black;
+  border-width: 0 0.2em 0.2em 0;
+  display: inline-block;
+  padding: 0.25em;
+  margin-left: 1ch;
+}
+
+.nav .dropdown .dropbtn .up {
+  transform: rotate(-135deg);
+  position:relative;
+  top: 0.1em
+}
+
+.nav .dropdown .dropbtn .down {
+  transform: rotate(45deg);
+  position:relative;
+  bottom: 0.2em;
+}
+
+.nav .dropdown-content {
   display: none;
   position: absolute;
   padding: 1px;
   background-color: #353535;
   min-width: 10em;
-}
-
-.nav .dropdown .dropbtn #drop_symbol {
-  display: inline;
-  float: right;
 }
 
 .nav .proj_drop{
@@ -199,10 +212,6 @@ em {
 
 .nav .dropdown .show {
     display: block;
-}
-
-.nav .dropdown #drop_symbol.upside-down {
-  transform: rotate(180deg);
 }
 
 a:link {
