@@ -1,12 +1,35 @@
 <div id="this-website-text">
   <h1>This Website</h1>
+
+  <h2>Summary</h2>
+
   <p>This is a website for purists.</p>
 
+    <p>
+      The sluggish performance, common 
+      <a href="https://en.wikipedia.org/wiki/Dependency_hell">dependency hell</a> and incredible
+      fragmentation of modern web development prompted me to try something new. To force myself out
+      of the current ecosystem, I set out to build a modern website without Javascript.
+    </p>
+
+    <p>
+      I got pretty close. Aside from javascript bindings generated with 
+      <a href="https://github.com/rustwasm/wasm-bindgen">wasm-bindgen</a> for the necessary DOM 
+      access, <em>this website uses only 7 lines of Javascript</em>. The rest is done in 
+      <a href="https://webassembly.org/">webassembly</a>, accomplishing rudamentary client-side
+      routing and interactivity.
+
+      The entire website -- including the <a href="https://actix.rs/">Actix-based</a> backend -- 
+      compiles to a single 9MB executable for easy deployment.
+    </p>
+
+  <h2>The Problem</h2>
+  
   <p>
     I am frequently frustrated by the ineficiency and fragmentation of modern web development. To
     implement client side routing for a more responsive user experience, for example,
-    you would typically be encouraged to adopt a JavaScript framework like Vue. Let me walk you though my experience
-    with that:
+    you would typically be encouraged to adopt a JavaScript framework like Vue. Let me walk you 
+    though my experience with that:
   </p>
 
   <ol>
@@ -20,7 +43,9 @@
         <li>Etc.</li>
       </ul>
     </li>
-    <li>Looked for slimmer alternatives (oh hey, maybe react?).</li>
+    <li>
+      Looked for slimmer alternatives (oh hey, maybe <a href=""https://reactjs.org/>React?</a>).
+    </li>
   </ol>
   
   <p>
@@ -28,23 +53,47 @@
   </p>
      
   <p>
-    My beef with this situation wasn't an aversion to learning -- it was a fear that <em>after adopting
-    one of these technoligies, I might be stuck with it.</em> What if it's no longer maintained in 5 
-    years? What if I need help maintaining it, but can't find people who know my specific "stack" of
-    frameworks anymore? What if I just want a different feature set? Commitment is scary, and web
-    development is full of it.
+    My beef with this situation wasn't an aversion to learning -- it was a fear that <em>after 
+    adopting one of these technoligies, I might be stuck with it.</em> What if it's no longer 
+    maintained in 5 years? What if I need help maintaining it, but can't find people who know my 
+    specific "stack" of frameworks anymore? What if I just want a different feature set? 
+    Commitment is scary, and web development is full of it.
+
+    Making matters worse, these dependencies come with dependencies of their own and will need 
+    helper libraries and plugins to accomplish many of the tasks you require. You will likely
+    end up with some combination of 
+    
+    <ul>
+      <li>vue-router</li>
+      <li>vuex</li>
+      <li>vue-custom-element</li>
+      <li>vue-touch</li>
+      <li>NPM</li>
+      <li>Webpack</li>
+    </ul>
+
+    along with any number of miscelanious dependencies you might find recommended on Stack Overflow
+    for whatever feature you're trying to implement. Small things here and there eventually add
+    up, and webpages have gotten big. The average webpage surpassed the original DOOM game in size 
+    <a href="https://www.wired.com/2016/04/average-webpage-now-size-original-doom/">
+      back in 2016
+    </a>. 
   </p>
+
+  <p>
+    There's a 
+    <a href="https://almanac.httparchive.org/en/2019/page-weight#introduction">great writeup</a> 
+    by HTTP Archive on why web bloat and complexity is a problem if you'd like to learn more. 
+
+  </p>
+
+  <h2>The Solution</h2>
 </div>
 <style>
 #this-website-text {
   max-width: 80ch;
   margin: 0 auto;
   padding: 0 1em;
-}
-
-#this-website-text h1 {
-  text-align: center;
-  color: #058bf2;
 }
 
 #this-website-text p {
