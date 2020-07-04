@@ -2,3 +2,4 @@
 /wasm/target
 *.swo
 *.swp
+*.geany
