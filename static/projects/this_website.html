@@ -8,8 +8,8 @@
     <p>
       The sluggish performance, common 
       <a href="https://en.wikipedia.org/wiki/Dependency_hell">dependency hell</a> and incredible
-      fragmentation of modern web development prompted me to try something new. To force myself out
-      of the current ecosystem, I set out to build a modern website without JavaScript.
+      fragmentation of modern web development prompted me to try something fun. To force myself out
+      of the current ecosystem, I tried to build a modern website without JavaScript.
     </p>
 
     <p>
@@ -30,10 +30,9 @@
   <h2>The Problem</h2>
   
   <p>
-    I am frequently frustrated by the ineficiency and fragmentation of modern web development. To
-    implement client side routing for a more responsive user experience, for example,
-    you would typically be encouraged to adopt a JavaScript framework like Vue. Let me walk you 
-    though my experience with that:
+    Modern web development is fragmented and inneficient. To implement client side routing for a 
+    more responsive user experience, for example, you would typically be encouraged to adopt a 
+    JavaScript framework like Vue. Let me walk you though my experience with that:
   </p>
 
   <ol>
@@ -57,8 +56,8 @@
   </p>
      
   <p>
-    My beef with this situation wasn't an aversion to learning -- it was a fear that <em>after 
-    adopting one of these technoligies, I might be stuck with it.</em> What if it's no longer 
+    The problem isn't just an aversion to learning. The problem is that <em>after 
+    adopting one of these technoligies, I might be stuck with it.</em> What if Vue is no longer 
     maintained in 5 years? What if I need help maintaining it, but can't find people who know my 
     specific "stack" of frameworks anymore? What if I just want a different feature set? 
     Commitment is scary, and web development is full of it.
@@ -94,8 +93,9 @@
 
   <p>
     If the problem is the ecosystem as a whole pushing us towards unsustainable development 
-    practices, then the solution is to get away from the ecosystem. Instead of JavaScript, this website
-    was created using WebAssembly compiled from <a href="https://www.rust-lang.org/">Rust</a>. 
+    practices, then the solution might be to get away from the ecosystem. Instead of JavaScript, 
+    this website was created using WebAssembly compiled from 
+    <a href="https://www.rust-lang.org/">Rust</a>. 
     Tools like <a href="https://getbootstrap.com/">Bootstrap</a> and NPM were left on the sidelines
     while I made my own interactive elements and relied on the Rust-native dependency manager and
     build tool, <a href="https://github.com/rust-lang/cargo/">Cargo</a>.
