@@ -87,6 +87,14 @@ async fn favicon() -> Result<&'static [u8]> {
     Ok(include_bytes!("../static/favicon.ico"))
 }
 
+/// CSS Normalization
+#[get("/normalize.css")]
+async fn normalize_css() -> Result<HttpResponse> {
+    Ok(HttpResponse::build(StatusCode::OK)
+        .content_type("text/css")
+        .body(&include_str!("../static/normalize.css")[..]))
+}
+
 /// Simple index handler
 async fn base(session: Session, _req: HttpRequest) -> Result<HttpResponse> {
     // Print content of request if compiled with debug profile.
@@ -153,6 +161,8 @@ async fn main() -> io::Result<()> {
             .service(coming_soon)
             // Register 404
             .service(p404)
+            // Register CSS Normalization
+            .service(normalize_css)
             // With path parameters
             .service(web::resource("/user/{name}").route(web::get().to(with_param)))
             // Default
