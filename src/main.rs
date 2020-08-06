@@ -139,6 +139,8 @@ async fn main() -> io::Result<()> {
             .wrap(CookieSession::signed(&[0; 32]).secure(false))
             // Enable logger - always register actix-web Logger middleware last
             .wrap(middleware::Logger::default())
+            // Register project "Quadcopter"
+            .service(quadcopter)
             // Register project "This Website"
             .service(this_website)
             // Register resume page

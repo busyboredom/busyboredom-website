@@ -322,6 +322,7 @@ pub fn route(rt: &str) {
         "/resume" => spawn_local(resume()),
         "/contact" => spawn_local(contact()),
         "/projects/this_website" => spawn_local(this_website()),
+        "/projects/quadcopter" => spawn_local(quadcopter()),
         _ => spawn_local(error_404()),
     }
 }
