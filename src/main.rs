@@ -141,6 +141,8 @@ async fn main() -> io::Result<()> {
             .wrap(middleware::Logger::default())
             // Register project "Quadcopter"
             .service(quadcopter)
+            .service(quadcopter_overview)
+            .service(quadcopter_closeup)
             // Register project "This Website"
             .service(this_website)
             // Register resume page
