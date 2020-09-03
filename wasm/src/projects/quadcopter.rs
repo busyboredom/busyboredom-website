@@ -15,7 +15,7 @@ pub async fn quadcopter() {
 
     let mut req = RequestInit::new();
     req.method("GET");
-    let request = Request::new_with_str_and_init("/api/projects/quadcopter", &req)
+    let request = Request::new_with_str_and_init("/api/projects/quadcopter/quadcopter.html", &req)
         .expect("Request could not be created");
     request
         .headers()

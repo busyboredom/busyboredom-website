@@ -15,7 +15,7 @@ pub async fn this_website() {
 
     let mut req = RequestInit::new();
     req.method("GET");
-    let request = Request::new_with_str_and_init("/api/projects/this_website", &req)
+    let request = Request::new_with_str_and_init("/api/projects/this_website/this_website.html", &req)
         .expect("Request could not be created");
     request
         .headers()
