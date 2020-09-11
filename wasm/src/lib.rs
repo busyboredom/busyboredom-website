@@ -263,7 +263,7 @@ pub async fn coming_soon() {
             .push_state_with_url(&JsValue::from_str("/coming_soon"), "Coming Soon!", Some("/coming_soon"))
             .expect("Could not push state to history");
     }
-    document.set_title("Coming Soon!!");
+    document.set_title("Coming Soon!");
 }
 
 #[wasm_bindgen]
@@ -323,6 +323,7 @@ pub fn route(rt: &str) {
         "/coming_soon" => spawn_local(coming_soon()),
         "/projects/this_website" => spawn_local(this_website()),
         "/projects/quadcopter" => spawn_local(quadcopter()),
+        "/projects/amplifier_optimizer" => spawn_local(amplifier_optimizer()),
         _ => spawn_local(error_404()),
     }
 }

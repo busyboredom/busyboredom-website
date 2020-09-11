@@ -6,7 +6,7 @@ use web_sys::{Request, RequestInit, Response};
 use crate::active_tab;
 
 #[wasm_bindgen]
-pub async fn this_website() {
+pub async fn amplifier_optimizer() {
     active_tab("");
 
     let window = web_sys::window().expect("No global `window` exists");
@@ -15,9 +15,11 @@ pub async fn this_website() {
 
     let mut req = RequestInit::new();
     req.method("GET");
-    let request =
-        Request::new_with_str_and_init("/api/projects/this_website/this_website.html", &req)
-            .expect("Request could not be created");
+        let request = 
+        Request::new_with_str_and_init(
+            "/api/projects/amplifier_optimizer/amplifier_optimizer.html", 
+            &req)
+        .expect("Request could not be created");
     request
         .headers()
         .set("Accept", "text/html")
@@ -56,15 +58,15 @@ pub async fn this_website() {
     drop_symbol.set_class_name("arrow down");
 
     // Remove the history entry pushed on page load, and replace it.
-    if history.state().expect("Could not get history state") != "/projects/this_website" {
+    if history.state().expect("Could not get history state") != "/projects/amplifier_optimizer" {
         history
             .push_state_with_url(
-                &JsValue::from_str("/projects/this_website"),
-                "This Website",
-                Some("/projects/this_website"),
+                &JsValue::from_str("/projects/amplifier_optimizer"),
+                "Amplifier Optimizer",
+                Some("/projects/amplifier_optimizer"),
             )
             .expect("Could not push state to history");
     }
 
-    document.set_title("This Website");
+    document.set_title("Amplifier Optimizer");
 }
