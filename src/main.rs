@@ -33,7 +33,7 @@ fn handle_embedded_file(path: &str) -> HttpResponse {
 }
 
 fn dist(path: web::Path<(String,)>) -> HttpResponse {
-    handle_embedded_file(&path.0.0)
+    handle_embedded_file(&(path.0).0)
 }
 
 /// Simple index handler
