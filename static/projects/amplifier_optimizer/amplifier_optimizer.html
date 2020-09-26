@@ -1,83 +1,114 @@
 <div class="amplifier-optimizer">
     <h1>Amplifier Optimizer</h1>
   
-    <div style="width:100%; height:0; padding-top:50%; position:relative;">
+    <div style="width:100%; height:0; padding-top:62.4%; position:relative;">
       <img 
-        alt="Setup Overview" 
-        src="/api/projects/quadcopter/overview.jpg" 
+        alt="Circuit Schematic" 
+        src="/api/projects/amplifier_optimizer/circuit.png" 
         style="position:absolute; top:0; left:0; width:100%;">
     </div>
   
     <h2>Summary</h2>
   
     <p>
-      This was one of my earliest electronics projects, and significantly influenced my decision
-      when choosing my majors in college. The amplifier_optimizer fits the common 250 mm form factor and
-      runs on a 3-cell (12.6 V) lithium polymer battery, but the best part was the onboard camera 
-      and video transmitter, letting the pilot see what the drone sees in real time. I even 
-      got a headset for it.
+      Ever gotten a homework assignment and immediately written it off as a loss? 
+      <br><br>
+      Optimizing this cascaded BJT amplifier was one of those for me. Calculating the 
+      charactaristics of a given amplifier is relatively straight forward, but taking a set of 
+      desired parameters and turning it into a design is another matter. Interestingly though, the 
+      issue is not a lack of knobs to turn -- it's that changing one of them influences the impact
+      of a change in another. Asking my professor for guidence got me a frustrating answer: try 
+      different combinations until you find one that works.
+      <br><br>
+      I don't know about you, but that sounds like computer work to me. There are a number of ways
+      to tackle a search problem like this. A simple grid search would probably work fine, and a 
+      baysian search might work a little better. If you want the "wow" factor though, you use a 
+      <a href="https://en.wikipedia.org/wiki/Genetic_algorithm" >genetic algorithm</a>.
     </p>
   
-    <h2>Breakdown</h2>
+    <h2>The Solution</h2>
   
     <p>
-      This amplifier_optimizer was meant to be a platform to be tinkered with. To accomodate that, I wanted to
-      spec out standard and stand-alone components that could be swapped out independently. 
+      The most efficient way to solve a problem like this would be analytically as a system of 
+      equations. Being motivated by laziness, however, that solution won't suffice. A black box 
+      optimization strategy like a genetic algorithm may not have the shortest run time, but our
+      goal is to minimize study time. 
+      <br><br>
+      Genetic algorithms are fairely intuitive optimizers. Given some function and a "loss 
+      function" describing the desired output, a genetic algorithm first randomly generates a set
+      of possible inputs. For this use case, the inputs are the resistor and Vcc values. The code
+      below shows how I randomly generate the inputs according to a configurable probability 
+      distribution.
     </p>
-  
-    <div style="width:100%; height:0; padding-top:50%; position:relative;">
-      <img 
-        alt="Components Closeup" 
-        src="/api/projects/quadcopter/closeup.jpg" 
-        style="position:absolute; top:0; left:0; width:100%;"
-      />
-    </div>
-  
-    <ul>
-      <li><h3>Camera, PSU, Transmitter and Antenna</h3></li>
-  
-      Cameras are delicate instruments. The steel housing helps protect my Pilot V2 camera from
-      impact, but isn't enough to protect the image quality from the electrical interference coming
-      from the motors and ESCs. To provide some electrical protection, the camera got its own little
-      filtered power supply. The video transmitter draws from this filtered power as well, and sports
-      a circular polerized antenna to cut down on interference from other nearby signals as well.
-  
-      <li><h3>Battery</h3></li>
-  
-      Lithium polymer batteries give an specific energy of between 
-      <a href="https://en.wikipedia.org/wiki/Lithium_polymer_battery">100–265 Wh/kg</a>. 
-      That might not be on par with the 13.0 kWh/kg you get out of gasoline, but it's a hell of a 
-      lot better than the 35–40 Wh/kg you'll get out of something like the lead acid batteries used in
-      cars. 
-      
-      <li><h3>ESCs and Motors</h3></li>
-  
-      The motors are a little special. You could use the normal brushed motors you might find in a
-      cheap RC car, but you would end up disappointed in your flight times. Those motors draw a lot of
-      power, and likely won't give you the thrust you're looking for. To do it right, you need
-      brushless DC (BLDC) motors. 
-      <br><br>
-      Brushless DC motors are special because they're not really DC at all -- they're driven by a
-      multi-phase AC signal similar to what you might find in big industrial machinery. Each input
-      line oscillates at the same frequency, but slightly out of phase. To speed up the motor, you
-      increase the frequency. 
-      <br><br>
-      You might have noticed that our power supply is a battery (a DC source). So how are we gonna get
-      a high-power variable frequency signal out of a DC source? With an Electronic Speed Controller!
-      ESCs take DC power and a control signal, and turn them into an alternating signal who's
-      frequency is determined by that control signal. Each motor of my amplifier_optimizer has its own 10 A ESC,
-      providing indevidual control over that motor and plenty of punch.
-  
-      <li><h3>Reciever and Flight Controller</h3></li>
-  
-      The reciever's role is simple: take input remotely from the operator. With a amplifier_optimizer,
-      however, interpretation of that input requires some work. Humans don't generally have the
-      reaction time necessary to manually control the speed of each motor, so controls are often
-      simplified down to forward, backwards, left, right, faster, slower, and turn (or "yaw"). To
-      translate these simple commands into actual motor speeds, I used a CC3D flight control module.
-      This module has a built in accelerometer and gyroscope, allowing it to self-stabilize
-      autonomously. Some basic calibration and PID tuning is all that's required after installation.   
-    </ul>
+    <pre>
+      <code>
+void Amplifier::Randomize() {
+  // Randomizes the amplifier.
+
+  // Set up random number generation.
+  std::random_device rd;  // Get random number from hardware.
+  std::mt19937 eng(rd());  // Seed the generator.
+  // Define Distributions.
+  std::uniform_int_distribution<> resistor_distribution(0, max_resistor);
+  std::uniform_int_distribution<> Vcc_distribution(1, max_Vcc);
+
+  // Set random Vcc and resistor values.
+  Vcc = Vcc_distribution(eng);
+  R1 = resistor_distribution(eng);
+  R2 = resistor_distribution(eng);
+  R3 = resistor_distribution(eng);
+  R4 = resistor_distribution(eng);
+  Rc1 = resistor_distribution(eng);
+  Re1 = resistor_distribution(eng);
+  Re2 = resistor_distribution(eng);
+}
+      </code>
+    </pre>
+    
+    <p>
+      After a population of inputs are randomized, each set is passed through a function and the
+      results are ranked in order from best to worst according to the loss function. In our case,
+      the function is a set of BJT amplifier equations and the loss function is a combination of
+      amplifier charactaristics. The code block below shows the process of calculating the voltage
+      gain of the amplifier (one of the many variables that a user may want to optimize for).
+    </p>
+
+    <pre>
+      <code>
+//Av-----------------------------------
+
+void Amplifier::calculate_Av() {
+  Av = Avs * Av1 * Av2;
+}
+
+void Amplifier::calculate_Avs() {
+  Avs = Rin / (parameters::Rsource + Rin);
+}
+
+void Amplifier::calculate_Av1() {
+  double beta = parameters::beta;
+  double Rload = parameters::Rload;
+  double numerator;
+  double denominator;
+  // numerator = (Rc1||Rth2||(Rpi2 + (beta + 1)(Re2||Rload)
+  numerator = beta * 
+    1 / (1/Rc1 + 1/Rth2 + 1/(Rpi2 + (beta + 1) * 1 / (1/Re2 + 1/Rload)));
+  denominator = Rpi1;
+  Av1 = numerator / denominator;
+}
+
+void Amplifier::calculate_Av2() {
+  double beta = parameters::beta;
+  double Rload = parameters::Rload;
+  double numerator;
+  double denominator;
+  // numerator = (beta + 1)(Re2||Rload)
+  numerator = (beta + 1) * 1 / (1/Re2 + 1/Rload);
+  denominator = Rpi2 + (beta + 1) * 1 / (1/Re2 + 1/Rload);
+  Av2 = numerator / denominator;
+}
+      </code>
+    </pre>
   
     <h2>Conclusion</h2>
   
@@ -119,7 +150,7 @@
   code {
     font-family: Consolas,"courier new";
     background: #202020;
-    color: green;
+    color: #04ff04;
   }
   
   pre {
