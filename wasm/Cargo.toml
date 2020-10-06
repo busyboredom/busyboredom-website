@@ -27,6 +27,7 @@ features = [
   'History',
   'EventTarget',
   'HtmlElement',
+  'HtmlHeadElement',
   'HtmlCollection',
   'Node',
   'Window',

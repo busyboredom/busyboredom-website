@@ -15,11 +15,11 @@ pub async fn amplifier_optimizer() {
 
     let mut req = RequestInit::new();
     req.method("GET");
-        let request = 
-        Request::new_with_str_and_init(
-            "/api/projects/amplifier_optimizer/amplifier_optimizer.html", 
-            &req)
-        .expect("Request could not be created");
+    let request = Request::new_with_str_and_init(
+        "/api/projects/amplifier_optimizer/amplifier_optimizer.html",
+        &req,
+    )
+    .expect("Request could not be created");
     request
         .headers()
         .set("Accept", "text/html")

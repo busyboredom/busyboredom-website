@@ -4,3 +4,4 @@
 *.swp
 *.geany
 *.code-workspace
+/static/projects/archviz/Build

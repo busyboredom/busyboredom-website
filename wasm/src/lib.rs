@@ -85,8 +85,8 @@ pub async fn resume() {
 
     let mut req = RequestInit::new();
     req.method("GET");
-    let request =
-        Request::new_with_str_and_init("/api/resume.html", &req).expect("Request could not be created");
+    let request = Request::new_with_str_and_init("/api/resume.html", &req)
+        .expect("Request could not be created");
     request
         .headers()
         .set("Accept", "text/html")
@@ -133,8 +133,8 @@ pub async fn welcome() {
 
     let mut req = RequestInit::new();
     req.method("GET");
-    let request =
-        Request::new_with_str_and_init("/api/welcome.html", &req).expect("Request could not be created");
+    let request = Request::new_with_str_and_init("/api/welcome.html", &req)
+        .expect("Request could not be created");
     request
         .headers()
         .set("Accept", "text/html")
@@ -181,8 +181,8 @@ pub async fn contact() {
 
     let mut req = RequestInit::new();
     req.method("GET");
-    let request =
-        Request::new_with_str_and_init("/api/contact.html", &req).expect("Request could not be created");
+    let request = Request::new_with_str_and_init("/api/contact.html", &req)
+        .expect("Request could not be created");
     request
         .headers()
         .set("Accept", "text/html")
@@ -260,7 +260,11 @@ pub async fn coming_soon() {
     // Remove the history entry pushed on page load, and replace it.
     if history.state().expect("Could not get history state") != "/coming_soon" {
         history
-            .push_state_with_url(&JsValue::from_str("/coming_soon"), "Coming Soon!", Some("/coming_soon"))
+            .push_state_with_url(
+                &JsValue::from_str("/coming_soon"),
+                "Coming Soon!",
+                Some("/coming_soon"),
+            )
             .expect("Could not push state to history");
     }
     document.set_title("Coming Soon!");
@@ -324,6 +328,7 @@ pub fn route(rt: &str) {
         "/projects/this_website" => spawn_local(this_website()),
         "/projects/quadcopter" => spawn_local(quadcopter()),
         "/projects/amplifier_optimizer" => spawn_local(amplifier_optimizer()),
+        "/projects/archviz" => spawn_local(archviz()),
         _ => spawn_local(error_404()),
     }
 }
