@@ -39,7 +39,7 @@ pub fn active_tab(tab: &str) {
 }
 
 #[wasm_bindgen]
-pub fn nav_expand() {
+pub fn nav_toggle() {
     let window = web_sys::window().expect("No global `window` exists");
     let document = window.document().expect("Should have a document on window");
     let nav = document
@@ -54,7 +54,33 @@ pub fn nav_expand() {
 }
 
 #[wasm_bindgen]
-pub fn proj_expand() {
+pub fn close_dropdowns() {
+    let window = web_sys::window().expect("No global `window` exists");
+    let document = window.document().expect("Should have a document on window");
+
+    // Get nav dropdown.
+    let nav = document
+        .get_element_by_id("nav")
+        .expect("Could not get 'nav' element");
+
+    // Close nav dropdown (mobile)
+    nav.set_class_name("nav");
+
+    // Get project dropdown.
+    let dropdown = document
+        .get_element_by_id("projects_dropdown")
+        .expect("Could not get 'dropdown' element");
+    let drop_symbol = document
+        .get_element_by_id("drop_symbol")
+        .expect("Could not get 'drop_symbol' element");
+
+    // Close project dropdown.
+    dropdown.set_class_name("dropdown-content");
+    drop_symbol.set_class_name("arrow down")
+}
+
+#[wasm_bindgen]
+pub fn proj_toggle() {
     let window = web_sys::window().expect("No global `window` exists");
     let document = window.document().expect("Should have a document on window");
 
