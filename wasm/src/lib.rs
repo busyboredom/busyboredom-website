@@ -139,6 +139,9 @@ pub async fn resume() {
         .unwrap()
         .set_inner_html(&page);
 
+    // Close the project dropdown menu.
+    close_dropdowns();
+
     // Remove the history entry pushed on page load, and replace it.
     if history.state().expect("Could not get history state") != "/resume" {
         history
@@ -186,6 +189,9 @@ pub async fn welcome() {
         .get_element_by_id("page")
         .unwrap()
         .set_inner_html(&page);
+
+    // Close the project dropdown menu.
+    close_dropdowns();
 
     // Remove the history entry pushed on page load, and replace it.
     if history.state().expect("Could not get history state") != "/welcome" {
@@ -235,6 +241,9 @@ pub async fn contact() {
         .unwrap()
         .set_inner_html(&page);
 
+    // Close the project dropdown menu.
+    close_dropdowns();
+
     // Remove the history entry pushed on page load, and replace it.
     if history.state().expect("Could not get history state") != "/contact" {
         history
@@ -282,6 +291,9 @@ pub async fn coming_soon() {
         .get_element_by_id("page")
         .unwrap()
         .set_inner_html(&page);
+    
+    // Close the project dropdown menu.
+    close_dropdowns();
 
     // Remove the history entry pushed on page load, and replace it.
     if history.state().expect("Could not get history state") != "/coming_soon" {
@@ -331,6 +343,9 @@ pub async fn error_404() {
         .get_element_by_id("page")
         .unwrap()
         .set_inner_html(&page);
+
+    // Close the project dropdown menu.
+    close_dropdowns();
 
     // Remove the history entry pushed on page load, and replace it.
     if history.state().expect("Could not get history state") != "/error_404" {

@@ -3,7 +3,7 @@ use wasm_bindgen::{JsCast, JsValue};
 use wasm_bindgen_futures::JsFuture;
 use web_sys::{Request, RequestInit, Response};
 
-use crate::active_tab;
+use crate::{active_tab, close_dropdowns};
 
 #[wasm_bindgen]
 pub async fn this_website() {
@@ -45,15 +45,7 @@ pub async fn this_website() {
         .set_inner_html(&page);
 
     // Close the project dropdown menu.
-    let dropdown = document
-        .get_element_by_id("projects_dropdown")
-        .expect("Could not get 'dropdown' element");
-    let drop_symbol = document
-        .get_element_by_id("drop_symbol")
-        .expect("Could not get 'drop_symbol' element");
-
-    dropdown.set_class_name("dropdown-content");
-    drop_symbol.set_class_name("arrow down");
+    close_dropdowns();
 
     // Remove the history entry pushed on page load, and replace it.
     if history.state().expect("Could not get history state") != "/projects/this_website" {
