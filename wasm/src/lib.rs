@@ -100,19 +100,15 @@ pub fn proj_toggle() {
     }
 }
 
-#[wasm_bindgen]
-pub async fn resume() {
-    //Set active tab
-    active_tab("resume");
-
+pub async fn goto_page(route: &str, resource: &str, title: &str) {
     let window = web_sys::window().expect("No global `window` exists");
     let document = window.document().expect("Should have a document on window");
     let history = window.history().expect("Could not get history");
 
     let mut req = RequestInit::new();
     req.method("GET");
-    let request = Request::new_with_str_and_init("/api/resume.html", &req)
-        .expect("Request could not be created");
+    let request =
+        Request::new_with_str_and_init(resource, &req).expect("Request could not be created");
     request
         .headers()
         .set("Accept", "text/html")
@@ -143,173 +139,56 @@ pub async fn resume() {
     close_dropdowns();
 
     // Remove the history entry pushed on page load, and replace it.
-    if history.state().expect("Could not get history state") != "/resume" {
+    if history.state().expect("Could not get history state") != route {
         history
-            .push_state_with_url(&JsValue::from_str("/resume"), "Résumé", Some("/resume"))
+            .push_state_with_url(&JsValue::from_str(route), title, Some(route))
             .expect("Could not push state (with URL) to history");
     }
 
-    document.set_title("Résumé");
+    document.set_title(title);
+}
+
+#[wasm_bindgen]
+pub async fn resume() {
+    // Set active tab.
+    active_tab("resume");
+
+    // Go to the page.
+    goto_page("/resume", "/api/resume.html", "Résumé").await;
 }
 
 #[wasm_bindgen]
 pub async fn welcome() {
-    // Set active tab
+    // Set active tab.
     active_tab("");
-    let window = web_sys::window().expect("No global `window` exists");
-    let document = window.document().expect("Should have a document on window");
-    let history = window.history().expect("Could not get history");
 
-    let mut req = RequestInit::new();
-    req.method("GET");
-    let request = Request::new_with_str_and_init("/api/welcome.html", &req)
-        .expect("Request could not be created");
-    request
-        .headers()
-        .set("Accept", "text/html")
-        .expect("Headers could not be set");
-
-    let response = JsFuture::from(window.fetch_with_request(&request))
-        .await
-        .expect("Could not unwrap response");
-
-    // `response` is a `Response` object.
-    assert!(response.is_instance_of::<Response>());
-    let resp: Response = response.dyn_into().unwrap();
-
-    // Convert this other `Promise` into a rust `Future`.
-    let page = JsFuture::from(resp.text().unwrap())
-        .await
-        .unwrap()
-        .as_string()
-        .unwrap();
-
-    // Show the new content.
-    document
-        .get_element_by_id("page")
-        .unwrap()
-        .set_inner_html(&page);
-
-    // Close the project dropdown menu.
-    close_dropdowns();
-
-    // Remove the history entry pushed on page load, and replace it.
-    if history.state().expect("Could not get history state") != "/welcome" {
-        history
-            .push_state_with_url(&JsValue::from_str("/welcome"), "Welcome!", Some("/welcome"))
-            .expect("Could not push state (with URL) to history");
-    }
-
-    document.set_title("Welcome!");
+    // Go to the page.
+    goto_page("/welcome", "/api/welcome.html", "Welcome!").await;
 }
 
 #[wasm_bindgen]
 pub async fn contact() {
-    // Set active tab
+    // Set active tab.
     active_tab("contact");
-    let window = web_sys::window().expect("No global `window` exists");
-    let document = window.document().expect("Should have a document on window");
-    let history = window.history().expect("Could not get history");
 
-    let mut req = RequestInit::new();
-    req.method("GET");
-    let request = Request::new_with_str_and_init("/api/contact.html", &req)
-        .expect("Request could not be created");
-    request
-        .headers()
-        .set("Accept", "text/html")
-        .expect("Headers could not be set");
-
-    let response = JsFuture::from(window.fetch_with_request(&request))
-        .await
-        .expect("Could not unwrap response");
-
-    // `response` is a `Response` object.
-    assert!(response.is_instance_of::<Response>());
-    let resp: Response = response.dyn_into().unwrap();
-
-    // Convert this other `Promise` into a rust `Future`.
-    let page = JsFuture::from(resp.text().unwrap())
-        .await
-        .unwrap()
-        .as_string()
-        .unwrap();
-
-    // Show the new content.
-    document
-        .get_element_by_id("page")
-        .unwrap()
-        .set_inner_html(&page);
-
-    // Close the project dropdown menu.
-    close_dropdowns();
-
-    // Remove the history entry pushed on page load, and replace it.
-    if history.state().expect("Could not get history state") != "/contact" {
-        history
-            .push_state_with_url(&JsValue::from_str("/contact"), "Contact", Some("/contact"))
-            .expect("Could not push state to history");
-    }
-
-    document.set_title("Contact");
+    // Go to the page.
+    goto_page("/contact", "/api/contact.html", "Contact").await;
 }
 
 #[wasm_bindgen]
 pub async fn coming_soon() {
     // Set active tab
     active_tab("");
-    let window = web_sys::window().expect("No global `window` exists");
-    let document = window.document().expect("Should have a document on window");
-    let history = window.history().expect("Could not get history");
 
-    let mut req = RequestInit::new();
-    req.method("GET");
-    let request = Request::new_with_str_and_init("/api/coming_soon.html", &req)
-        .expect("Request could not be created");
-    request
-        .headers()
-        .set("Accept", "text/html")
-        .expect("Headers could not be set");
-
-    let response = JsFuture::from(window.fetch_with_request(&request))
-        .await
-        .expect("Could not unwrap response");
-
-    // `response` is a `Response` object.
-    assert!(response.is_instance_of::<Response>());
-    let resp: Response = response.dyn_into().unwrap();
-
-    // Convert this other `Promise` into a rust `Future`.
-    let page = JsFuture::from(resp.text().unwrap())
-        .await
-        .unwrap()
-        .as_string()
-        .unwrap();
-
-    // Show the new content.
-    document
-        .get_element_by_id("page")
-        .unwrap()
-        .set_inner_html(&page);
-    
-    // Close the project dropdown menu.
-    close_dropdowns();
-
-    // Remove the history entry pushed on page load, and replace it.
-    if history.state().expect("Could not get history state") != "/coming_soon" {
-        history
-            .push_state_with_url(
-                &JsValue::from_str("/coming_soon"),
-                "Coming Soon!",
-                Some("/coming_soon"),
-            )
-            .expect("Could not push state to history");
-    }
-    document.set_title("Coming Soon!");
+    // Go to the page.
+    goto_page("/coming_soon", "/api/coming_soon.html", "Coming Soon!").await;
 }
 
 #[wasm_bindgen]
 pub async fn error_404() {
+    // Set active tab
+    active_tab("");
+
     let window = web_sys::window().expect("No global `window` exists");
     let document = window.document().expect("Should have a document on window");
     let history = window.history().expect("Could not get history");
