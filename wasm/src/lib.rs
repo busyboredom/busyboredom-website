@@ -101,9 +101,10 @@ pub fn proj_toggle() {
 }
 
 pub async fn goto_page(route: &str, resource: &str, title: &str) {
+    close_dropdowns();
+    
     let window = web_sys::window().expect("No global `window` exists");
     let document = window.document().expect("Should have a document on window");
-    let history = window.history().expect("Could not get history");
 
     let mut req = RequestInit::new();
     req.method("GET");
@@ -134,18 +135,16 @@ pub async fn goto_page(route: &str, resource: &str, title: &str) {
         .get_element_by_id("page")
         .unwrap()
         .set_inner_html(&page);
-
-    // Close the project dropdown menu.
-    close_dropdowns();
+    
+    document.set_title(title);
 
     // Remove the history entry pushed on page load, and replace it.
+    let history = window.history().expect("Could not get history");
     if history.state().expect("Could not get history state") != route {
         history
             .push_state_with_url(&JsValue::from_str(route), title, Some(route))
             .expect("Could not push state (with URL) to history");
     }
-
-    document.set_title(title);
 }
 
 #[wasm_bindgen]
