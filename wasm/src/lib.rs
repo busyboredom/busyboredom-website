@@ -102,7 +102,7 @@ pub fn proj_toggle() {
 
 pub async fn goto_page(route: &str, resource: &str, title: &str) {
     close_dropdowns();
-    
+
     let window = web_sys::window().expect("No global `window` exists");
     let document = window.document().expect("Should have a document on window");
 
@@ -135,7 +135,7 @@ pub async fn goto_page(route: &str, resource: &str, title: &str) {
         .get_element_by_id("page")
         .unwrap()
         .set_inner_html(&page);
-    
+
     document.set_title(title);
 
     // Remove the history entry pushed on page load, and replace it.
