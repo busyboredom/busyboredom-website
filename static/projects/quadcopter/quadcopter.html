@@ -2,89 +2,90 @@
   <h1>Quadcopter</h1>
 
   <div style="width:100%; height:0; padding-top:50%; position:relative;">
-    <img 
-      alt="Setup Overview" 
-      src="/api/projects/quadcopter/overview.jpg" 
+    <img alt="Setup Overview" src="/api/projects/quadcopter/overview.jpg"
       style="position:absolute; top:0; left:0; width:100%;">
   </div>
 
   <h2>Summary</h2>
 
   <p>
-    This was one of my earliest electronics projects, and significantly influenced my decision
-    when choosing my majors in college. The quadcopter fits the common 250 mm form factor and
-    runs on a 3-cell (12.6 V) lithium polymer battery, but the best part was the onboard camera 
-    and video transmitter, letting the pilot see what the drone sees in real time. I even 
-    got a headset for it.
+    This was one of my earliest electronics projects, and significantly influenced my
+    decision when choosing my majors in college. The quadcopter fits the common 250 mm
+    form factor and runs on a 3-cell (12.6 V) lithium polymer battery, but the best part
+    was the onboard camera and video transmitter, letting the pilot see what the drone
+    sees in real time. I even got a headset for it.
   </p>
-
+  
   <h2>Breakdown</h2>
-
+  
   <p>
-    This quadcopter was meant to be a platform to be tinkered with. To accomodate that, I wanted to
-    spec out standard and stand-alone components that could be swapped out independently. 
+    This quadcopter was meant to be a platform to be tinkered with. To accomodate that, I
+    wanted to spec out standard and stand-alone components that could be swapped out
+    independently.
   </p>
 
   <div style="width:100%; height:0; padding-top:50%; position:relative;">
-    <img 
-      alt="Components Closeup" 
-      src="/api/projects/quadcopter/closeup.jpg" 
-      style="position:absolute; top:0; left:0; width:100%;"
-    />
+    <img alt="Components Closeup" src="/api/projects/quadcopter/closeup.jpg"
+      style="position:absolute; top:0; left:0; width:100%;" />
   </div>
 
-  <ul>
-    <li><h3>Camera, PSU, Transmitter and Antenna</h3></li>
+  <h3>Camera, PSU, Transmitter and Antenna</h3>
+  <hr>
 
-    Cameras are delicate instruments. The steel housing helps protect my Pilot V2 camera from
-    impact, but isn't enough to protect the image quality from the electrical interference coming
-    from the motors and ESCs. To provide some electrical protection, the camera got its own little
-    filtered power supply. The video transmitter draws from this filtered power as well, and sports
-    a circular polerized antenna to cut down on interference from other nearby signals as well.
+  Cameras are delicate instruments. The steel housing helps protect my Pilot V2 camera
+  from impact, but isn't enough to protect the image quality from the electrical
+  interference coming from the motors and ESCs. To provide some electrical protection, the
+  camera got its own little filtered power supply. The video transmitter draws from this
+  filtered power as well, and sports a circular polerized antenna to cut down on
+  interference from other nearby signals as well.
 
-    <li><h3>Battery</h3></li>
+  <h3>Battery</h3>
+  <hr>
 
-    Lithium polymer batteries give an specific energy of between 
-    <a href="https://en.wikipedia.org/wiki/Lithium_polymer_battery">100–265 Wh/kg</a>. 
-    That might not be on par with the 13.0 kWh/kg you get out of gasoline, but it's a hell of a 
-    lot better than the 35–40 Wh/kg you'll get out of something like the lead acid batteries used in
-    cars. 
-    
-    <li><h3>ESCs and Motors</h3></li>
+  Lithium polymer batteries give an specific energy of between
+  <a href="https://en.wikipedia.org/wiki/Lithium_polymer_battery">100–265 Wh/kg</a>. That
+  might not be on par with the 13.0 kWh/kg you get out of gasoline, but it's a hell of a
+  lot better than the 35–40 Wh/kg you'll get out of something like the lead acid batteries
+  used in cars.
 
-    The motors are a little special. You could use the normal brushed motors you might find in a
-    cheap RC car, but you would end up disappointed in your flight times. Those motors draw a lot of
-    power, and likely won't give you the thrust you're looking for. To do it right, you need
-    brushless DC (BLDC) motors. 
-    <br><br>
-    Brushless DC motors are special because they're not really DC at all -- they're driven by a
-    multi-phase AC signal similar to what you might find in big industrial machinery. Each input
-    line oscillates at the same frequency, but slightly out of phase. To speed up the motor, you
-    increase the frequency. 
-    <br><br>
-    You might have noticed that our power supply is a battery (a DC source). So how are we gonna get
-    a high-power variable frequency signal out of a DC source? With an Electronic Speed Controller!
-    ESCs take DC power and a control signal, and turn them into an alternating signal who's
-    frequency is determined by that control signal. Each motor of my quadcopter has its own 10 A ESC,
-    providing indevidual control over that motor and plenty of punch.
+  <h3>ESCs and Motors</h3>
+  <hr>
 
-    <li><h3>Reciever and Flight Controller</h3></li>
+  The motors are a little special. You could use the normal brushed motors you might find
+  in a cheap RC car, but you would end up disappointed in your flight times. Those motors
+  draw a lot of power, and likely won't give you the thrust you're looking for. To do it
+  right, you need brushless DC (BLDC) motors.
+  <br><br>
+  Brushless DC motors are special because they're not really DC at all -- they're driven
+  by a multi-phase AC signal similar to what you might find in big industrial machinery.
+  Each input line oscillates at the same frequency, but slightly out of phase. To speed up
+  the motor, you increase the frequency.
+  <br><br>
+  You might have noticed that our power supply is a battery (a DC source). So how are we
+  gonna get a high-power variable frequency signal out of a DC source? With an Electronic
+  Speed Controller! ESCs take DC power and a control signal, and turn them into an
+  alternating signal who's frequency is determined by that control signal. Each motor of
+  my quadcopter has its own 10 A ESC, providing indevidual control over that motor and
+  plenty of punch.
 
-    The reciever's role is simple: take input remotely from the operator. With a quadcopter,
-    however, interpretation of that input requires some work. Humans don't generally have the
-    reaction time necessary to manually control the speed of each motor, so controls are often
-    simplified down to forward, backwards, left, right, faster, slower, and turn (or "yaw"). To
-    translate these simple commands into actual motor speeds, I used a CC3D flight control module.
-    This module has a built in accelerometer and gyroscope, allowing it to self-stabilize
-    autonomously. Some basic calibration and PID tuning is all that's required after installation.   
-  </ul>
+  <h3>Reciever and Flight Controller</h3>
+  <hr>
+
+  The reciever's role is simple: take input remotely from the operator. With a quadcopter,
+  however, interpretation of that input requires some work. Humans don't generally have
+  the reaction time necessary to manually control the speed of each motor, so controls are
+  often simplified down to forward, backwards, left, right, faster, slower, and turn (or
+  "yaw"). Flight control modules are used to translate these simplified inputs into actual
+  motor speeds. The CC3D flight control module has a built in accelerometer and gyroscope,
+  allowing it to self-stabilize autonomously. Some basic calibration and PID tuning is all
+  that's required after installation.
 
   <h2>Conclusion</h2>
 
-  This project was a cornerstone of my early education, and I highly recommend building your own if
-  you have the time and money. Alternatively, if you're a parent, maybe consider doing something
-  like this with your kids. Give them a "grant", let them take the ropes and see what they come up 
-  with.
+  This project was a cornerstone of my early education, and I highly recommend building
+  your own if you have the time and money. Alternatively, if you're a parent, maybe
+  consider doing something like this with your kids. Give them a "grant", let them take
+  the ropes and see what they come up with.
 
   <p class="feedback">
     <i>See a bug or typo?</i> <a onclick="window.busy.contact()">Contact Me</a>
@@ -92,38 +93,32 @@
 
 </div>
 <style>
-.quadcopter {
-  max-width: 80ch;
-  margin: 0 auto;
-  padding: 0 1em;
-}
+  .quadcopter {
+    max-width: 80ch;
+    margin: 0 auto;
+    padding: 0 1em;
+  }
 
-img {
-  max-width:100%;
-}
+  img {
+    max-width: 100%;
+  }
 
-ul, li {
-  margin-left: 0; 
-  padding-left: 0;
-}
+  code {
+    font-family: Consolas, "courier new";
+    background: #202020;
+    color: green;
+  }
 
-code {
-  font-family: Consolas,"courier new";
-  background: #202020;
-  color: green;
-}
-
-pre {
-  background: #202020;
-  border-left: 0.25em solid #FF7700;
-  page-break-inside: avoid;
-  font-family: monospace;
-  line-height: 1.5;
-  max-width: 100%;
-  overflow: auto;
-  padding: 0em 1.5em;
-  display: block;
-  word-wrap: break-word;
-}
-
+  pre {
+    background: #202020;
+    border-left: 0.25em solid #FF7700;
+    page-break-inside: avoid;
+    font-family: monospace;
+    line-height: 1.5;
+    max-width: 100%;
+    overflow: auto;
+    padding: 0em 1.5em;
+    display: block;
+    word-wrap: break-word;
+  }
 </style>

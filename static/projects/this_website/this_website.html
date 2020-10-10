@@ -7,32 +7,34 @@
 
   <p>
     The sluggish performance, common 
-    <a href="https://en.wikipedia.org/wiki/Dependency_hell">dependency hell</a> and incredible
-    fragmentation of modern web development prompted me to try something fun. To force myself out
-    of the current ecosystem, I tried to build a modern website without JavaScript.
+    <a href="https://en.wikipedia.org/wiki/Dependency_hell">dependency hell</a> and
+    incredible fragmentation of modern web development prompted me to try something fun.
+    To force myself out of the current ecosystem, I tried to build a modern website
+    without JavaScript.
   </p>
 
   <p>
     I got pretty close. Aside from JavaScript bindings generated with 
-    <a href="https://github.com/rustwasm/wasm-bindgen">wasm-bindgen</a> for the necessary DOM 
-    access, <em>this website uses only 8 lines of JavaScript</em>. The rest is done in 
-    <a href="https://WebAssembly.org/">WebAssembly</a>, accomplishing rudamentary client-side
-    routing and interactivity.
+    <a href="https://github.com/rustwasm/wasm-bindgen">wasm-bindgen</a> for the necessary
+    DOM access, <em>this website uses only 8 lines of JavaScript</em>. The rest is done in  
+    <a href="https://WebAssembly.org/">WebAssembly</a>, accomplishing rudamentary
+    client-side routing and interactivity.
   </p>
 
   <p>
     The entire website -- including the <a href="https://actix.rs/">Actix</a>-based backend -- 
     compiles to a single 9MB executable for easy deployment. You can view the source code 
-    <a href="https://github.com/busyboredom/busyboredom-website">here</a> if you're thinking of
-    doing something similar yourself.
+    <a href="https://github.com/busyboredom/busyboredom-website">here</a> if you're
+    thinking of doing something similar yourself.
   </p>
 
   <h2>The Problem</h2>
   
   <p>
-    Modern web development is fragmented and inneficient. To implement client side routing for a 
-    more responsive user experience, for example, you would typically be encouraged to adopt a 
-    JavaScript framework like Vue. Let me walk you though my experience with that:
+    Modern web development is fragmented and inneficient. To implement client side routing
+    for a more responsive user experience, for example, you would typically be encouraged
+    to adopt a JavaScript framework like Vue. Let me walk you though my experience with
+    that:
   </p>
 
   <ol>
@@ -47,7 +49,8 @@
       </ul>
     </li>
     <li>
-      Looked for slimmer alternatives (oh hey, maybe <a href="https://reactjs.org/">React</a>?).
+      Looked for slimmer alternatives (oh hey, maybe <a
+      href="https://reactjs.org/">React</a>?).
     </li>
   </ol>
   
@@ -56,15 +59,15 @@
   </p>
      
   <p>
-    The problem isn't just an aversion to learning. The problem is that <em>after 
-    adopting one of these technoligies, I might be stuck with it.</em> What if Vue is no longer 
-    maintained in 5 years? What if I need help maintaining it, but can't find people who know my 
-    specific "stack" of frameworks anymore? What if I just want a different feature set? 
-    Commitment is scary, and web development is full of it.
-
-    Making matters worse, these dependencies come with dependencies of their own and will need 
-    helper libraries and plugins to accomplish many of the tasks you require. You will likely
-    end up with some combination of 
+    The problem isn't just an aversion to learning. The problem is that <em>after adopting
+    one of these technoligies, I might be stuck with it.</em> What if Vue is no longer
+    maintained in 5 years? What if I need help maintaining it, but can't find people who
+    know my specific "stack" of frameworks anymore? What if I just want a different
+    feature set? Commitment is scary, and web development is full of it.
+    <br><br>
+    Making matters worse, these dependencies come with dependencies of their own and will
+    need helper libraries and plugins to accomplish many of the tasks you require. You
+    will likely end up with some combination of 
     
     <ul>
       <li>vue-router</li>
@@ -75,36 +78,39 @@
       <li>Webpack</li>
     </ul>
 
-    along with any number of miscelanious dependencies you might find recommended on Stack Overflow
-    for whatever feature you're trying to implement. Small things here and there eventually add
-    up, and webpages have gotten big. The average webpage surpassed the original DOOM game in size 
+    along with any number of miscelanious dependencies you might find recommended on Stack
+    Overflow for whatever feature you're trying to implement. Small things here and there
+    eventually add up, and webpages have gotten big. The average webpage surpassed the
+    original DOOM game in size 
     <a href="https://www.wired.com/2016/04/average-webpage-now-size-original-doom/">
       back in 2016
     </a>. 
   </p>
 
   <p>
-    There's a 
-    <a href="https://almanac.httparchive.org/en/2019/page-weight#introduction">great writeup</a> 
-    by HTTP Archive on why web bloat and complexity is a problem if you'd like to learn more. 
+    There's a <a
+    href="https://almanac.httparchive.org/en/2019/page-weight#introduction">great
+    writeup</a> by HTTP Archive on why web bloat and complexity is a problem if you'd like
+    to learn more. 
   </p>
 
   <h2>The Solution</h2>
 
   <p>
-    If the problem is the ecosystem as a whole pushing us towards unsustainable development 
-    practices, then the solution might be to get away from the ecosystem. Instead of JavaScript, 
-    this website was created using WebAssembly compiled from 
-    <a href="https://www.rust-lang.org/">Rust</a>. 
-    Tools like <a href="https://getbootstrap.com/">Bootstrap</a> and NPM were left on the sidelines
-    while I made my own interactive elements and relied on the Rust-native dependency manager and
-    build tool, <a href="https://github.com/rust-lang/cargo/">Cargo</a>.
+    If the problem is the ecosystem as a whole pushing us towards unsustainable
+    development practices, then the solution might be to get away from the ecosystem.
+    Instead of JavaScript, this website was created using WebAssembly compiled from 
+    <a href="https://www.rust-lang.org/">Rust</a>. Tools like <a
+    href="https://getbootstrap.com/">Bootstrap</a> and NPM were left on the sidelines
+    while I made my own interactive elements and relied on the Rust-native dependency
+    manager and build tool, <a href="https://github.com/rust-lang/cargo/">Cargo</a>.
   </p>
 
   <p>
-    WebAssembly, however, lacks many of the privilages of JavaScript (like DOM access). To get
-    around this, some javascript was auto-generated as glue code by wasm-bindgen (mentioned 
-    earlier) and these 8 lines of JavaScript were used to load the WebAssembly and glue code.
+    WebAssembly, however, lacks many of the privilages of JavaScript (like DOM access). To
+    get around this, some javascript was auto-generated as glue code by wasm-bindgen
+    (mentioned earlier) and these 8 lines of JavaScript were used to load the WebAssembly
+    and glue code.
   </p>
 
   <pre>
@@ -132,8 +138,8 @@ window.onpopstate = function(event) {
   </pre>
   
   <p>
-    With this out of the way, I was able to start working on the fun stuff. Routing boiled down
-    to a very simple function run on every request.
+    With this out of the way, I was able to start working on the fun stuff. Routing boiled
+    down to a very simple function run on every request.
   </p>
 
   <pre>
@@ -155,8 +161,8 @@ pub fn route(rt: &str) {
   </pre>
 
   <p>
-    Meanwhile, browser history is manipulated from within each page's associated function as 
-    shown below for the welcome page.
+    Meanwhile, browser history is manipulated from within each page's associated function
+    as shown below for the welcome page.
   </p>
 
   <pre>
@@ -174,8 +180,8 @@ if history
   </pre>
 
   <p>
-    The actual content of pages (when not loaded on first contact) is retrieved as-needed by HTTP 
-    request.
+    The actual content of pages (when not loaded on first contact) is retrieved as-needed
+    by HTTP request.
   </p>
 
   <pre>
@@ -214,21 +220,22 @@ document
   </pre>
 
   <p>
-    The frontend is served by an actix-web backend, with the entire frontend compiled seperately 
-    and embedded in the final executable using the <code>include_bytes!()</code> macro. While this
-    method is less than ideal for compile times, it makes single-file deployment a possibility.
+    The frontend is served by an actix-web backend, with the entire frontend compiled
+    seperately and embedded in the final executable using the
+    <code>include_bytes!()</code> macro. While this method is less than ideal for compile
+    times, it makes single-file deployment a possibility.
   </p>
 
   <h2>Closing Remarks</h2>
 
   <p>
-    This has been a fun project, and I plan on using this website to host my projects for a long 
-    time. 
+    This has been a fun project, and I plan on using this website to host my projects for
+    a long time. 
   </p>
 
   <p>
-    That said, <em>I would never use a setup like this for a serious production website</em>.
-    As cool as this is, it's just too far from standard.
+    That said, <em>I would never use a setup like this for a serious production
+    website</em>. As cool as this is, it's just too far from standard.
   </p>
 
   <p class="feedback">

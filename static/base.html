@@ -7,29 +7,31 @@
 </head>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
 <body>
-  <nav class="nav" id="nav">
-    <button id="logo" onclick="window.busy.welcome()">
-      <img width="32px" height="32px" src="data:image/x-icon;base64,AAABAAEAICAQAAEABADoAgAAFgAAACgAAAAgAAAAQAAAAAEABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADyiwUAAHf/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERAAAAAAAAAAAAAAAAEREREQAAAAAAAAAAAAAAABEREREAAAAAAAAAAAAAAAARERERAAAAAAAAAAAAAAAAEREREQAAEREREREREREAABEREREAABERERERERERAAARERERAAARAAAREQAAEQAAEREREQAAEQAAEREAABEAABEREREAABEAABERAAARAAARERERAAARAAAREQAAEQAAEREREQAAEREREREREREAABEREREAABERERERERERAAARERERAAAAAAAAAAAAAAAAEREREQAAAAAAAAAAAAAAABEREREAAAAAAAAAAAAAAAARERERAAAAAAAAAAAAAAAAEREREREAABEREREREQAAERERERERAAAREREREREAABERERERAAAAABEREREAAAAAEREREQAAAAARERERAAAAABEREREAAAAAEREREQAAAAARERERAAAAABEREREAAAAAEREREQAAAAARERERAAAAABEREREAAAAAEREREQAAAAAREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==" alt="Robot Logo"/>
-    </button>
-    <div class="dropdown">
-      <button id="dropbtn" class="dropbtn" onclick="window.busy.proj_toggle()">
-        Projects<i id="drop_symbol" class="arrow down"></i>
+  <header>
+    <nav class="nav" id="nav">
+      <button id="logo" onclick="window.busy.welcome()">
+        <img width="32px" height="32px" src="data:image/x-icon;base64,AAABAAEAICAQAAEABADoAgAAFgAAACgAAAAgAAAAQAAAAAEABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADyiwUAAHf/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERAAAAAAAAAAAAAAAAEREREQAAAAAAAAAAAAAAABEREREAAAAAAAAAAAAAAAARERERAAAAAAAAAAAAAAAAEREREQAAEREREREREREAABEREREAABERERERERERAAARERERAAARAAAREQAAEQAAEREREQAAEQAAEREAABEAABEREREAABEAABERAAARAAARERERAAARAAAREQAAEQAAEREREQAAEREREREREREAABEREREAABERERERERERAAARERERAAAAAAAAAAAAAAAAEREREQAAAAAAAAAAAAAAABEREREAAAAAAAAAAAAAAAARERERAAAAAAAAAAAAAAAAEREREREAABEREREREQAAERERERERAAAREREREREAABERERERAAAAABEREREAAAAAEREREQAAAAARERERAAAAABEREREAAAAAEREREQAAAAARERERAAAAABEREREAAAAAEREREQAAAAARERERAAAAABEREREAAAAAEREREQAAAAAREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==" alt="Robot Logo"/>
       </button>
-      <div class="dropdown-content" id="projects_dropdown">
-        <button class="proj_drop" id="this_website" onclick="window.busy.this_website()">This Website</button>
-        <button class="proj_drop" id="quadcopter" onclick="window.busy.quadcopter()">Quadcopter</button>
-        <button class="proj_drop" id="amplifier_optimizer" onclick="window.busy.amplifier_optimizer()">Amplifier Optimizer</button>
-        <button class="proj_drop" id="getofftheroad" onclick="window.busy.coming_soon()">Get Off The Road</button>
-        <button class="proj_drop" id="waste_oil_furnace" onclick="window.busy.coming_soon()">Waste Oil Furnace</button>
-        <button class="proj_drop" id="mnist_tutorial_paper"onclick="window.busy.coming_soon()">MNIST Tutorial</button>
+      <div class="dropdown">
+        <button id="dropbtn" class="dropbtn" onclick="window.busy.proj_toggle()">
+          Projects<i id="drop_symbol" class="arrow down"></i>
+        </button>
+        <div class="dropdown-content" id="projects_dropdown">
+          <button class="proj_drop" id="this_website" onclick="window.busy.this_website()">This Website</button>
+          <button class="proj_drop" id="quadcopter" onclick="window.busy.quadcopter()">Quadcopter</button>
+          <button class="proj_drop" id="amplifier_optimizer" onclick="window.busy.amplifier_optimizer()">Amplifier Optimizer</button>
+          <button class="proj_drop" id="getofftheroad" onclick="window.busy.coming_soon()">Get Off The Road</button>
+          <button class="proj_drop" id="waste_oil_furnace" onclick="window.busy.coming_soon()">Waste Oil Furnace</button>
+          <button class="proj_drop" id="mnist_tutorial_paper"onclick="window.busy.coming_soon()">MNIST Tutorial</button>
+        </div>
       </div>
-    </div>
-    <button class="tab" id="resume" onclick="window.busy.resume()">Résumé</button>
-    <button class="tab" id="contact" onclick="window.busy.contact()">Contact</button>
-    <button class="icon" onclick="window.busy.nav_toggle()">
-      <img width="24px" height="24px" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAABmJLR0QA/wD/AP+gvaeTAAAAKElEQVRIiWNgGAXDHjAisf/TwmwmKhs6CgYhGE1Fo4ByMJqKRsEQAADWCQMKYvEFtQAAAABJRU5ErkJggg==" alt="Hamburger Menu"/>
-    </button>
-  </nav>
+      <button class="tab" id="resume" onclick="window.busy.resume()">Résumé</button>
+      <button class="tab" id="contact" onclick="window.busy.contact()">Contact</button>
+      <button class="icon" onclick="window.busy.nav_toggle()">
+        <img width="24px" height="24px" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAABmJLR0QA/wD/AP+gvaeTAAAAKElEQVRIiWNgGAXDHjAisf/TwmwmKhs6CgYhGE1Fo4ByMJqKRsEQAADWCQMKYvEFtQAAAABJRU5ErkJggg==" alt="Hamburger Menu"/>
+      </button>
+    </nav>
+  </header>
   <div id="page" onclick="window.busy.close_dropdowns()"></div>
 </body>
 <script type="module">
@@ -67,6 +69,10 @@ body, html {
   height: 100%;
 }
 
+header {
+  height: 50px;
+}
+
 em {
   color: #058BF2;
 }
@@ -95,9 +101,9 @@ p.feedback {
 }
 
 #page {
-  margin-top: 50px;
+  position: absolute;
   width: 100%;
-  height: calc(100vh - 50px);
+  height: calc(100% - 50px);
 }
 
 .nav {
