@@ -58,28 +58,26 @@ pub fn close_dropdowns() {
     let window = web_sys::window().expect("No global `window` exists");
     let document = window.document().expect("Should have a document on window");
 
-    // Close nav dropdown (mobile)
-    if nav.class_name("nav responsive") {
-        // Get nav dropdown.
-        let nav = document
-            .get_element_by_id("nav")
-            .expect("Could not get 'nav' element");
+    // Get nav dropdown.
+    let nav = document
+        .get_element_by_id("nav")
+        .expect("Could not get 'nav' element");
 
-        // Close it.
-        nav.set_class_name() == "nav";
+    // Close nav dropdown (mobile)
+    if nav.class_name() == "nav responsive"{
+        nav.set_class_name("nav");
     }
 
-    // Close project dropdown.
-    if dropdown.class_name("dropdown-content show") {
-        // Get project dropdown.
-        let dropdown = document
-            .get_element_by_id("projects_dropdown")
-            .expect("Could not get 'dropdown' element");
-        let drop_symbol = document
-            .get_element_by_id("drop_symbol")
-            .expect("Could not get 'drop_symbol' element");
+    // Get project dropdown.
+    let dropdown = document
+        .get_element_by_id("projects_dropdown")
+        .expect("Could not get 'dropdown' element");
+    let drop_symbol = document
+        .get_element_by_id("drop_symbol")
+        .expect("Could not get 'drop_symbol' element");
 
-        // Close it.
+    // Close project dropdown.
+    if dropdown.class_name() == "dropdown-content show" {
         dropdown.set_class_name("dropdown-content");
         drop_symbol.set_class_name("arrow down")
     }
@@ -253,6 +251,7 @@ pub fn route(rt: &str) {
         "/projects/this_website" => spawn_local(this_website()),
         "/projects/quadcopter" => spawn_local(quadcopter()),
         "/projects/amplifier_optimizer" => spawn_local(amplifier_optimizer()),
+        "/projects/industrial_automation" => spawn_local(industrial_automation()),
         "/projects/archviz" => spawn_local(archviz()),
         _ => spawn_local(error_404()),
     }
