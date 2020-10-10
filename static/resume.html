@@ -1,10 +1,8 @@
-<object id="pdf" style="width: 100%; height: 100vh;" type="application/pdf" data="/api/resume.pdf" >
-  <div align="center">
+<object id="pdf" type="application/pdf" data="/api/resume.pdf" >
     <h1>Hmm...</h1>
-    <p>Your browser can't display this PDF. 
+    <p class="center">Your browser can't display this PDF. 
       <br>Try <a href="/api/resume.pdf" download>downloading it instead</a>
     </p>
-  </div>
 </object>
 <style>
   body, html {
@@ -13,5 +11,11 @@
 
   h1 {
     color: #058bf2;
+  }
+
+  object {
+    width: 100%; 
+    height: 100vh;
+    margin-top: -10px;
   }
 </style>

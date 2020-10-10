@@ -1,6 +1,40 @@
 <div id="welcome-text">
   <h1>Welcome</h1>
-  <p class="center">This website is a work in progress, but you can <a href="/register/">join the chat server</a> (assuming you've got the password)</p>
+  <p>
+    Welcome to my project website. It's a little sparse at the moment, but feel free to check out 
+    a few of the project pages I've written. 
+    <br></br>
+    Here for the chat server? <a href="/register/">Click here</a> (assuming you've got the 
+    password).
+  </p>
+  <h2>Featured Projects</h2>
+
+  <div class="grid">
+    <div class="card" onclick="window.busy.amplifier_optimizer()">
+      <img src="/api/projects/amplifier_optimizer/circuit.png" alt="Circuit Schematic"/>
+      <div class="container">
+        <h4>Amplifier Optimizer</h4>
+        <p>Automating a homework assignment with a genetic algorithm.</p>
+      </div>
+    </div>
+      
+    <div class="card" onclick="window.busy.quadcopter()">
+      <img src="/api/projects/quadcopter/closeup_16x9.jpg" alt="Components Closeup"/>
+      <div class="container">
+        <h4>Quadcopter</h4>
+        <p>Building a custom quadcopter.</p>
+      </div>
+    </div>
+
+    <div class="card" onclick="window.busy.this_website()">
+      <img src="/api/projects/this_website/loading_wasm.png" alt="Loading Wasm"/>
+      <div class="container">
+        <h4>This Website</h4>
+        <p>Overusing WebAssembly, and enjoying it.</p>
+      </div>
+    </div>
+  </div>
+
 </div>
 <style>
 #welcome-text {
@@ -11,5 +45,49 @@
 
 #welcome-text h1 {
   color: #058bf2;
+}
+
+#welcome-text h4 {
+  color: #058bf2;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(25ch, 1fr));
+  grid-gap: 2em 1em;
+}
+
+.card {
+  /* Add shadows to create the "card" effect */
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.3);
+  transition: 0.3s;
+  width: 100%;
+  padding-top: 60%;
+  position: relative;
+}
+
+/* On mouse-over, add a deeper shadow */
+#welcome-text .card:hover {
+  box-shadow: 4px 8px 14px 4px rgba(0, 0, 0, 0.5);
+}
+
+
+.card img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+}
+
+/* Add some padding inside the card container */
+#welcome-text .card .container {
+  float: left;
+  padding: 2px 16px;
+}
+
+@media screen and (max-width: 30ch) {
+   .grid {
+      grid-template-columns: repeat(auto-fill, minmax(100%, 1fr));
+   }
 }
 </style>
