@@ -17,12 +17,51 @@
           Projects<i id="drop_symbol" class="arrow down"></i>
         </button>
         <div class="dropdown-content" id="projects_dropdown">
-          <button class="proj_drop" id="this_website" onclick="window.busy.this_website()">This Website</button>
-          <button class="proj_drop" id="quadcopter" onclick="window.busy.quadcopter()">Quadcopter</button>
-          <button class="proj_drop" id="amplifier_optimizer" onclick="window.busy.amplifier_optimizer()">Amplifier Optimizer</button>
-          <button class="proj_drop" id="getofftheroad" onclick="window.busy.coming_soon()">Get Off The Road</button>
-          <button class="proj_drop" id="waste_oil_furnace" onclick="window.busy.coming_soon()">Waste Oil Furnace</button>
-          <button class="proj_drop" id="mnist_tutorial_paper"onclick="window.busy.coming_soon()">MNIST Tutorial</button>
+          <button 
+            class="proj_drop" 
+            id="this_website"
+            onclick="window.busy.this_website()"
+          >
+            This Website
+          </button>
+          <button 
+            class="proj_drop" 
+            id="quadcopter" 
+            onclick="window.busy.quadcopter()"
+          >
+            Quadcopter
+          </button>
+          <button 
+            class="proj_drop" 
+            id="amplifier_optimizer"
+            onclick="window.busy.amplifier_optimizer()"
+          >
+            Amplifier Optimizer
+          </button>
+          <button 
+            class="proj_drop" 
+            id="getofftheroad" 
+            onclick="window.busy.coming_soon()"
+          >
+            Get Off The Road
+            <img class="lock" src="/api/lock_icon.png" alt="Lock Icon"/>
+          </button>
+          <button 
+            class="proj_drop" 
+            id="waste_oil_furnace" 
+            onclick="window.busy.coming_soon()"
+          >
+            Waste Oil Furnace 
+            <img class="lock" src="/api/lock_icon.png" alt="Lock Icon"/>
+          </button>
+          <button 
+            class="proj_drop" 
+            id="mnist_tutorial_paper"
+            onclick="window.busy.coming_soon()"
+          >
+            MNIST Tutorial
+            <img class="lock" src="/api/lock_icon.png" alt="Lock Icon"/>
+          </button>
         </div>
       </div>
       <button class="tab" id="resume" onclick="window.busy.resume()">Résumé</button>
@@ -203,6 +242,10 @@ p.feedback {
   background-color: #ff7700;
 }
 
+.nav .lock {
+  float: right;
+  height: 11px;
+}
   
 code {
   font-family: Consolas,"courier new";
@@ -270,6 +313,11 @@ pre {
     padding: 0.5em;
     border: none;
   }
+
+  .nav.responsive .lock {
+  float: left;
+  margin-right: 1ch;
+}
 }
 
 .nav button:hover, #logo:hover, #dropbtn:hover {
