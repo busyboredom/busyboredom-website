@@ -140,6 +140,8 @@ pub async fn goto_page(route: &str, resource: &str, title: &str) {
         .unwrap()
         .set_inner_html(&page);
 
+    window.scroll_to_with_x_and_y(0.0, 0.0);
+
     document.set_title(title);
 
     // Remove the history entry pushed on page load, and replace it.
