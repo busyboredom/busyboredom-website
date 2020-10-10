@@ -4,7 +4,7 @@
     <div style="width:100%; height:0; padding-top:56.25%; position:relative;">
       <video controls style="position:absolute; top:0; left:0; width:100%;"> 
         <source
-          src="/api/projects/industrial_automation/overview_20s.mp4"
+          src="/api/projects/industrial_automation/autoinjector_sleever.mp4"
           type="video/mp4"
         >
       <p class="center">
@@ -16,17 +16,131 @@
   
     <p>
       I went into industrial automation out of college, so this is a bit more than one
-      project. It's how I paid my loans off, and <i>oh boy</i> does it take a lot of programming
-      to pay off a degree nowadays. 
+      project. It's how I paid my loans off, and <i>oh boy</i> does it take a lot of
+      programming to pay off a degree nowadays. Luckily, industrial automation is a
+      rewarding field to work in; it makes people's work go farther, so that someday we
+      might not have to work so hard.
       <br><br>
-      At <a href="http://www.umc-oscar.com">Universal Machine and Engineering</a>, the
+      At <a href="http://www.umc-oscar.com">Universal Machine and Engineering</a> (UMEC), the
       role of a controls engineer is to program machines to do the tasks expected of them.
       Those tasks range from putting bottles in boxes to cutting up lobsters -- the
       client specifies the task, the mechanical guys build a machine, and the controls
       guys bring it to life.
       <br><br>
+      This page lists a few of the industrial automation jobs I have had a hand in. 
     </p>
+
+    <h2>Autoinjector Sleever</h2>
+
+    <div style="width:100%; height:0; padding-top:56.25%; position:relative;">
+      <video controls style="position:absolute; top:0; left:0; width:100%;"> 
+        <source
+          src="/api/projects/industrial_automation/autoinjector_sleever2.mp4"
+          type="video/mp4"
+        >
+      <p class="center">
+        <em>Oops</em>, looks like your browser doesn't support the HTML5 video player.
+      </p>
+    </div>
+
+    <p>
+      This is the project shown in the video at the top of this page. The machine's task
+      was simple: 
+      
+      <ol>
+        <li>Print some info on a plastic sleeve.</li>
+        <li>Put it on an injector.</li>
+        <li>Shrink it on tight.</li>
+      </ol>
+
+      But as with all large projects, making it work isn't quite as easy as those 3 steps
+      sound. To meet the client's neets, the machine also needed to:
+      
+      <ul>
+        <li>Verify the information printed using optical character recognition.</li>
+        <li>Eject bad prints before shrinking.</li>
+        <li>Reject bad parts (for faulty shrinkage) after shrinking.</li>
+        <li>Load injectors from trays.</li>
+        <li>Allow continuous operation during loading and unloading.</li>
+        <li>
+          Record temperature, speed, rejects, operator credentials, etc. in a database.
+        </li>
+        <li>Do it all at 60 parts per minute.</li>
+      </ul>
+
+      There were many other requirements, but this was the bulk of it. We used two 6-axis
+      Epson robots to load the injectors from trays inserted by an operator, Cognex
+      cameras to read the print and inspect the shrinkage, pneumatic pistons for
+      ejecting/rejecting parts and an Epson SCARA robot for unloading the sleeved
+      injectors into bins. Data was pushed to Microsoft SQL Server while inspection images
+      were sent to an FTP server, and it was all controlled by an Allen-Bradley PLC. 
+    </p>
+
+    <h2>Vial Cartoner</h2>
+
+    <div style="width:100%; height:0; padding-top:56.25%; position:relative;">
+      <video controls style="position:absolute; top:0; left:0; width:100%;"> 
+        <source
+          src="/api/projects/industrial_automation/vial_cartoner.mp4"
+          type="video/mp4"
+        >
+      <p class="center">
+        <em>Oops</em>, looks like your browser doesn't support the HTML5 video player.
+      </p>
+    </div>
+
+    <p>
+      This was my first project at UMEC. The task was to:
+
+      <ol>
+        <li>Fold boxes (i.e. cartons).</li>
+        <li>Verify the carton barcodes using an ID40 barcode scanner.</li>
+        <li>Load vials into cartons two at a time.</li>
+        <li>Fold the cartons shut.</li>
+        <li>Reject bad parts (empty carton, bad barcode read, etc.).</li>
+        <li>Place 60 vials per minute.</li>
+      </ol>
+
+      Pick-and-place for the vials was accomplished with an Epson SCARA robot, while
+      rejecting was done with a blower at the end of the line. The unreliability of the
+      carton infeed mechanism made speed the primary challenge, and meeting the specified
+      rate required me to pre-fetch the vials and hover over position while waiting for
+      the cartons to index. I got it up to over 80 parts per minute in the end, beating
+      the requirement by a pretty wide margin.
+    </p>
+
+    <h2>Bottler Interlocks</h2>
   
+    <div style="width:100%; height:0; padding-top:56.25%; position:relative;">
+      <img alt="Bottling Line" src="/api/projects/industrial_automation/bottling_interlocks.jpg"
+        style="position:absolute; top:0; left:0; width:100%;" />
+    </div>
+
+    <p>
+      This line does a lot. Bottles go though stations for:
+
+      <ol>
+        <li>Sanitization.</li>
+        <li>Filling.</li>
+        <li>Capping.</li>
+        <li>Inspection.</li>
+        <li>Metal detection.</li>
+        <li>Wrapping.</li>
+        <li>Sealing.</li>
+        <li>Labeling.</li>
+      </ol>
+
+      Most of the line was in place before I started work on it, but none of the components
+      were talking to each other. The metal detector could go down and the capper would keep
+      going like nothing happened, and that's a problem. 
+      <br><br>
+      My role was to program a PLC to turn each component on and off according to certain
+      criteria like "if the conveyor stops, raise the heat tunnel". While I was at it, I was
+      also asked to add an HMI, program the post-capper inspection camera, and program the
+      reject setup. 
+      <br><br>
+    </p>
+
     <p class="feedback">
       <i>See a bug or typo?</i> <a onclick="window.busy.contact()">Contact Me</a>
     </p>
