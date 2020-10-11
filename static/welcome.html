@@ -22,7 +22,7 @@
       <img src="/api/projects/amplifier_optimizer/circuit.png" alt="Circuit Schematic"/>
       <div class="container">
         <h4>Amplifier Optimizer</h4>
-        <p>Automating a homework assignment with a genetic algorithm.</p>
+        <p>Doing homework with a genetic algorithm.</p>
       </div>
     </div>
       
@@ -55,10 +55,6 @@
   color: #058bf2;
 }
 
-#welcome-text h4 {
-  color: #058bf2;
-}
-
 .grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(25ch, 1fr));
@@ -70,27 +66,34 @@
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.3);
   transition: 0.3s;
   width: 100%;
-  padding-top: 60%;
+  padding-top: 56%;
   position: relative;
 }
 
 /* On mouse-over, add a deeper shadow */
 #welcome-text .card:hover {
-  box-shadow: 4px 8px 14px 4px rgba(0, 0, 0, 0.5);
+  box-shadow: 4px 8px 16px 4px rgba(0, 0, 0, 0.5);
 }
 
+/* Add some padding inside the card container */
+#welcome-text .card .container {
+  padding: 2px 1em;
+}
+
+.container h4 {
+  color: #058bf2;
+  margin: 0.5em 0;
+}
+
+.container p {
+  margin: 0.5em 0;
+}
 
 .card img {
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
-}
-
-/* Add some padding inside the card container */
-#welcome-text .card .container {
-  float: left;
-  padding: 2px 16px;
 }
 
 @media screen and (max-width: 30ch) {
