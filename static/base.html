@@ -5,70 +5,67 @@
   <link rel="shortcut icon" type="image/x-icon" href="/api/favicon.ico">
   <link rel="stylesheet" type="text/css" href="/api/normalize.css">
 </head>
-<meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta title="Welcome! | Busyboredom.com (Charlie Wilkin)">
+<meta 
+     name="Description" 
+     content=
+          "Welcome to my project website. I take on random projects ranging from genetic 
+          algorithms to waste oil furnaces and custom quadcopters, and I write 
+          about them here. Feel free to check out a few of the project pages I've written, 
+          or hop on my chat server (if you've got the password)."
+>
 <body>
   <header>
     <nav class="nav" id="nav">
-      <button id="logo" onclick="window.busy.welcome()">
-        <img width="32px" height="32px" src="data:image/x-icon;base64,AAABAAEAICAQAAEABADoAgAAFgAAACgAAAAgAAAAQAAAAAEABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADyiwUAAHf/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERAAAAAAAAAAAAAAAAEREREQAAAAAAAAAAAAAAABEREREAAAAAAAAAAAAAAAARERERAAAAAAAAAAAAAAAAEREREQAAEREREREREREAABEREREAABERERERERERAAARERERAAARAAAREQAAEQAAEREREQAAEQAAEREAABEAABEREREAABEAABERAAARAAARERERAAARAAAREQAAEQAAEREREQAAEREREREREREAABEREREAABERERERERERAAARERERAAAAAAAAAAAAAAAAEREREQAAAAAAAAAAAAAAABEREREAAAAAAAAAAAAAAAARERERAAAAAAAAAAAAAAAAEREREREAABEREREREQAAERERERERAAAREREREREAABERERERAAAAABEREREAAAAAEREREQAAAAARERERAAAAABEREREAAAAAEREREQAAAAARERERAAAAABEREREAAAAAEREREQAAAAARERERAAAAABEREREAAAAAEREREQAAAAAREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==" alt="Robot Logo"/>
+      <button id="logo">
+        <a href="/">
+          <img width="32px" height="32px" src="data:image/x-icon;base64,AAABAAEAICAQAAEABADoAgAAFgAAACgAAAAgAAAAQAAAAAEABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADyiwUAAHf/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERAAAAAAAAAAAAAAAAEREREQAAAAAAAAAAAAAAABEREREAAAAAAAAAAAAAAAARERERAAAAAAAAAAAAAAAAEREREQAAEREREREREREAABEREREAABERERERERERAAARERERAAARAAAREQAAEQAAEREREQAAEQAAEREAABEAABEREREAABEAABERAAARAAARERERAAARAAAREQAAEQAAEREREQAAEREREREREREAABEREREAABERERERERERAAARERERAAAAAAAAAAAAAAAAEREREQAAAAAAAAAAAAAAABEREREAAAAAAAAAAAAAAAARERERAAAAAAAAAAAAAAAAEREREREAABEREREREQAAERERERERAAAREREREREAABERERERAAAAABEREREAAAAAEREREQAAAAARERERAAAAABEREREAAAAAEREREQAAAAARERERAAAAABEREREAAAAAEREREQAAAAARERERAAAAABEREREAAAAAEREREQAAAAAREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==" alt="Robot Logo"/>
+        </a>
       </button>
       <div class="dropdown">
         <button id="dropbtn" class="dropbtn" onclick="window.busy.proj_toggle()">
           Projects<i id="drop_symbol" class="arrow down"></i>
         </button>
         <div class="dropdown-content" id="projects_dropdown">
-          <button 
-            class="proj_drop" 
-            id="this_website"
-            onclick="window.busy.this_website()"
-          >
-            This Website
-          </button>
-          <button 
-            class="proj_drop" 
-            id="quadcopter" 
-            onclick="window.busy.quadcopter()"
-          >
-            Quadcopter
-          </button>
-          <button 
-            class="proj_drop" 
-            id="amplifier_optimizer"
-            onclick="window.busy.amplifier_optimizer()"
-          >
-            Amplifier Optimizer
-          </button>
-          <button 
-            class="proj_drop" 
-            id="industrial_automation"
-            onclick="window.busy.industrial_automation()"
-          >
-            Industrial Automation
-          </button>
-          <button 
-            class="proj_drop" 
-            id="getofftheroad" 
-            onclick="window.busy.coming_soon()"
-          >
-            Get Off The Road
-            <img class="lock" src="/api/lock_icon.png" alt="Lock Icon"/>
-          </button>
-          <button 
-            class="proj_drop" 
-            id="waste_oil_furnace" 
-            onclick="window.busy.coming_soon()"
-          >
-            Waste Oil Furnace 
-            <img class="lock" src="/api/lock_icon.png" alt="Lock Icon"/>
-          </button>
-          <button 
-            class="proj_drop" 
-            id="mnist_tutorial_paper"
-            onclick="window.busy.coming_soon()"
-          >
-            MNIST Tutorial
-            <img class="lock" src="/api/lock_icon.png" alt="Lock Icon"/>
-          </button>
+          <a href="/projects/this_website" onclick="window.busy.this_website(); return false">
+            <button class="proj_drop" id="this_website">
+              This Website
+            </button>
+          </a>
+          <a href="/projects/quadcopter" onclick="window.busy.quadcopter(); return false">
+            <button class="proj_drop" id="quadcopter">
+              Quadcopter
+            </button>
+          </a>
+          <a href="/projects/amplifier_optimizer" onclick="window.busy.amplifier_optimizer(); return false">
+            <button class="proj_drop" id="amplifier_optimizer">
+              Amplifier Optimizer
+            </button>
+          </a>
+          <a href="/projects/industrial_automation" onclick="window.busy.industrial_automation(); return false">
+            <button class="proj_drop" id="industrial_automation">
+              Industrial Automation
+            </button>
+          </a>
+          <a href="#" onclick="window.busy.coming_soon(); return false">
+            <button class="proj_drop" id="getofftheroad">
+              Get Off The Road
+              <img class="lock" src="/api/lock_icon.png" alt="Lock Icon"/>
+            </button>
+          </a>
+          <a href="#" onclick="window.busy.coming_soon(); return false">
+            <button class="proj_drop" id="waste_oil_furnace">
+              Waste Oil Furnace 
+              <img class="lock" src="/api/lock_icon.png" alt="Lock Icon"/>
+            </button>
+          </a>
+          <a href="#" onclick="window.busy.coming_soon(); return false">
+            <button class="proj_drop" id="mnist_tutorial_paper">
+              MNIST Tutorial
+              <img class="lock" src="/api/lock_icon.png" alt="Lock Icon"/>
+            </button>
+          </a>
         </div>
       </div>
       <button class="tab" id="resume" onclick="window.busy.resume()">Résumé</button>
@@ -240,6 +237,11 @@ p.feedback {
   padding: 0.5em;
   text-align: left;
   font-size: 14px;
+}
+
+/* Remove underline from button text. */
+.nav a {
+  text-decoration: none;
 }
 
 .nav .icon {

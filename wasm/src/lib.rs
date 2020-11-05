@@ -142,13 +142,14 @@ pub async fn goto_page(route: &str, resource: &str, title: &str) {
 
     window.scroll_to_with_x_and_y(0.0, 0.0);
 
-    document.set_title(title);
+    let title = title.to_owned() + " | BusyBoredom (Charlie Wilkin)";
+    document.set_title(&title);
 
     // Remove the history entry pushed on page load, and replace it.
     let history = window.history().expect("Could not get history");
     if history.state().expect("Could not get history state") != route {
         history
-            .push_state_with_url(&JsValue::from_str(route), title, Some(route))
+            .push_state_with_url(&JsValue::from_str(route), &title, Some(route))
             .expect("Could not push state (with URL) to history");
     }
 }
@@ -168,7 +169,7 @@ pub async fn welcome() {
     active_tab("");
 
     // Go to the page.
-    goto_page("/welcome", "/api/welcome.html", "Welcome!").await;
+    goto_page("/", "/api/welcome.html", "Welcome!").await;
 }
 
 #[wasm_bindgen]
@@ -256,7 +257,7 @@ pub fn route(rt: &str) {
         "/projects/industrial_automation" => spawn_local(industrial_automation()),
         "/projects/archviz" => spawn_local(archviz()),
         _ => spawn_local(error_404()),
-    }
+    };
 }
 
 #[wasm_bindgen]
