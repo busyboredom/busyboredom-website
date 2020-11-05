@@ -64,7 +64,7 @@ pub fn close_dropdowns() {
         .expect("Could not get 'nav' element");
 
     // Close nav dropdown (mobile)
-    if nav.class_name() == "nav responsive"{
+    if nav.class_name() == "nav responsive" {
         nav.set_class_name("nav");
     }
 
