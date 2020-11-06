@@ -255,6 +255,7 @@ pub fn route(rt: &str) {
         "/projects/quadcopter" => spawn_local(quadcopter()),
         "/projects/amplifier_optimizer" => spawn_local(amplifier_optimizer()),
         "/projects/industrial_automation" => spawn_local(industrial_automation()),
+        "/projects/mnist_tutorial" => spawn_local(mnist_tutorial()),
         "/projects/archviz" => spawn_local(archviz()),
         _ => spawn_local(error_404()),
     };
