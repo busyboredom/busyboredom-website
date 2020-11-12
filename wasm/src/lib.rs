@@ -170,6 +170,17 @@ pub async fn welcome() {
 
     // Go to the page.
     goto_page("/", "/api/welcome.html", "Welcome!").await;
+
+    // Show warning if safari is detected.
+    let window = web_sys::window().expect("No global `window` exists");
+    if window.navigator().user_agent().unwrap().contains("Safari") {
+        let document = window.document().expect("Should have a document on window");
+        let warning = document.get_element_by_id("safari-warning")
+            .expect("Could not get element with id 'safari-warning'");
+        if warning.class_name() == "warning" {
+            warning.set_class_name("warning show");
+        }
+    }
 }
 
 #[wasm_bindgen]

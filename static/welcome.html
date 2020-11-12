@@ -1,4 +1,9 @@
 <div id="welcome-text">
+  <p id="safari-warning" class="warning">
+    I see you are using Safari. Unfortunately, this website may use features not yet
+    supported on your browser. Please use Chrome or Firefox instead if you experience any
+    issues (like missing images).
+  </p>
   <h1>Welcome</h1>
   <p>
     Welcome to my project website. I take on random projects ranging from genetic 
@@ -98,6 +103,20 @@
   top: 0;
   left: 0;
   width: 100%;
+}
+
+.warning {
+  text-align: center;
+  color: red;
+  border: 1px;
+  border-style: solid;
+  border-color: red;
+  padding: 0.5em;
+  display: none;
+}
+
+.warning.show {
+  display: block;
 }
 
 @media screen and (max-width: 30ch) {
