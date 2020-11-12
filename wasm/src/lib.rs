@@ -173,7 +173,8 @@ pub async fn welcome() {
 
     // Show warning if safari is detected.
     let window = web_sys::window().expect("No global `window` exists");
-    if window.navigator().user_agent().unwrap().contains("Safari") {
+    let user_agent = window.navigator().user_agent().unwrap();
+    if user_agent.contains("Safari") && !user_agent.contains("Chrome") {
         let document = window.document().expect("Should have a document on window");
         let warning = document.get_element_by_id("safari-warning")
             .expect("Could not get element with id 'safari-warning'");

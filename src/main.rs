@@ -6,6 +6,7 @@ use std::{env, io};
 
 use actix_session::{CookieSession, Session};
 use actix_web::body::Body;
+use actix_web::http::header::{CacheControl, CacheDirective};
 use actix_web::http::StatusCode;
 use actix_web::{guard, middleware, web, App, HttpRequest, HttpResponse, HttpServer, Result};
 use mime_guess::from_path;
@@ -22,9 +23,18 @@ fn handle_embedded_file(path: &str) -> HttpResponse {
                 Cow::Borrowed(bytes) => bytes.into(),
                 Cow::Owned(bytes) => bytes.into(),
             };
-            HttpResponse::Ok()
-                .content_type(from_path(path).first_or_octet_stream().as_ref())
-                .body(body)
+            let content_type = from_path(path).first_or_octet_stream();
+            if content_type.subtype().as_str().to_lowercase().contains("html") {
+                return HttpResponse::Ok()
+                    .set(CacheControl(vec![CacheDirective::MaxAge(300u32)]))
+                    .content_type(content_type.as_ref())
+                    .body(body);
+            } else {
+                return HttpResponse::Ok()
+                    .set(CacheControl(vec![CacheDirective::MaxAge(604800u32)]))
+                    .content_type(content_type.as_ref())
+                    .body(body);
+            }
         }
         None => HttpResponse::build(StatusCode::OK)
             .content_type("text/html; charset=utf-8")
