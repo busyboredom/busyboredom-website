@@ -24,14 +24,25 @@ fn handle_embedded_file(path: &str) -> HttpResponse {
                 Cow::Owned(bytes) => bytes.into(),
             };
             let content_type = from_path(path).first_or_octet_stream();
-            if content_type.subtype().as_str().to_lowercase().contains("html") {
+            if content_type
+                .subtype()
+                .as_str()
+                .to_lowercase()
+                .contains("html")
+            {
                 return HttpResponse::Ok()
-                    .set(CacheControl(vec![CacheDirective::MaxAge(300u32)]))
+                    .set(CacheControl(vec![
+                        CacheDirective::MaxAge(300u32),
+                        CacheDirective::Public,
+                    ]))
                     .content_type(content_type.as_ref())
                     .body(body);
             } else {
                 return HttpResponse::Ok()
-                    .set(CacheControl(vec![CacheDirective::MaxAge(604800u32)]))
+                    .set(CacheControl(vec![
+                        CacheDirective::MaxAge(604800u32),
+                        CacheDirective::Public,
+                    ]))
                     .content_type(content_type.as_ref())
                     .body(body);
             }
