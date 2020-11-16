@@ -521,6 +521,7 @@ dependencies = [
  "futures",
  "mime_guess",
  "rust-embed",
+ "walkdir",
 ]
 
 [[package]]
