@@ -23,7 +23,7 @@ pub async fn archviz() {
         .create_element("script")
         .expect("Could not create Unity Load script element.");
     loader
-        .set_attribute("src", "/api/projects/archviz/Build/UnityLoader.js")
+        .set_attribute("src", "/api/projects/archviz/Build/UnityLoader.js?ver=1")
         .expect("Could not set unity loader 'src' attribute.");
     loader
         .set_attribute("onload", "unityInitializer()")
@@ -33,7 +33,7 @@ pub async fn archviz() {
         .create_element("script")
         .expect("Could not create Unity Progress script element.");
     progress
-        .set_attribute("src", "/api/projects/archviz/TemplateData/UnityProgress.js")
+        .set_attribute("src", "/api/projects/archviz/TemplateData/UnityProgress.js?ver=1")
         .expect("Could not set unity progress bar 'src' attribute.");
 
     let instance = document
@@ -44,7 +44,7 @@ pub async fn archviz() {
                 function unityInitializer() {
                     unityInstance = UnityLoader.instantiate(
                     \"unityContainer\", 
-                    \"/api/projects/archviz/Build/WebGLBuild.json\", 
+                    \"/api/projects/archviz/Build/WebGLBuild.json?ver=1\", 
                     {onProgress: UnityProgress});
                 }",
     );
