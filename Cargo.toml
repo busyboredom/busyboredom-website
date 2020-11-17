@@ -16,6 +16,7 @@ env_logger = "0"
 
 [build-dependencies]
 walkdir = "2.3.1"
+regex = "1"
 
 [profile.release]
 lto = true

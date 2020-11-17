@@ -520,6 +520,7 @@ dependencies = [
  "env_logger",
  "futures",
  "mime_guess",
+ "regex",
  "rust-embed",
  "walkdir",
 ]
