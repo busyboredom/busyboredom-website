@@ -32,7 +32,9 @@ fn update_urls() -> Result<(), io::Error> {
             if !f_name.ends_with(".html") {
                 if let Some(f_path) = entry.path().to_string_lossy().strip_prefix("static") {
                     println!("{}", f_path);
-                    set_url_hash("/resume.pdf", "1").unwrap();
+                    for dir in ["src/", "static/", "wasm/src/"].iter() {
+                        set_url_hash(f_path, "1", dir).expect("Unable to set URL hash");
+                    }
                 }
             }
         }
@@ -40,31 +42,48 @@ fn update_urls() -> Result<(), io::Error> {
     Ok(())
 }
 
-fn set_url_hash(resource: &str, hash: &str) -> Result<(), io::Error> {
-    let file_path = Path::new("static/resume.html");
+fn set_url_hash(resource: &str, hash: &str, directory: &str) -> Result<(), io::Error> {
+    // Define pattern to search for.
+    let from_regex = Regex::new(&(resource.replace(".", "\\.") + r"\?ver=[A-Za-z0-9_-]+"))
+        .expect("Invalid Regex in URL generation.");
 
-    // Open and read the file entirely
-    let mut src = File::open(&file_path)?;
-    let mut data = String::new();
-    src.read_to_string(&mut data)?;
-    drop(src); // Close the file early
+    for entry in WalkDir::new(directory)
+        .follow_links(true)
+        .into_iter()
+        .filter_map(|e| e.ok())
+    {
+        if entry
+            .metadata()
+            .expect("Unable to read metadata during URL setting/generation")
+            .is_file()
+        {
+            if let Some(path_str) = entry.path().to_str() {
+                let extension = entry.path().extension().unwrap();
+                if extension == "html" || extension == "rs" {
+                    let file_path = Path::new(path_str);
+                    println!(
+                        "Setting hash to \"{}\" for all instances of \"{}\" in \"{}\".",
+                        hash,
+                        resource,
+                        file_path.display(),
+                    );
+                    //let file_path = Path::new("static/resume.html");
+                    // Open and read the file entirely
+                    let mut src = File::open(&file_path)?;
+                    let mut data = String::new();
+                    src.read_to_string(&mut data)?;
+                    drop(src); // Close the file early
 
-    let from_regex =
-        Regex::new(r"/resume\.pdf\?ver=[A-Za-z0-9_-]+").expect("Invalid Regex in URL generation.");
+                    let new_data =
+                        from_regex.replace_all(&data, &*(resource.to_owned() + "?ver=" + hash));
 
-    let new_data =
-        from_regex.replace_all(&data, &*("/resume.pdf?ver=".to_owned() + hash));
-
-    // Recreate the file and dump the processed contents to it
-    let mut dst = File::create(&file_path)?;
-    dst.write(new_data.as_bytes())?;
-
-    println!(
-        "Set hash for \"{}\" to \"{}\" in \"{}\".",
-        resource,
-        hash,
-        file_path.display()
-    );
+                    // Recreate the file and dump the processed contents to it
+                    let mut dst = File::create(&file_path)?;
+                    dst.write(new_data.as_bytes())?;
+                }
+            }
+        }
+    }
 
     Ok(())
 }
