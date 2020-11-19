@@ -33,7 +33,7 @@ fn handle_embedded_file(path: &str) -> HttpResponse {
             {
                 return HttpResponse::Ok()
                     .set(CacheControl(vec![
-                        CacheDirective::MaxAge(60u32),
+                        CacheDirective::MaxAge(300u32),
                         CacheDirective::Public,
                     ]))
                     .content_type(content_type.as_ref())
