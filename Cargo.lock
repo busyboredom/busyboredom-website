@@ -517,11 +517,13 @@ dependencies = [
  "actix-rt",
  "actix-session",
  "actix-web",
+ "base64 0.12.3",
  "env_logger",
  "futures",
  "mime_guess",
  "regex",
  "rust-embed",
+ "sha-1",
  "walkdir",
 ]
 

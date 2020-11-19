@@ -1,12 +1,12 @@
 use regex::Regex;
-use std::collections::hash_map::DefaultHasher;
-use std::env;
 use std::fs::File;
-use std::hash::{Hash, Hasher};
 use std::io::{self, Read, Write};
 use std::path::Path;
 use std::process::Command;
 use walkdir::WalkDir;
+use sha1::{Digest, Sha1};
+
+const HASH_BUFFER_SIZE: usize = 1024;
 
 fn main() {
     // Compile the wasm.
@@ -31,9 +31,16 @@ fn update_urls() -> Result<(), io::Error> {
             let f_name = entry.file_name().to_string_lossy();
             if !f_name.ends_with(".html") {
                 if let Some(f_path) = entry.path().to_string_lossy().strip_prefix("static") {
-                    println!("{}", f_path);
-                    for dir in ["src/", "static/", "wasm/src/"].iter() {
-                        set_url_hash(f_path, "1", dir).expect("Unable to set URL hash");
+                    if let Ok(mut file) = File::open(entry.path()) {
+                        let hash = generate_hash::<Sha1, _>(&mut file);
+                        println!(
+                            "Setting hash to \"{}\" for all instances of \"{}\".",
+                            hash,
+                            f_path,
+                        );
+                        for dir in ["src/", "static/", "wasm/src/"].iter() {
+                            set_url_hash(f_path, &hash, dir).expect("Unable to set URL hash");
+                        }
                     }
                 }
             }
@@ -61,12 +68,6 @@ fn set_url_hash(resource: &str, hash: &str, directory: &str) -> Result<(), io::E
                 let extension = entry.path().extension().unwrap();
                 if extension == "html" || extension == "rs" {
                     let file_path = Path::new(path_str);
-                    println!(
-                        "Setting hash to \"{}\" for all instances of \"{}\" in \"{}\".",
-                        hash,
-                        resource,
-                        file_path.display(),
-                    );
                     //let file_path = Path::new("static/resume.html");
                     // Open and read the file entirely
                     let mut src = File::open(&file_path)?;
@@ -87,5 +88,21 @@ fn set_url_hash(resource: &str, hash: &str, directory: &str) -> Result<(), io::E
 
     Ok(())
 }
-// grep -rl '\/resume\.pdf?ver=[A-Za-z0-9_-]\+' static/ src/ wasm/src/
-// | xargs sed -i 's/\/resume\.pdf?ver=[A-Za-z0-9_-]\+/\/resume\.pdf?ver=1/g'
+
+fn generate_hash<D: Digest + Default, R: Read>(reader: &mut R) -> String {
+    let mut sh = D::default();
+    let mut buffer = [0u8; HASH_BUFFER_SIZE];
+    loop {
+        let n = match reader.read(&mut buffer) {
+            Ok(n) => n,
+            Err(_) => panic!("Unable to read file while attempting to generate hash"),
+        };
+        sh.update(&buffer[..n]);
+        if n == 0 || n < HASH_BUFFER_SIZE {
+            break;
+        }
+    }
+
+    // Convert to base64 and return.
+    base64::encode_config(sh.finalize(), base64::URL_SAFE.pad(false))
+}
