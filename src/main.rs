@@ -95,6 +95,14 @@ async fn frontend_wasm() -> Result<HttpResponse> {
         .body(&include_bytes!("../wasm/pkg/frontend_bg.wasm")[..]))
 }
 
+/// Robots.txt handler
+#[get("/robots.txt")]
+async fn robots_txt() -> Result<HttpResponse> {
+    Ok(HttpResponse::build(StatusCode::OK)
+        .content_type("text/plain")
+        .body(&include_bytes!("../static/robots.txt")[..]))
+}
+
 #[actix_rt::main]
 async fn main() -> io::Result<()> {
     env::set_var("RUST_LOG", "actix_web=debug,actix_server=info");
@@ -112,6 +120,8 @@ async fn main() -> io::Result<()> {
             .service(bindings)
             // Register wasm
             .service(frontend_wasm)
+            // Register robots.txt
+            .service(robots_txt)
             // Static directory
             .service(web::resource("/api/{_:.*}").route(web::get().to(dist)))
             // Default
