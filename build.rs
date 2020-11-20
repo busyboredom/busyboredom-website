@@ -6,7 +6,7 @@ use std::path::Path;
 use std::process::Command;
 use walkdir::WalkDir;
 
-const HASH_BUFFER_SIZE: usize = 2048;
+const HASH_BUFFER_SIZE: usize = 16384;
 
 fn main() {
     // Compile the wasm.
