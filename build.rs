@@ -1,12 +1,12 @@
+use blake3;
 use regex::Regex;
 use std::fs::File;
 use std::io::{self, Read, Write};
 use std::path::Path;
 use std::process::Command;
 use walkdir::WalkDir;
-use sha1::{Digest, Sha1};
 
-const HASH_BUFFER_SIZE: usize = 1024;
+const HASH_BUFFER_SIZE: usize = 2048;
 
 fn main() {
     // Compile the wasm.
@@ -37,11 +37,10 @@ fn update_urls() -> Result<(), io::Error> {
                     // Open it.
                     if let Ok(mut file) = File::open(entry.path()) {
                         // Hash it.
-                        let hash = generate_hash::<Sha1, _>(&mut file);
+                        let hash = generate_hash::<_>(&mut file);
                         println!(
                             "Setting hash to \"{}\" for all instances of \"{}\".",
-                            hash,
-                            f_path,
+                            hash, f_path,
                         );
                         // Update its hash in all URLs pointing to it.
                         for dir in ["src/", "static/", "wasm/src/"].iter() {
@@ -86,7 +85,7 @@ fn set_url_hash(resource: &str, hash: &str, directory: &str) -> Result<(), io::E
 
                     // Recreate the file and dump the processed contents to it
                     let mut dst = File::create(&file_path)?;
-                    dst.write(new_data.as_bytes())?;
+                    dst.write_all(new_data.as_bytes())?;
                 }
             }
         }
@@ -95,20 +94,23 @@ fn set_url_hash(resource: &str, hash: &str, directory: &str) -> Result<(), io::E
     Ok(())
 }
 
-fn generate_hash<D: Digest + Default, R: Read>(reader: &mut R) -> String {
-    let mut sh = D::default();
+fn generate_hash<R: Read>(reader: &mut R) -> String {
+    let mut hasher = blake3::Hasher::new();
     let mut buffer = [0u8; HASH_BUFFER_SIZE];
     loop {
         let n = match reader.read(&mut buffer) {
             Ok(n) => n,
             Err(_) => panic!("Unable to read file while attempting to generate hash"),
         };
-        sh.update(&buffer[..n]);
+        hasher.update(&buffer[..n]);
         if n == 0 || n < HASH_BUFFER_SIZE {
             break;
         }
     }
+    let mut output = [0; 8];
+    let mut output_reader = hasher.finalize_xof();
+    output_reader.fill(&mut output);
 
     // Convert to unpadded base64 and return.
-    base64::encode_config(sh.finalize(), base64::URL_SAFE.pad(false))
+    base64::encode_config(output, base64::URL_SAFE.pad(false))
 }
