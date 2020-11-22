@@ -60,23 +60,53 @@ fn dist(path: web::Path<(String,)>) -> HttpResponse {
 }
 
 /// Simple index handler
-async fn base(session: Session, _req: HttpRequest) -> Result<HttpResponse> {
+async fn base(session: Session, _req: HttpRequest) -> HttpResponse {
     // Print content of request if compiled with debug profile.
     #[cfg(debug_assertions)]
     println!("{:?}", _req);
 
     // Session
     let mut counter = 1;
-    if let Some(count) = session.get::<i32>("counter")? {
+    if let Some(count) = session.get::<i32>("counter").unwrap() {
         println!("SESSION value: {}", count);
         counter = count + 1;
     }
 
     // Set counter to session
-    session.set("counter", counter)?;
+    session.set("counter", counter).unwrap();
 
-    // Response
-    Ok(handle_embedded_file("base.html"))
+    match Asset::get("base.html") {
+        Some(content) => {
+            let base: Vec<u8> = match content {
+                Cow::Borrowed(bytes) => bytes.into(),
+                Cow::Owned(bytes) => bytes.into(),
+            };
+
+            match Asset::get("welcome.html") {
+                Some(content) => {
+                    let body: Vec<u8> = match content {
+                        Cow::Borrowed(bytes) => bytes.into(),
+                        Cow::Owned(bytes) => bytes.into(),
+                    };
+                    let welcome = std::str::from_utf8(&body).unwrap();
+
+                    let response = &std::str::from_utf8(&base)
+                        .unwrap()
+                        .replace("{{ welcome_content }}", welcome);
+
+                    HttpResponse::Ok()
+                        .set(CacheControl(vec![
+                            CacheDirective::MaxAge(300u32),
+                            CacheDirective::Public,
+                        ]))
+                        .content_type("text/html; charset=utf-8")
+                        .body(response)
+                }
+                None => panic!("Unable to find welcome.html while building base.html"),
+            }
+        }
+        None => panic!("Unable to find base.html while building base.html"),
+    }
 }
 
 /// Wasm binding handler
