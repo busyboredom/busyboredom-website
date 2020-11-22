@@ -79,14 +79,14 @@ async fn base(session: Session, _req: HttpRequest) -> HttpResponse {
         Some(content) => {
             let base: Vec<u8> = match content {
                 Cow::Borrowed(bytes) => bytes.into(),
-                Cow::Owned(bytes) => bytes.into(),
+                Cow::Owned(bytes) => bytes,
             };
 
             match Asset::get("welcome.html") {
                 Some(content) => {
                     let body: Vec<u8> = match content {
                         Cow::Borrowed(bytes) => bytes.into(),
-                        Cow::Owned(bytes) => bytes.into(),
+                        Cow::Owned(bytes) => bytes,
                     };
                     let welcome = std::str::from_utf8(&body).unwrap();
 

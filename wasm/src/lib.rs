@@ -176,7 +176,8 @@ pub async fn welcome() {
     let user_agent = window.navigator().user_agent().unwrap();
     if user_agent.contains("Safari") && !user_agent.contains("Chrome") {
         let document = window.document().expect("Should have a document on window");
-        let warning = document.get_element_by_id("safari-warning")
+        let warning = document
+            .get_element_by_id("safari-warning")
             .expect("Could not get element with id 'safari-warning'");
         if warning.class_name() == "warning" {
             warning.set_class_name("warning show");
