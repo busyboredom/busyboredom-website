@@ -166,7 +166,7 @@ pub async fn resume() {
     active_tab("resume");
 
     // Go to the page.
-    goto_page("/resume", "/api/resume.html", "Résumé").await;
+    goto_page("/resume", "/api/resume.html?ver=JCKpxjzxTu0", "Résumé").await;
 }
 
 #[wasm_bindgen]
@@ -175,7 +175,7 @@ pub async fn welcome() {
     active_tab("");
 
     // Go to the page.
-    goto_page("/", "/api/welcome.html", "Welcome!").await;
+    goto_page("/", "/api/welcome.html?ver=eNMMjqI2h4s", "Welcome!").await;
 
     // Show warning if safari is detected.
     let window = web_sys::window().expect("No global `window` exists");
@@ -197,7 +197,7 @@ pub async fn contact() {
     active_tab("contact");
 
     // Go to the page.
-    goto_page("/contact", "/api/contact.html", "Contact").await;
+    goto_page("/contact", "/api/contact.html?ver=RsQl31lZ0YQ", "Contact").await;
 }
 
 #[wasm_bindgen]
@@ -206,7 +206,7 @@ pub async fn coming_soon() {
     active_tab("");
 
     // Go to the page.
-    goto_page("/coming_soon", "/api/coming_soon.html", "Coming Soon!").await;
+    goto_page("/coming_soon", "/api/coming_soon.html?ver=YoSytkd9Ke0", "Coming Soon!").await;
 }
 
 #[wasm_bindgen]
@@ -220,7 +220,7 @@ pub async fn error_404() {
 
     let mut req = RequestInit::new();
     req.method("GET");
-    let request = Request::new_with_str_and_init("/api/404.html", &req)
+    let request = Request::new_with_str_and_init("/api/404.html?ver=p9Qlk98fUzE", &req)
         .expect("Request could not be created");
     request
         .headers()

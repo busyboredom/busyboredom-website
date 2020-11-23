@@ -10,7 +10,7 @@ pub async fn quadcopter() {
     // Go to the page.
     goto_page(
         "/projects/quadcopter",
-        "/api/projects/quadcopter/quadcopter.html",
+        "/api/projects/quadcopter/quadcopter.html?ver=HoXPgcmMerc",
         "Quadcopter",
     )
     .await;

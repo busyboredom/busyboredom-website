@@ -10,7 +10,7 @@ pub async fn mnist_tutorial() {
     // Go to the page.
     goto_page(
         "/projects/mnist_tutorial",
-        "/api/projects/mnist_tutorial/mnist_tutorial.html",
+        "/api/projects/mnist_tutorial/mnist_tutorial.html?ver=GjQQDXpbOx4",
         "MNIST Tutorial",
     )
     .await;

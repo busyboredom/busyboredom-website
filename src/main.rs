@@ -24,30 +24,13 @@ fn handle_embedded_file(path: &str) -> HttpResponse {
                 Cow::Owned(bytes) => bytes.into(),
             };
             let content_type = from_path(path).first_or_octet_stream();
-            // If html, don't cache it for long.
-            if content_type
-                .subtype()
-                .as_str()
-                .to_lowercase()
-                .contains("html")
-            {
-                return HttpResponse::Ok()
-                    .set(CacheControl(vec![
-                        CacheDirective::MaxAge(300u32),
-                        CacheDirective::Public,
-                    ]))
-                    .content_type(content_type.as_ref())
-                    .body(body);
-            // Otherwise, store it forever (we will change the url when the content changes).
-            } else {
-                return HttpResponse::Ok()
-                    .set(CacheControl(vec![
-                        CacheDirective::MaxAge(31536000u32),
-                        CacheDirective::Public,
-                    ]))
-                    .content_type(content_type.as_ref())
-                    .body(body);
-            }
+            return HttpResponse::Ok()
+                .set(CacheControl(vec![
+                    CacheDirective::MaxAge(31536000u32),
+                    CacheDirective::Public,
+                ]))
+                .content_type(content_type.as_ref())
+                .body(body);
         }
         None => HttpResponse::build(StatusCode::OK)
             .content_type("text/html; charset=utf-8")

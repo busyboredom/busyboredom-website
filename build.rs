@@ -30,22 +30,19 @@ fn update_urls() -> Result<(), io::Error> {
         // If the entry is a file.
         if entry.metadata().unwrap().is_file() {
             let f_name = entry.file_name().to_string_lossy();
-            // And if it is not and HTML file.
-            if !f_name.ends_with(".html") {
-                // Strip the "static" part of its path.
-                if let Some(f_path) = entry.path().to_string_lossy().strip_prefix("static") {
-                    // Open it.
-                    if let Ok(mut file) = File::open(entry.path()) {
-                        // Hash it.
-                        let hash = generate_hash::<_>(&mut file);
-                        println!(
-                            "Setting hash to \"{}\" for all instances of \"{}\".",
-                            hash, f_path,
-                        );
-                        // Update its hash in all URLs pointing to it.
-                        for dir in ["src/", "static/", "wasm/src/"].iter() {
-                            set_url_hash(f_path, &hash, dir).expect("Unable to set URL hash");
-                        }
+            // Strip the "static" part of its path.
+            if let Some(f_path) = entry.path().to_string_lossy().strip_prefix("static") {
+                // Open it.
+                if let Ok(mut file) = File::open(entry.path()) {
+                    // Hash it.
+                    let hash = generate_hash::<_>(&mut file);
+                    println!(
+                        "Setting hash to \"{}\" for all instances of \"{}\".",
+                        hash, f_path,
+                    );
+                    // Update its hash in all URLs pointing to it.
+                    for dir in ["src/", "static/", "wasm/src/"].iter() {
+                        set_url_hash(f_path, &hash, dir).expect("Unable to set URL hash");
                     }
                 }
             }

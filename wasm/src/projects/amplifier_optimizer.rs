@@ -10,7 +10,7 @@ pub async fn amplifier_optimizer() {
     // Go to the page.
     goto_page(
         "/projects/amplifier_optimizer",
-        "/api/projects/amplifier_optimizer/amplifier_optimizer.html",
+        "/api/projects/amplifier_optimizer/amplifier_optimizer.html?ver=SJa3nHUkBRQ",
         "Amplifier Optimizer",
     )
     .await;

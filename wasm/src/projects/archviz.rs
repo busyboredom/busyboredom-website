@@ -10,7 +10,7 @@ pub async fn archviz() {
     // Go to the page.
     goto_page(
         "/projects/archviz",
-        "/api/projects/archviz/archviz.html",
+        "/api/projects/archviz/archviz.html?ver=gIkkDibIHyE",
         "Archviz",
     )
     .await;
