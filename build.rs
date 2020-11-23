@@ -27,9 +27,8 @@ fn update_urls() -> Result<(), io::Error> {
         .into_iter()
         .filter_map(|e| e.ok())
     {
-        // If the entry is a file.
+        // If the entry is a file,
         if entry.metadata().unwrap().is_file() {
-            let f_name = entry.file_name().to_string_lossy();
             // Strip the "static" part of its path.
             if let Some(f_path) = entry.path().to_string_lossy().strip_prefix("static") {
                 // Open it.
