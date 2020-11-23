@@ -140,7 +140,13 @@ pub async fn goto_page(route: &str, resource: &str, title: &str) {
         .unwrap()
         .set_inner_html(&page);
 
+    // Scroll to top.
     window.scroll_to_with_x_and_y(0.0, 0.0);
+
+    // Remove base title if it exists.
+    if let Some(base_title) = document.get_element_by_id("base-title") {
+        base_title.remove();
+    }
 
     let title = title.to_owned() + " | BusyBoredom (Charlie Wilkin)";
     document.set_title(&title);
