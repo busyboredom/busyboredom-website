@@ -1,6 +1,6 @@
 <div class="contact-text">
   <h1>Contact Me</h1>
-  <form id="contact-form" action="/contact-submitted" method="POST">
+  <form id="contact-form" action="/contact-submitted" method="POST" onsubmit="window.busy.contact_submit()">
 
     <label for="fname">First Name</label>
     <input type="text" id="fname" name="firstname" placeholder="Your first name" required>
@@ -28,7 +28,8 @@
       required
     ></textarea>
 
-    <input type="submit" value="Submit">
+    <input id="submit" type="submit" value="Submit">
+    <em id="contact-loading" class="contact-loading">Loading...</em>
 
   </form>
 </div>
@@ -37,7 +38,7 @@
 
 .contact-text {
   max-width: 80ch;
-  margin: 0 auto;
+  margin: 0 auto 3em;
   padding: 0 1em;
 }
 
