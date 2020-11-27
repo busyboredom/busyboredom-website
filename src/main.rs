@@ -11,6 +11,7 @@ use actix_web::http::StatusCode;
 use actix_web::{guard, middleware, web, App, HttpRequest, HttpResponse, HttpServer, Result};
 use mime_guess::from_path;
 use rust_embed::RustEmbed;
+use cached::proc_macro::cached;
 
 #[derive(RustEmbed)]
 #[folder = "static/"]
@@ -42,6 +43,35 @@ fn dist(path: web::Path<(String,)>) -> HttpResponse {
     handle_embedded_file(&(path.0).0)
 }
 
+/// Basic templating.
+#[cached(size=20)]
+fn template_composition(base: &'static str, content: &'static str) -> String {
+    match Asset::get(base) {
+        Some(base_file) => {
+            let base_bytes: Vec<u8> = match base_file {
+                Cow::Borrowed(bytes) => bytes.into(),
+                Cow::Owned(bytes) => bytes,
+            };
+
+            match Asset::get(content) {
+                Some(content_file) => {
+                    let content_bytes: Vec<u8> = match content_file {
+                        Cow::Borrowed(bytes) => bytes.into(),
+                        Cow::Owned(bytes) => bytes,
+                    };
+                    let content_str = std::str::from_utf8(&content_bytes).unwrap();
+
+                    return std::str::from_utf8(&base_bytes)
+                        .unwrap()
+                        .replace("<p id=\"placeholder\"></p>", content_str);
+                }
+                None => panic!("Unable to find embedded content file"),
+            }
+        }
+        None => panic!("Unable to find embedded base file"),
+    }
+}
+
 /// Simple index handler
 async fn base(session: Session, _req: HttpRequest) -> HttpResponse {
     // Print content of request if compiled with debug profile.
@@ -58,38 +88,7 @@ async fn base(session: Session, _req: HttpRequest) -> HttpResponse {
     // Set counter to session
     session.set("counter", counter).unwrap();
 
-    match Asset::get("base.html") {
-        Some(content) => {
-            let base: Vec<u8> = match content {
-                Cow::Borrowed(bytes) => bytes.into(),
-                Cow::Owned(bytes) => bytes,
-            };
-
-            match Asset::get("welcome.html") {
-                Some(content) => {
-                    let body: Vec<u8> = match content {
-                        Cow::Borrowed(bytes) => bytes.into(),
-                        Cow::Owned(bytes) => bytes,
-                    };
-                    let welcome = std::str::from_utf8(&body).unwrap();
-
-                    let response = &std::str::from_utf8(&base)
-                        .unwrap()
-                        .replace("{{ Initial Content }}", welcome);
-
-                    HttpResponse::Ok()
-                        .set(CacheControl(vec![
-                            CacheDirective::MaxAge(300u32),
-                            CacheDirective::Public,
-                        ]))
-                        .content_type("text/html; charset=utf-8")
-                        .body(response)
-                }
-                None => panic!("Unable to find welcome.html while building base.html"),
-            }
-        }
-        None => panic!("Unable to find base.html while building base.html"),
-    }
+    handle_embedded_file("base.html")
 }
 
 /// Wasm binding handler
