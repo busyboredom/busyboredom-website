@@ -111,8 +111,6 @@ async fn contact_submitted(
     mailer: web::Data<SmtpTransport>,
     form: web::Form<ContactForm>,
 ) -> Result<HttpResponse> {
-    let mut response_content = "contact_submitted.html";
-
     let html_message = format!(
         "<b>First Name: </b>{}<br>
         <b>Last Name: </b>{}<br>
@@ -158,7 +156,6 @@ async fn contact_submitted(
         Ok(_) => info!("Email sent successfully!"),
         Err(e) => {
             error!("Could not send email: {:?}", e);
-            response_content = "contact_failed.html";
         }
     }
 
@@ -182,13 +179,12 @@ async fn contact_submitted(
         Ok(_) => info!("Autoreply sent successfully!"),
         Err(e) => {
             error!("Could not send autoreply: {:?}", e);
-            response_content = "autoreply_failed.html";
         },
     }
 
     Ok(HttpResponse::build(StatusCode::OK)
         .content_type("text/html; charset=utf-8")
-        .body(template_composition("base.html", response_content)))
+        .body(template_composition("base.html", "contact_submitted.html")))
 }
 
 /// Wasm binding handler
