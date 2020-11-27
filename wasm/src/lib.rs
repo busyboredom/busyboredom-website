@@ -207,7 +207,7 @@ pub async fn coming_soon() {
 
     // Go to the page.
     goto_page(
-        "/coming_soon",
+        "/coming-soon",
         "/api/coming_soon.html?ver=YoSytkd9Ke0",
         "Coming Soon!",
     )
@@ -257,9 +257,9 @@ pub async fn error_404() {
     close_dropdowns();
 
     // Remove the history entry pushed on page load, and replace it.
-    if history.state().expect("Could not get history state") != "/error_404" {
+    if history.state().expect("Could not get history state") != "/error-404" {
         history
-            .push_state(&JsValue::from_str("/error_404"), "404: Page Not Found")
+            .push_state(&JsValue::from_str("/error-404"), "404: Page Not Found")
             .expect("Could not push state to history");
     }
 
@@ -274,12 +274,12 @@ pub fn route(rt: &str) {
         "/welcome" => spawn_local(welcome()),
         "/resume" => spawn_local(resume()),
         "/contact" => spawn_local(contact()),
-        "/coming_soon" => spawn_local(coming_soon()),
-        "/projects/this_website" => spawn_local(this_website()),
+        "/coming-soon" => spawn_local(coming_soon()),
+        "/projects/this-website" => spawn_local(this_website()),
         "/projects/quadcopter" => spawn_local(quadcopter()),
-        "/projects/amplifier_optimizer" => spawn_local(amplifier_optimizer()),
-        "/projects/industrial_automation" => spawn_local(industrial_automation()),
-        "/projects/mnist_tutorial" => spawn_local(mnist_tutorial()),
+        "/projects/amplifier-optimizer" => spawn_local(amplifier_optimizer()),
+        "/projects/industrial-automation" => spawn_local(industrial_automation()),
+        "/projects/mnist-tutorial" => spawn_local(mnist_tutorial()),
         "/projects/archviz" => spawn_local(archviz()),
         _ => spawn_local(error_404()),
     };

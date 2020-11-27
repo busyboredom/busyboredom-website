@@ -75,7 +75,7 @@ async fn base(session: Session, _req: HttpRequest) -> HttpResponse {
 
                     let response = &std::str::from_utf8(&base)
                         .unwrap()
-                        .replace("{{ welcome_content }}", welcome);
+                        .replace("{{ Initial Content }}", welcome);
 
                     HttpResponse::Ok()
                         .set(CacheControl(vec![
