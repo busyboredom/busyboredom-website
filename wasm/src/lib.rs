@@ -197,7 +197,21 @@ pub async fn contact() {
     active_tab("contact");
 
     // Go to the page.
-    goto_page("/contact", "/api/contact.html?ver=9wj1D89_73Y", "Contact").await;
+    goto_page("/contact", "/api/contact.html?ver=MjC3QeALUV4", "Contact").await;
+}
+
+#[wasm_bindgen]
+pub async fn contact_submitted() {
+    // Set active tab.
+    active_tab("contact");
+
+    // Go to the page.
+    goto_page(
+        "/contact-submitted",
+        "/api/contact_submitted.html?ver=ypBIrFi5QPY",
+        "Submitted",
+    )
+    .await;
 }
 
 #[wasm_bindgen]
@@ -275,6 +289,7 @@ pub fn route(rt: &str) {
         "/resume" => spawn_local(resume()),
         "/contact" => spawn_local(contact()),
         "/coming-soon" => spawn_local(coming_soon()),
+        "/contact-submitted" => spawn_local(contact_submitted()),
         "/projects/this-website" => spawn_local(this_website()),
         "/projects/quadcopter" => spawn_local(quadcopter()),
         "/projects/amplifier-optimizer" => spawn_local(amplifier_optimizer()),
