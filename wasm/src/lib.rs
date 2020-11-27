@@ -197,7 +197,7 @@ pub async fn contact() {
     active_tab("contact");
 
     // Go to the page.
-    goto_page("/contact", "/api/contact.html?ver=RsQl31lZ0YQ", "Contact").await;
+    goto_page("/contact", "/api/contact.html?ver=9wj1D89_73Y", "Contact").await;
 }
 
 #[wasm_bindgen]
@@ -206,7 +206,12 @@ pub async fn coming_soon() {
     active_tab("");
 
     // Go to the page.
-    goto_page("/coming_soon", "/api/coming_soon.html?ver=YoSytkd9Ke0", "Coming Soon!").await;
+    goto_page(
+        "/coming_soon",
+        "/api/coming_soon.html?ver=YoSytkd9Ke0",
+        "Coming Soon!",
+    )
+    .await;
 }
 
 #[wasm_bindgen]
