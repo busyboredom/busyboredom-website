@@ -28,7 +28,24 @@
       required
     ></textarea>
 
-    <input id="submit" type="submit" value="Submit">
+    <label>Captcha (Enter the charactars shown)</label>
+    <div class="captcha">
+      <div class="captcha-img">
+        <div class="captcha-img-padding" onclick="window.busy.industrial_automation()">
+          <img src="/api/testcaptcha.png?ver=3VzBxxBVXYY" alt="Test Captcha"/>
+        </div>
+      </div>
+      <div class="captcha-controls">
+        <input type="text" id="captcha-chars" name="captchachars"></input>
+        <div class="captcha-buttons">
+          <button>&#x21ba;</button>
+          <button>Audio</button>
+          <button>&#x2794;</button>
+        </div>
+      </div>
+    </div>
+
+    <input id="submit" class="submit" type="submit" value="Submit">
     <em id="contact-loading" class="contact-loading">Loading...</em>
 
   </form>
@@ -43,7 +60,7 @@
 }
 
  /* Style inputs with type="text", select elements and textareas */
- input:not([type='submit']), select, textarea {
+ input:not([type='submit']), select, textarea, .captcha {
   width: 100%; /* Full width */
   padding: 12px; /* Some padding */ 
   color: black;
@@ -79,7 +96,62 @@ input[type=submit] {
   cursor: pointer;
 }
 
-/* When moving the mouse over the submit button, add a darker green color */
+.captcha {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5em;
+  width: 100%;
+  justify-content: space-between;
+}
+
+.captcha-img {
+  flex: 1 1 200px;
+}
+
+.captcha-controls {
+  flex: 1 1 200px;
+}
+
+.captcha-controls input {
+  background-color: white;
+  padding: 8px;
+  margin: 0;
+}
+
+.captcha-controls .captcha-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: right;
+}
+.captcha-controls .captcha-buttons button {
+  background-color: #0a9dff;
+  color: black;
+  padding: 0.5em;
+  margin-top: 0.5em;
+  margin-left: 0.5em;
+  border-radius: 0.5em;
+  border: 0;
+}
+
+.captcha-controls label {
+  color: white;
+}
+
+.captcha-img-padding {
+  width: 100%;
+  padding-top: 28.13%;
+  position: relative;
+}
+
+.captcha-img-padding img {
+  position: absolute;
+  border-radius: 1ch;
+  top: 0;
+  left: 0;
+  width: 100%;
+}
+
+/* When moving the mouse over the submit button, make it blue */
 input[type=submit]:hover {
   background-color: #0a9dff;
 }
