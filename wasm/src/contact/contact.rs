@@ -8,7 +8,7 @@ pub async fn contact() {
     active_tab("contact");
 
     // Go to the page.
-    goto_page("/contact", "/api/contact.html?ver=c3f2lvHgcD8", "Contact").await;
+    goto_page("/contact", "/api/contact.html?ver=jVzO5FIt2hU", "Contact").await;
 }
 
 #[wasm_bindgen]

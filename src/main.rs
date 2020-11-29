@@ -10,6 +10,7 @@ use actix_web::http::header::{CacheControl, CacheDirective};
 use actix_web::http::StatusCode;
 use actix_web::{guard, middleware, web, App, HttpRequest, HttpResponse, HttpServer, Result};
 use cached::proc_macro::cached;
+use captcha::{Captcha, filters};
 use lettre::message::{header, MultiPart, SinglePart};
 use lettre::transport::smtp::authentication::Credentials;
 use lettre::{Message, SmtpTransport, Transport};
@@ -187,6 +188,30 @@ async fn contact_submitted(
         .body(template_composition("base.html", "contact_submitted.html")))
 }
 
+/// Captcha generation handler
+#[get("/api/generate_captcha")]
+async fn generate_captcha() -> Result<HttpResponse> {
+    let mut captcha = Captcha::new();
+    captcha
+        .add_chars(8)
+        .apply_filter(filters::Noise::new(0.3))
+        .apply_filter(filters::Wave::new(2.5, 10.0).horizontal())
+        .apply_filter(filters::Wave::new(3.0, 10.0).vertical());
+
+    println!("{:?}", captcha.text_area());
+
+    captcha
+        .view(300, 84)
+        .apply_filter(filters::Cow::new().min_radius(60).max_radius(70).circles(1))
+        .apply_filter(filters::Dots::new(7).min_radius(3).max_radius(5));
+    let solution = captcha.chars_as_string();
+    let img = captcha.as_png().expect("Failed to generate captcha PNG");
+
+    Ok(HttpResponse::build(StatusCode::OK)
+        .content_type("image/png")
+        .body(img))
+}
+
 /// Wasm binding handler
 #[get("/api/bindings")]
 async fn bindings() -> Result<HttpResponse> {
@@ -235,7 +260,7 @@ async fn main() -> io::Result<()> {
             // Comression middleware
             .wrap(middleware::Compress::default())
             // Cookie session middleware
-            .wrap(CookieSession::signed(&[0; 32]).secure(false))
+            .wrap(CookieSession::signed(&[0; 32]).secure(true))
             // Enable logger - always register actix-web Logger middleware last
             .wrap(middleware::Logger::default())
             // Register bindings
@@ -246,6 +271,8 @@ async fn main() -> io::Result<()> {
             .service(robots_txt)
             // Contact form submission
             .service(contact_submitted)
+            // Captcha generation
+            .service(generate_captcha)
             // Static directory
             .service(web::resource("/api/{_:.*}").route(web::get().to(dist)))
             // Default

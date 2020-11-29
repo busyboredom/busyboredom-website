@@ -28,18 +28,20 @@
       required
     ></textarea>
 
-    <label>Captcha (Enter the charactars shown)</label>
+    <label for="captcha-chars">Captcha (Enter the Charactars Shown)</label>
     <div class="captcha">
       <div class="captcha-img">
-        <div class="captcha-img-padding" onclick="window.busy.industrial_automation()">
-          <img src="/api/testcaptcha.png?ver=3VzBxxBVXYY" alt="Test Captcha"/>
+        <div class="captcha-img-padding">
+          <img src="/api/generate_captcha" alt="Captcha Image"/>
         </div>
       </div>
       <div class="captcha-controls">
         <input type="text" id="captcha-chars" name="captchachars"></input>
         <div class="captcha-buttons">
-          <button>&#x21ba;</button>
-          <button>Audio</button>
+          <button><b>&#128472;</b></button>
+          <button>
+            <img src="/api/audio_icon.png" alt="Audio Icon">
+          </button>
           <button>&#x2794;</button>
         </div>
       </div>
@@ -114,6 +116,7 @@ input[type=submit] {
 
 .captcha-controls input {
   background-color: white;
+  border-radius: 0.5ch;
   padding: 8px;
   margin: 0;
 }
@@ -123,14 +126,28 @@ input[type=submit] {
   flex-wrap: wrap;
   justify-content: right;
 }
+
 .captcha-controls .captcha-buttons button {
   background-color: #0a9dff;
   color: black;
-  padding: 0.5em;
+  min-width: 5ch;
+  font-weight: bolder;
+  padding: 0.7em;
   margin-top: 0.5em;
   margin-left: 0.5em;
   border-radius: 0.5em;
   border: 0;
+}
+
+.captcha-buttons button img {
+  height: 18px; 
+  width: 18px;
+  position: relative;
+  top: 0.1em;
+}
+
+b {
+  color: black;
 }
 
 .captcha-controls label {
@@ -141,11 +158,13 @@ input[type=submit] {
   width: 100%;
   padding-top: 28.13%;
   position: relative;
+  border-radius: 0.5ch;
+  background-color: #909090;
 }
 
 .captcha-img-padding img {
   position: absolute;
-  border-radius: 1ch;
+  border-radius: 0.5ch;
   top: 0;
   left: 0;
   width: 100%;
