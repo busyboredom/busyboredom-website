@@ -13,10 +13,10 @@ use cached::proc_macro::cached;
 use lettre::message::{header, MultiPart, SinglePart};
 use lettre::transport::smtp::authentication::Credentials;
 use lettre::{Message, SmtpTransport, Transport};
+use log::{error, info};
 use mime_guess::from_path;
 use rust_embed::RustEmbed;
 use serde::Deserialize;
-use log::{info, error};
 
 #[derive(RustEmbed)]
 #[folder = "static/"]
@@ -179,7 +179,7 @@ async fn contact_submitted(
         Ok(_) => info!("Autoreply sent successfully!"),
         Err(e) => {
             error!("Could not send autoreply: {:?}", e);
-        },
+        }
     }
 
     Ok(HttpResponse::build(StatusCode::OK)

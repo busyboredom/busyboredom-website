@@ -15,7 +15,7 @@ futures = "0"
 env_logger = "0"
 cached = "0"
 serde = "1"
-lettre = "0.10.0-alpha.4"
+lettre = {version = "0.10.0-alpha.4", default-features = false, features = ["smtp-transport", "builder", "rustls-tls"]}
 log = "0"
 
 [build-dependencies]
