@@ -17,6 +17,7 @@ cached = "0"
 serde = "1"
 log = "0"
 captcha = "0"
+rand = "0"
 
 [dependencies.lettre]
 version = "0.10.0-alpha.4"

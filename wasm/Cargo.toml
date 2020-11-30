@@ -29,6 +29,7 @@ features = [
   'HtmlElement',
   'HtmlHeadElement',
   'HtmlCollection',
+  'HtmlInputElement',
   'Navigator',
   'Node',
   'Window',

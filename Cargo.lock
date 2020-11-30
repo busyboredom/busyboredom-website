@@ -580,6 +580,7 @@ dependencies = [
  "lettre",
  "log",
  "mime_guess",
+ "rand",
  "regex",
  "rust-embed",
  "serde",

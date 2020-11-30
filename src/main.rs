@@ -2,22 +2,30 @@
 extern crate actix_web;
 
 use std::borrow::Cow;
+use std::convert::TryInto;
 use std::{env, io};
 
 use actix_session::{CookieSession, Session};
 use actix_web::body::Body;
 use actix_web::http::header::{CacheControl, CacheDirective};
 use actix_web::http::StatusCode;
-use actix_web::{guard, middleware, web, App, HttpRequest, HttpResponse, HttpServer, Result};
+use actix_web::{
+    cookie, guard, middleware, web, App, HttpRequest, HttpResponse, HttpServer, Result,
+};
 use cached::proc_macro::cached;
-use captcha::{Captcha, filters};
+use captcha::{filters, Captcha};
 use lettre::message::{header, MultiPart, SinglePart};
 use lettre::transport::smtp::authentication::Credentials;
 use lettre::{Message, SmtpTransport, Transport};
 use log::{error, info};
 use mime_guess::from_path;
+use rand::{thread_rng, Rng};
 use rust_embed::RustEmbed;
 use serde::Deserialize;
+
+const SESSION_KEY_LEN: usize = 64;
+const CAPTCHA_LEN: usize = 8;
+const SECONDS_IN_YEAR: usize = 31536000;
 
 #[derive(RustEmbed)]
 #[folder = "static/"]
@@ -33,7 +41,7 @@ fn handle_embedded_file(path: &str) -> HttpResponse {
             let content_type = from_path(path).first_or_octet_stream();
             return HttpResponse::Ok()
                 .set(CacheControl(vec![
-                    CacheDirective::MaxAge(31536000u32),
+                    CacheDirective::MaxAge(SECONDS_IN_YEAR.try_into().unwrap()),
                     CacheDirective::Public,
                 ]))
                 .content_type(content_type.as_ref())
@@ -104,14 +112,33 @@ struct ContactForm {
     email: String,
     subject: String,
     message: String,
+    captchachars: String,
 }
 
 /// Contact form handler
 #[post("/contact-submitted")]
 async fn contact_submitted(
-    mailer: web::Data<SmtpTransport>,
+    app_data: web::Data<AppData>,
     form: web::Form<ContactForm>,
+    session: Session,
 ) -> Result<HttpResponse> {
+
+    // Verify that captcha was solved correctly first.
+    let answer = match session.get("captcha") {
+        Ok(answer) => answer,
+        Err(_) => {
+            error!("Could not send email, captcha not passed");
+            None
+        }
+    };
+    
+    if Some(form.captchachars.clone()) != answer {
+        error!("Could not send email, captcha not passed");
+        return Ok(HttpResponse::build(StatusCode::OK)
+            .content_type("text/plain; charset=utf-8")
+            .body("Captcha response didn't match what the server expected."))
+    }
+
     let html_message = format!(
         "<b>First Name: </b>{}<br>
         <b>Last Name: </b>{}<br>
@@ -153,7 +180,7 @@ async fn contact_submitted(
         .expect("failed to build email");
 
     // Send the email to myself.
-    match mailer.send(&email) {
+    match app_data.mailer.send(&email) {
         Ok(_) => info!("Email sent successfully!"),
         Err(e) => {
             error!("Could not send email: {:?}", e);
@@ -165,7 +192,7 @@ async fn contact_submitted(
     let autoreply_message = format!(
         "Hello {},\n
         Your message has been recieved and you can expect a response within the next few days.
-        Please have patience if my response time is slow (especially on weekdays)",
+        Please have patience if my response time is slow (especially on weekdays).",
         form.firstname
     );
     let autoreply = Message::builder()
@@ -176,7 +203,7 @@ async fn contact_submitted(
         .expect("failed to build email");
 
     // Send the autoreply.
-    match mailer.send(&autoreply) {
+    match app_data.mailer.send(&autoreply) {
         Ok(_) => info!("Autoreply sent successfully!"),
         Err(e) => {
             error!("Could not send autoreply: {:?}", e);
@@ -190,26 +217,58 @@ async fn contact_submitted(
 
 /// Captcha generation handler
 #[get("/api/generate_captcha")]
-async fn generate_captcha() -> Result<HttpResponse> {
+async fn generate_captcha(session: Session) -> Result<HttpResponse> {
     let mut captcha = Captcha::new();
     captcha
-        .add_chars(8)
+        .add_chars(CAPTCHA_LEN.try_into().expect("Captcha too long"))
         .apply_filter(filters::Noise::new(0.3))
         .apply_filter(filters::Wave::new(2.5, 10.0).horizontal())
-        .apply_filter(filters::Wave::new(3.0, 10.0).vertical());
-
-    println!("{:?}", captcha.text_area());
-
-    captcha
+        .apply_filter(filters::Wave::new(3.0, 10.0).vertical())
         .view(300, 84)
         .apply_filter(filters::Cow::new().min_radius(60).max_radius(70).circles(1))
         .apply_filter(filters::Dots::new(7).min_radius(3).max_radius(5));
     let solution = captcha.chars_as_string();
     let img = captcha.as_png().expect("Failed to generate captcha PNG");
 
+    session
+        .set("captcha", solution)
+        .expect("Unable to add captcha solution to session");
+
     Ok(HttpResponse::build(StatusCode::OK)
+        .set(CacheControl(vec![
+            CacheDirective::NoStore,
+        ]))
         .content_type("image/png")
         .body(img))
+}
+
+#[derive(Deserialize)]
+struct CaptchaSubmitQuery {
+    captcha: String,
+}
+
+/// Captcha submission handler
+#[get("/api/submit_captcha")]
+async fn submit_captcha(
+    session: Session,
+    web::Query(guess): web::Query<CaptchaSubmitQuery>,
+) -> Result<HttpResponse> {
+    let mut pass_status = "Fail";
+
+    let answer = match session.get("captcha") {
+        Ok(answer) => answer,
+        Err(_) => None,
+    };
+    if Some(guess.captcha) == answer {
+        pass_status = "Pass";
+    }
+
+    Ok(HttpResponse::build(StatusCode::OK)
+        .set(CacheControl(vec![
+            CacheDirective::NoStore,
+        ]))
+        .content_type("text/plain; charset=utf-8")
+        .body(pass_status))
 }
 
 /// Wasm binding handler
@@ -236,6 +295,10 @@ async fn robots_txt() -> Result<HttpResponse> {
         .body(&include_bytes!("../static/robots.txt")[..]))
 }
 
+struct AppData {
+    mailer: SmtpTransport,
+}
+
 #[actix_rt::main]
 async fn main() -> io::Result<()> {
     env::set_var("RUST_LOG", "info");
@@ -245,22 +308,33 @@ async fn main() -> io::Result<()> {
     let mut mail_secret = include_str!("../../secrets/email.txt").to_string();
     mail_secret.pop();
 
+    // Set random session key.
+    let mut key_arr = [0u8; SESSION_KEY_LEN];
+    thread_rng().fill(&mut key_arr[..]);
+    let session_key: [u8; SESSION_KEY_LEN] = key_arr;
+
     HttpServer::new(move || {
         App::new()
-            // Build mailer.
-            .data(
-                SmtpTransport::relay("mail.privateemail.com")
+            // Build application data.
+            .data(AppData {
+                mailer: SmtpTransport::relay("mail.privateemail.com")
                     .expect("Could not build mailer")
                     .credentials(Credentials::new(
                         "charlie@busyboredom.com".to_string(),
                         mail_secret.to_owned(),
                     ))
                     .build(),
-            )
+            })
             // Comression middleware
             .wrap(middleware::Compress::default())
             // Cookie session middleware
-            .wrap(CookieSession::signed(&[0; 32]).secure(true))
+            .wrap(
+                CookieSession::private(&session_key)
+                    .name("busyboredom_private")
+                    .secure(true)
+                    .max_age(SECONDS_IN_YEAR.try_into().unwrap())
+                    .same_site(cookie::SameSite::Strict),
+            )
             // Enable logger - always register actix-web Logger middleware last
             .wrap(middleware::Logger::default())
             // Register bindings
@@ -273,6 +347,8 @@ async fn main() -> io::Result<()> {
             .service(contact_submitted)
             // Captcha generation
             .service(generate_captcha)
+            // Captcha submission
+            .service(submit_captcha)
             // Static directory
             .service(web::resource("/api/{_:.*}").route(web::get().to(dist)))
             // Default

@@ -32,22 +32,28 @@
     <div class="captcha">
       <div class="captcha-img">
         <div class="captcha-img-padding">
-          <img src="/api/generate_captcha" alt="Captcha Image"/>
+          <img id="captcha-png" src="/api/generate_captcha" alt="Captcha Image"/>
         </div>
       </div>
       <div class="captcha-controls">
-        <input type="text" id="captcha-chars" name="captchachars"></input>
-        <div class="captcha-buttons">
-          <button><b>&#128472;</b></button>
+        <input type="text" id="captcha-chars" name="captchachars" required></input>
+        <div class="captcha-buttons" id="captcha-buttons">
+          <button onclick="window.busy.captcha_submit(); return false">&#x2794;</button>
+<!--           
           <button>
-            <img src="/api/audio_icon.png" alt="Audio Icon">
+            <img src="/api/audio_icon.png?ver=lMLavbEqoEg" alt="Audio Icon">
+          </button> 
+-->
+          <button onclick="window.busy.captcha_refresh(); return false">
+            <img src="/api/refresh.png?ver=MLtQ6LtB3h4" alt="Refresh Icon">
           </button>
-          <button>&#x2794;</button>
+          <p id="try-again" hidden>Oops, try again!</p>
         </div>
+        <p id="captcha-pass" class="captcha-pass" hidden>&#10003;</p>
       </div>
     </div>
 
-    <input id="submit" class="submit" type="submit" value="Submit">
+    <input id="submit" class="submit" type="submit" value="Submit" hidden>
     <em id="contact-loading" class="contact-loading">Loading...</em>
 
   </form>
@@ -123,8 +129,21 @@ input[type=submit] {
 
 .captcha-controls .captcha-buttons {
   display: flex;
+  flex-direction: row-reverse; 
   flex-wrap: wrap;
   justify-content: right;
+}
+
+.captcha-controls .captcha-buttons p {
+  color: black;
+  margin-right: 1em;
+}
+
+.captcha-controls .captcha-pass {
+  font-size: 5em;
+  text-align: center;
+  margin: 0;
+  color: #0a9dff;
 }
 
 .captcha-controls .captcha-buttons button {
@@ -140,8 +159,8 @@ input[type=submit] {
 }
 
 .captcha-buttons button img {
-  height: 18px; 
-  width: 18px;
+  height: 16px; 
+  width: 16px;
   position: relative;
   top: 0.1em;
 }

@@ -22,13 +22,23 @@ fn main() {
 
 // Update URLs when files change, to enable efficient caching.
 fn update_urls() -> Result<(), io::Error> {
-    for entry in WalkDir::new("static")
-        .follow_links(true)
-        .into_iter()
-        .filter_map(|e| e.ok())
-    {
-        // If the entry is a file,
-        if entry.metadata().unwrap().is_file() {
+    for i in 0..4 {
+        for entry in WalkDir::new("static")
+            .follow_links(true)
+            .into_iter()
+            .filter_map(|e| e.ok())
+        {
+            // If the entry is not a file, skip.
+            if !entry.metadata().unwrap().is_file() {
+                continue;
+            }
+            // If this is not the first iteration and the file is not .rs or .html, skip.
+            if i != 0
+                && entry.path().extension().unwrap() != "rs"
+                && entry.path().extension().unwrap() != "html"
+            {
+                continue;
+            }
             // Strip the "static" part of its path.
             if let Some(f_path) = entry.path().to_string_lossy().strip_prefix("static") {
                 // Open it.
