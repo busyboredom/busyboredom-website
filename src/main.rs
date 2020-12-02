@@ -14,7 +14,6 @@ use actix_web::{
     cookie, guard, middleware, web, App, HttpRequest, HttpResponse, HttpServer, Result,
 };
 use cached::proc_macro::cached;
-use captcha::{filters, Captcha};
 use lettre::message::{header, MultiPart, SinglePart};
 use lettre::transport::smtp::authentication::Credentials;
 use lettre::{Message, SmtpTransport, Transport};
@@ -25,9 +24,10 @@ use rand::{thread_rng, Rng};
 use rust_embed::RustEmbed;
 use serde::Deserialize;
 
+mod captcha;
+use crate::captcha::*;
+
 const SESSION_KEY_LEN: usize = 64;
-const CAPTCHA_LEN: usize = 8;
-const CAPTCHA_ID_LEN: usize = 16;
 const CAPTCHA_CACHE_LEN: usize = 1000;
 const SECONDS_IN_YEAR: usize = 31536000;
 
@@ -260,78 +260,6 @@ async fn contact_submitted(
         .body(template_composition("base.html", "contact_submitted.html")))
 }
 
-/// Captcha generation handler
-#[get("/api/generate_captcha")]
-async fn generate_captcha(session: Session, app_data: web::Data<Mutex<SharedAppData>>) -> Result<HttpResponse> {
-    let mut captcha = Captcha::new();
-    captcha
-        .add_chars(CAPTCHA_LEN.try_into().expect("Captcha too long"))
-        .apply_filter(filters::Noise::new(0.3))
-        .apply_filter(filters::Wave::new(2.5, 10.0).horizontal())
-        .apply_filter(filters::Wave::new(3.0, 10.0).vertical())
-        .view(300, 84)
-        .apply_filter(filters::Cow::new().min_radius(60).max_radius(70).circles(1))
-        .apply_filter(filters::Dots::new(7).min_radius(3).max_radius(5));
-    let mut solution: [char; CAPTCHA_LEN] = Default::default();
-    solution.copy_from_slice(&captcha.chars()[..]);
-    let img = captcha.as_png().expect("Failed to generate captcha PNG");
-
-    // Set random captcha ID.
-    let mut id = [0u8; CAPTCHA_ID_LEN];
-    thread_rng().fill(&mut id[..]);
-    app_data
-        .lock()
-        .expect("Unable to get lock on captcha cache")
-        .captcha_cache
-        .put(id, solution);
-    info!(
-        "Put captcha ID = {:?} and solution = {:?} in local cache",
-        id, solution
-    );
-
-    // Add captcha solution to private session cookie.
-    session
-        .set("captcha", captcha.chars_as_string())
-        .expect("Unable to add captcha solution to session");
-
-    // Add captcha id to private session cookie.
-    session
-        .set("captcha_id", id)
-        .expect("Unable to add captcha id to session");
-
-    Ok(HttpResponse::build(StatusCode::OK)
-        .set(CacheControl(vec![CacheDirective::NoStore]))
-        .content_type("image/png")
-        .body(img))
-}
-
-#[derive(Deserialize)]
-struct CaptchaSubmitQuery {
-    captcha: String,
-}
-
-/// Captcha submission handler
-#[get("/api/submit_captcha")]
-async fn submit_captcha(
-    session: Session,
-    web::Query(guess): web::Query<CaptchaSubmitQuery>,
-) -> Result<HttpResponse> {
-    let mut pass_status = "Fail";
-
-    let answer = match session.get("captcha") {
-        Ok(answer) => answer,
-        Err(_) => None,
-    };
-    if Some(guess.captcha) == answer {
-        pass_status = "Pass";
-    }
-
-    Ok(HttpResponse::build(StatusCode::OK)
-        .set(CacheControl(vec![CacheDirective::NoStore]))
-        .content_type("text/plain; charset=utf-8")
-        .body(pass_status))
-}
-
 /// Wasm binding handler
 #[get("/api/bindings")]
 async fn bindings() -> Result<HttpResponse> {
@@ -360,7 +288,7 @@ struct AppData {
     mailer: SmtpTransport,
 }
 
-struct SharedAppData {
+pub struct SharedAppData {
     captcha_cache: LruCache<[u8; CAPTCHA_ID_LEN], [char; CAPTCHA_LEN]>,
 }
 
@@ -379,7 +307,7 @@ async fn main() -> io::Result<()> {
     let session_key: [u8; SESSION_KEY_LEN] = key_arr;
 
     // Make shared application data object.
-    let shared_data = web::Data::new(Mutex::new( SharedAppData { 
+    let shared_data = web::Data::new(Mutex::new(SharedAppData {
         captcha_cache: LruCache::new(CAPTCHA_CACHE_LEN),
     }));
 
