@@ -12,7 +12,52 @@ pub async fn contact() {
     active_tab("contact");
 
     // Go to the page.
-    goto_page("/contact", "/api/contact.html?ver=E3S6b80_XA0", "Contact").await;
+    goto_page("/contact", "/api/contact.html?ver=aI608ziQ4Ks", "Contact").await;
+}
+
+#[wasm_bindgen]
+pub fn contact_info() {
+    let window = web_sys::window().expect("No global `window` exists");
+    let document = window.document().expect("Should have a document on window");
+
+    // Retrieve selected contact method.
+    let input_js: JsValue = document
+        .get_element_by_id("info-selector")
+        .expect("Could not find element 'info-selector'")
+        .into();
+    let info_selector: HtmlInputElement = input_js.into();
+    let selected = info_selector.value();
+
+    let mut contact_info = String::new();
+
+    if selected == "Phone" {
+        contact_info = "Dude, it's ".to_owned() + 
+            &Date::new_0().get_full_year().to_string() + ".";
+    }
+
+    // Show loading text.
+    let text = document
+        .get_element_by_id("info-text")
+        .expect("Could not get element with id 'info-text'");
+    text.set_inner_html(&contact_info);
+}
+
+#[wasm_bindgen]
+pub fn contact_copy() {
+    let window = web_sys::window().expect("No global `window` exists");
+    let document = window.document().expect("Should have a document on window");
+
+    // Remove submit button.
+    document
+        .get_element_by_id("submit")
+        .expect("Could not get element with id 'submit'")
+        .remove();
+
+    // Show loading text.
+    let loading = document
+        .get_element_by_id("contact-loading")
+        .expect("Could not get element with id 'contact-loading'");
+    loading.set_class_name("contact-loading show");
 }
 
 #[wasm_bindgen]

@@ -9,13 +9,13 @@ use walkdir::WalkDir;
 const HASH_BUFFER_SIZE: usize = 16384;
 
 fn main() {
+    update_urls().expect("Error while updating URLs.");
+
     // Compile the wasm.
     Command::new("wasm-pack")
         .args(&["build", "wasm/", "--release", "--target", "web"])
         .status()
         .unwrap();
-
-    update_urls().expect("Error while updating URLs.");
 
     println!("cargo:rerun-if-changed=*");
 }
@@ -49,6 +49,8 @@ fn update_urls() -> Result<(), io::Error> {
                         "Setting hash to \"{}\" for all instances of \"{}\".",
                         hash, f_path,
                     );
+                    // Drop the file now since we no longer need it open.
+                    drop(file);
                     // Update its hash in all URLs pointing to it.
                     for dir in ["src/", "static/", "wasm/src/"].iter() {
                         set_url_hash(f_path, &hash, dir).expect("Unable to set URL hash");
@@ -79,7 +81,7 @@ fn set_url_hash(resource: &str, hash: &str, directory: &str) -> Result<(), io::E
                 let extension = entry.path().extension().unwrap();
                 if extension == "html" || extension == "rs" {
                     let file_path = Path::new(path_str);
-                    //let file_path = Path::new("static/resume.html");
+
                     // Open and read the file entirely
                     let mut src = File::open(&file_path)?;
                     let mut data = String::new();

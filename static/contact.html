@@ -1,5 +1,22 @@
 <div class="contact-text">
   <h1>Contact Me</h1>
+
+  <div id="no-forms">
+    <label><em>Don't like forms? Contact me directly.</em></label>
+    <div id="contact-info">
+      <select id="info-selector" onchange="window.busy.contact_info()">
+        <option value="Select">Select</option>
+        <option value="Email">Email</option>
+        <option value="Mastodon">Mastodon</option>
+        <option value="Linkedin">Linkedin</option>
+        <option value="Phone">Phone</option>
+      </select>
+      <div id="info-display"><p id="info-text"></p></div>
+      <button id="copy-info">Copied!</button>
+    </div>
+  </div>
+
+  <h2>Contact Form</h2>
   <form id="contact-form" action="/contact-submitted" method="POST" onsubmit="window.busy.contact_submit()">
 
     <label for="fname">First Name</label>
@@ -67,6 +84,57 @@
   padding: 0 1em;
 }
 
+#no-forms {
+  margin: 0 auto;
+  max-width: 40ch;
+  text-align: center;
+}
+
+#contact-info {
+  display: flex;
+  margin-top: 6px;
+  width: 100%;
+  page-break-inside: avoid;
+  overflow: auto;
+  word-wrap: break-word;
+}
+
+#info-selector {
+  flex: 0 0 10.5ch;
+  margin: 0;
+  padding: 0;
+  text-align: center;
+  border-radius: 1ch 0 0 1ch;
+  height: 2.5em;
+}
+
+#info-display {
+  flex: 1 1 22ch;
+  background-color: #202020;
+  height: 2.5em;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#info-text {
+  margin-left: 0.5ch;
+  width: 100%;
+}
+
+#copy-info {
+  flex: 0 0 6ch;
+  background-color: #ff6e00;
+  color: black;
+  border: 0;
+  border-radius: 0 1ch 1ch 0;
+  height: 2.5em;
+}
+
+#copy-info:hover, #info-selector:hover {
+  background-color: #0a9dff;
+}
+
  /* Style inputs with type="text", select elements and textareas */
  input:not([type='submit']), select, textarea, .captcha {
   width: 100%; /* Full width */
@@ -74,7 +142,7 @@
   color: black;
   background-color: #ff6e00;
   border: 0;
-  border-radius: 1ch; /* Rounded borders */
+  border-radius: 1ch; 
   box-sizing: border-box; /* Make sure that padding and width stays in place */
   margin-top: 6px; /* Add a top margin */
   margin-bottom: 16px; /* Bottom margin */
