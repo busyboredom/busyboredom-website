@@ -1,8 +1,8 @@
+use js_sys::Date;
 use wasm_bindgen::prelude::*;
 use wasm_bindgen::JsCast;
 use wasm_bindgen_futures::JsFuture;
 use web_sys::{HtmlInputElement, Request, RequestInit, Response};
-use js_sys::Date;
 
 use crate::{active_tab, goto_page};
 
@@ -12,7 +12,7 @@ pub async fn contact() {
     active_tab("contact");
 
     // Go to the page.
-    goto_page("/contact", "/api/contact.html?ver=aI608ziQ4Ks", "Contact").await;
+    goto_page("/contact", "/api/contact.html?ver=LpidCXTXHkc", "Contact").await;
 }
 
 #[wasm_bindgen]
@@ -31,8 +31,9 @@ pub async fn contact_info() {
     let contact_info;
 
     if selected == "Phone" {
-        contact_info = "Dude, it's ".to_owned() + 
-            &Date::new_0().get_full_year().to_string() + ".";
+        contact_info = "Dude, it's ".to_owned() + &Date::new_0().get_full_year().to_string() + ".";
+    } else if selected == "Select" {
+        contact_info = "".to_string();
     } else {
         let mut req = RequestInit::new();
         req.method("GET");
@@ -68,22 +69,52 @@ pub async fn contact_info() {
 }
 
 #[wasm_bindgen]
-pub fn contact_copy() {
+pub async fn contact_copy() {
+    let window = web_sys::window().expect("No global `window` exists");
+    let document = window.document().expect("Should have a document on window");
+    let navigator = window.navigator();
+
+    // Get the text.
+    let text = document
+        .get_element_by_id("info-text")
+        .expect("Could not get element with id 'submit'")
+        .inner_html();
+
+    if text == "" {
+        return;
+    }
+
+    let copy_promise = navigator.clipboard().write_text(&text);
+
+    // Convert this `Promise` into a rust `Future`.
+    let feedback = match JsFuture::from(copy_promise).await {
+        Ok(_) => "Copied!",
+        Err(_) => "Error!",
+    };
+
+    // Show copied.
+    let copy_button = document
+        .get_element_by_id("copy-info")
+        .expect("Could not get element with id 'copy-info'");
+    copy_button.set_inner_html(feedback);
+
+    window
+        .set_timeout_with_str_and_timeout_and_unused_0("window.busy.contact_copy_reset()", 1000)
+        .expect("Could not set timeout for copy feedback");
+}
+
+#[wasm_bindgen]
+pub async fn contact_copy_reset() {
     let window = web_sys::window().expect("No global `window` exists");
     let document = window.document().expect("Should have a document on window");
 
-    // Remove submit button.
-    document
-        .get_element_by_id("submit")
-        .expect("Could not get element with id 'submit'")
-        .remove();
-
-    // Show loading text.
-    let loading = document
-        .get_element_by_id("contact-loading")
-        .expect("Could not get element with id 'contact-loading'");
-    loading.set_class_name("contact-loading show");
+    // Show copied.
+    let copy_button = document
+        .get_element_by_id("copy-info")
+        .expect("Could not get element with id 'copy-info'");
+    copy_button.set_inner_html("Copy");
 }
+
 
 #[wasm_bindgen]
 pub fn contact_submit() {
@@ -173,10 +204,10 @@ pub async fn captcha_submit() {
             .expect("Hidden attribute not present");
         // Show submit button.
         document
-        .get_element_by_id("submit")
-        .expect("Could not find element 'captcha-pass'")
-        .remove_attribute("hidden")
-        .expect("Hidden attribute not present");
+            .get_element_by_id("submit")
+            .expect("Could not find element 'captcha-pass'")
+            .remove_attribute("hidden")
+            .expect("Hidden attribute not present");
     } else {
         // Show try again.
         document

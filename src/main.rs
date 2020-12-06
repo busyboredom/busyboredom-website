@@ -191,6 +191,8 @@ async fn main() -> io::Result<()> {
             .service(frontend_wasm)
             // Register robots.txt
             .service(robots_txt)
+            // Contact info for contact page.
+            .service(contact_info)
             // Contact form submission
             .service(contact_submitted)
             // Captcha generation

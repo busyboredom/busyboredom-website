@@ -2,9 +2,7 @@ use std::sync::Mutex;
 
 use actix_session::Session;
 use actix_web::http::StatusCode;
-use actix_web::{
-    web, HttpResponse, Result,
-};
+use actix_web::{web, HttpResponse, Result};
 use lettre::message::{header, MultiPart, SinglePart};
 use lettre::{Message, Transport};
 use log::{error, info, warn};
@@ -12,8 +10,28 @@ use serde::Deserialize;
 
 use crate::captcha::*;
 use crate::template_composition;
-use crate::SharedAppData;
 use crate::AppData;
+use crate::SharedAppData;
+
+#[derive(Deserialize)]
+struct ContactInfoQuery {
+    method: String,
+}
+
+/// Captcha submission handler
+#[get("/api/contact_info")]
+async fn contact_info(web::Query(query): web::Query<ContactInfoQuery>) -> Result<HttpResponse> {
+    let info = match &query.method[..] {
+        "Email" => "charlie@busyboredom.com",
+        "Mastodon" => "@busyboredom@mastodon.technology",
+        "Linkedin" => "https://www.linkedin.com/in/charlie-wilkin-7b6027178/",
+        _ => "Not found",
+    };
+
+    Ok(HttpResponse::build(StatusCode::OK)
+        .content_type("text/plain; charset=utf-8")
+        .body(info))
+}
 
 #[derive(Deserialize)]
 struct ContactForm {
