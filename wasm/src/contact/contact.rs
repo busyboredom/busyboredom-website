@@ -16,7 +16,7 @@ pub async fn contact() {
 }
 
 #[wasm_bindgen]
-pub fn contact_info() {
+pub async fn contact_info() {
     let window = web_sys::window().expect("No global `window` exists");
     let document = window.document().expect("Should have a document on window");
 
@@ -28,14 +28,39 @@ pub fn contact_info() {
     let info_selector: HtmlInputElement = input_js.into();
     let selected = info_selector.value();
 
-    let mut contact_info = String::new();
+    let contact_info;
 
     if selected == "Phone" {
         contact_info = "Dude, it's ".to_owned() + 
             &Date::new_0().get_full_year().to_string() + ".";
+    } else {
+        let mut req = RequestInit::new();
+        req.method("GET");
+        let request_string = format!("/api/contact_info?method={}", selected);
+        let request = Request::new_with_str_and_init(&request_string, &req)
+            .expect("Request could not be created");
+        request
+            .headers()
+            .set("Accept", "text/plain")
+            .expect("Headers could not be set");
+
+        let response = JsFuture::from(window.fetch_with_request(&request))
+            .await
+            .expect("Could not cast response as JsFuture");
+
+        // `response` is a `Response` object.
+        assert!(response.is_instance_of::<Response>());
+        let resp: Response = response.dyn_into().unwrap();
+
+        // Convert this other `Promise` into a rust `Future`.
+        contact_info = JsFuture::from(resp.text().unwrap())
+            .await
+            .unwrap()
+            .as_string()
+            .unwrap();
     }
 
-    // Show loading text.
+    // Show contact info.
     let text = document
         .get_element_by_id("info-text")
         .expect("Could not get element with id 'info-text'");
