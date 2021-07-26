@@ -168,7 +168,7 @@ pub async fn resume() {
     active_tab("resume");
 
     // Go to the page.
-    goto_page("/resume", "/api/resume.html?ver=JCKpxjzxTu0", "Résumé").await;
+    goto_page("/resume", "/api/resume.html?ver=bpzByFJj5VY", "Résumé").await;
 }
 
 #[wasm_bindgen]
