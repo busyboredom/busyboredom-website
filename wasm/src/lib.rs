@@ -83,6 +83,20 @@ pub fn close_dropdowns() {
         dropdown.set_class_name("dropdown-content");
         drop_symbol.set_class_name("arrow down")
     }
+
+    // Get resume dropdown.
+    let dropdown = document
+        .get_element_by_id("resume_dropdown")
+        .expect("Could not get 'resume_dropdown' element");
+    let drop_symbol = document
+        .get_element_by_id("resume_drop_symbol")
+        .expect("Could not get 'resume_drop_symbol' element");
+
+    // Close presume dropdown.
+    if dropdown.class_name() == "dropdown-content show" {
+        dropdown.set_class_name("dropdown-content");
+        drop_symbol.set_class_name("arrow down")
+    }
 }
 
 #[wasm_bindgen]
@@ -96,6 +110,27 @@ pub fn proj_toggle() {
     let drop_symbol = document
         .get_element_by_id("drop_symbol")
         .expect("Could not get 'drop_symbol' element");
+
+    if dropdown.class_name() == "dropdown-content" {
+        dropdown.set_class_name("dropdown-content show");
+        drop_symbol.set_class_name("arrow up")
+    } else {
+        dropdown.set_class_name("dropdown-content");
+        drop_symbol.set_class_name("arrow down")
+    }
+}
+
+#[wasm_bindgen]
+pub fn resume_toggle() {
+    let window = web_sys::window().expect("No global `window` exists");
+    let document = window.document().expect("Should have a document on window");
+
+    let dropdown = document
+        .get_element_by_id("resume_dropdown")
+        .expect("Could not get 'resume_dropdown' element");
+    let drop_symbol = document
+        .get_element_by_id("resume_drop_symbol")
+        .expect("Could not get 'resume_drop_symbol' element");
 
     if dropdown.class_name() == "dropdown-content" {
         dropdown.set_class_name("dropdown-content show");
@@ -164,11 +199,20 @@ pub async fn goto_page(route: &str, resource: &str, title: &str) {
 
 #[wasm_bindgen]
 pub async fn resume() {
-    // Set active tab.
-    active_tab("resume");
-
     // Go to the page.
-    goto_page("/resume", "/api/resume.html?ver=bpzByFJj5VY", "Résumé").await;
+    software_eng_resume().await;
+}
+
+#[wasm_bindgen]
+pub async fn software_eng_resume() {
+    // Go to the page.
+    goto_page("/software-eng-resume", "/api/software_eng_resume.html?ver=je1mJ262aRs", "Résumé").await;
+}
+
+#[wasm_bindgen]
+pub async fn controls_eng_resume() {
+    // Go to the page.
+    goto_page("/controls-eng-resume", "/api/controls_eng_resume.html?ver=YlERjf3Pjtw", "Résumé").await;
 }
 
 #[wasm_bindgen]
@@ -266,6 +310,8 @@ pub fn route(rt: &str) {
         "/" => spawn_local(welcome()),
         "/welcome" => spawn_local(welcome()),
         "/resume" => spawn_local(resume()),
+        "/software-eng-resume" => spawn_local(software_eng_resume()),
+        "/controls-eng-resume" => spawn_local(controls_eng_resume()),
         "/contact" => spawn_local(contact()),
         "/coming-soon" => spawn_local(coming_soon()),
         "/contact-submitted" => spawn_local(contact_submitted()),
