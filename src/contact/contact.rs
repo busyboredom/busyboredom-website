@@ -3,7 +3,7 @@ use std::sync::Mutex;
 use actix_session::Session;
 use actix_web::http::StatusCode;
 use actix_web::{web, HttpResponse, Result};
-use lettre::message::{header, MultiPart, SinglePart};
+use lettre::message::{MultiPart, SinglePart};
 use lettre::{Message, Transport};
 use log::{error, info, warn};
 use serde::Deserialize;
@@ -130,21 +130,9 @@ async fn contact_submitted(
         .multipart(
             MultiPart::alternative()
                 // Plain text version.
-                .singlepart(
-                    SinglePart::eight_bit()
-                        .header(header::ContentType(
-                            "text/plain; charset=utf8".parse().unwrap(),
-                        ))
-                        .body(plain_message),
-                )
+                .singlepart(SinglePart::plain(plain_message))
                 // HTML version.
-                .singlepart(
-                    SinglePart::quoted_printable()
-                        .header(header::ContentType(
-                            "text/html; charset=utf8".parse().unwrap(),
-                        ))
-                        .body(html_message),
-                ),
+                .singlepart(SinglePart::html(html_message)),
         )
         .expect("failed to build email");
 

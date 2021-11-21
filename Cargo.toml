@@ -5,11 +5,10 @@ authors = ["Charlie Wilkin <cwilkin@protonmail.com>"]
 edition = "2018"
 
 [dependencies]
-actix-rt = "1"
 actix-web = "3"
 actix-files = "0"
 actix-session = "0"
-rust-embed = "5"
+rust-embed = "6"
 mime_guess = "2"
 futures = "0"
 env_logger = "0"
@@ -21,7 +20,7 @@ rand = "0"
 lru = "0"
 
 [dependencies.lettre]
-version = "0.10.0-alpha.4"
+version = "0.10.0-rc.4"
 default-features = false
 features = ["smtp-transport", "builder", "rustls-tls"]
 
@@ -29,7 +28,7 @@ features = ["smtp-transport", "builder", "rustls-tls"]
 walkdir = "2.3.1"
 regex = "1"
 sha-1 = "0"
-blake3 = "0"
+blake3 = "1"
 base64 = "0"
 
 [profile.release]

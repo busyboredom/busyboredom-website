@@ -206,13 +206,13 @@ pub async fn resume() {
 #[wasm_bindgen]
 pub async fn software_eng_resume() {
     // Go to the page.
-    goto_page("/software-eng-resume", "/api/software_eng_resume.html?ver=je1mJ262aRs", "Résumé (Software Engineering)").await;
+    goto_page("/software-eng-resume", "/api/software_eng_resume.html?ver=BLkAR1UM3v0", "Résumé (Software Engineering)").await;
 }
 
 #[wasm_bindgen]
 pub async fn controls_eng_resume() {
     // Go to the page.
-    goto_page("/controls-eng-resume", "/api/controls_eng_resume.html?ver=YlERjf3Pjtw", "Résumé (Controls Engineering)").await;
+    goto_page("/controls-eng-resume", "/api/controls_eng_resume.html?ver=iTKO2bCo3A4", "Résumé (Controls Engineering)").await;
 }
 
 #[wasm_bindgen]

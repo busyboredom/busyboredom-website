@@ -1,7 +1,6 @@
 #[macro_use]
 extern crate actix_web;
 
-use std::borrow::Cow;
 use std::convert::TryInto;
 use std::sync::Mutex;
 use std::{env, io};
@@ -37,10 +36,7 @@ struct Asset;
 fn handle_embedded_file(path: &str) -> HttpResponse {
     match Asset::get(path) {
         Some(content) => {
-            let body: Body = match content {
-                Cow::Borrowed(bytes) => bytes.into(),
-                Cow::Owned(bytes) => bytes.into(),
-            };
+            let body: Body = content.data.as_ref().to_owned().into();
             let content_type = from_path(path).first_or_octet_stream();
             return HttpResponse::Ok()
                 .set(CacheControl(vec![
@@ -65,17 +61,11 @@ fn dist(path: web::Path<(String,)>) -> HttpResponse {
 fn template_composition(base: &'static str, content: &'static str) -> String {
     match Asset::get(base) {
         Some(base_file) => {
-            let base_bytes: Vec<u8> = match base_file {
-                Cow::Borrowed(bytes) => bytes.into(),
-                Cow::Owned(bytes) => bytes,
-            };
+            let base_bytes: Vec<u8> = base_file.data.as_ref().into();
 
             match Asset::get(content) {
                 Some(content_file) => {
-                    let content_bytes: Vec<u8> = match content_file {
-                        Cow::Borrowed(bytes) => bytes.into(),
-                        Cow::Owned(bytes) => bytes,
-                    };
+                    let content_bytes: Vec<u8> = content_file.data.as_ref().into();
                     let content_str = std::str::from_utf8(&content_bytes).unwrap();
 
                     return std::str::from_utf8(&base_bytes)
@@ -140,7 +130,7 @@ pub struct SharedAppData {
     captcha_cache: LruCache<[u8; CAPTCHA_ID_LEN], [char; CAPTCHA_LEN]>,
 }
 
-#[actix_rt::main]
+#[actix_web::main]
 async fn main() -> io::Result<()> {
     env::set_var("RUST_LOG", "info");
     env_logger::init();
