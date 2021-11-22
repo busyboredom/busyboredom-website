@@ -1,37 +1,34 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <link rel="shortcut icon" type="image/x-icon" href="/api/favicon.ico?ver=KuTtVrziwGI">
-  <link rel="stylesheet" type="text/css"
-  href="/api/normalize.css?ver=FYGwuW7vcm8">
+  <link rel="stylesheet" type="text/css" href="/api/normalize.css?ver=FYGwuW7vcm8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta id="base-title" title="Welcome! | Busyboredom (Charlie Wilkin)">
-  <meta 
-      name="Description" 
-      content=
-            "Welcome to my project website. I take on random projects ranging from genetic 
+  <meta name="Description" content="Welcome to my project website. I take on random projects ranging from genetic 
             algorithms to waste oil furnaces and custom quadcopters, and I write 
             about them here. Feel free to check out a few of the project pages I've written, 
-            or hop on my chat server (if you've got the password)."
-  >
+            or hop on my chat server (if you've got the password).">
   <meta name="theme-color" content="#303030">
   <meta name="author" content="Charlie Wilkin">
 
   <!-- OGP stuff (required by Linkedin) -->
-  <meta property='og:title' content='BusyBoredom (Charlie Wilkin)'/>
-  <meta property='og:image' content='//busyboredom.com/favicon.ico'/>
-  <meta property='og:description' content='A place to show off a few of my projects.'/>
+  <meta property='og:title' content='BusyBoredom (Charlie Wilkin)' />
+  <meta property='og:image' content='//busyboredom.com/favicon.ico' />
+  <meta property='og:description' content='A place to show off a few of my projects.' />
   <meta property="og:type" content="website" />
-  <meta property='og:url' content='//www.busyboredom.com/'/>
+  <meta property='og:url' content='//www.busyboredom.com/' />
 
 </head>
+
 <body>
   <header>
     <nav class="nav" id="nav">
       <button id="logo">
         <a href="/">
-          <img width="32px" height="32px" src="/api/logo.png" alt="BusyBoredom (Charlie Wilkin)"/>
+          <img width="32px" height="32px" src="/api/logo.png" alt="BusyBoredom (Charlie Wilkin)" />
         </a>
       </button>
       <div class="dropdown">
@@ -39,6 +36,11 @@
           Projects<i id="drop_symbol" class="arrow down"></i>
         </button>
         <div class="dropdown-content" id="projects_dropdown">
+          <a href="/projects/acceptxmr" onclick="window.busy.acceptxmr(); return false">
+            <button class="proj_drop" id="acceptxmr">
+              AcceptXMR
+            </button>
+          </a>
           <a href="/projects/this-website" onclick="window.busy.this_website(); return false">
             <button class="proj_drop" id="this_website">
               This Website
@@ -62,13 +64,13 @@
           <a href="#" onclick="window.busy.coming_soon(); return false">
             <button class="proj_drop" id="getofftheroad">
               Get Off The Road
-              <img class="lock" src="/api/lock_icon.png?ver=oNnGwzfus_0" alt="Lock Icon"/>
+              <img class="lock" src="/api/lock_icon.png?ver=oNnGwzfus_0" alt="Lock Icon" />
             </button>
           </a>
           <a href="#" onclick="window.busy.coming_soon(); return false">
             <button class="proj_drop" id="waste_oil_furnace">
-              Waste Oil Furnace 
-              <img class="lock" src="/api/lock_icon.png?ver=oNnGwzfus_0" alt="Lock Icon"/>
+              Waste Oil Furnace
+              <img class="lock" src="/api/lock_icon.png?ver=oNnGwzfus_0" alt="Lock Icon" />
             </button>
           </a>
           <a href="#" onclick="window.busy.mnist_tutorial(); return false">
@@ -97,7 +99,9 @@
       </div>
       <button class="tab" id="contact" onclick="window.busy.contact()">Contact</button>
       <button class="icon" onclick="window.busy.nav_toggle()">
-        <img width="24px" height="24px" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAABmJLR0QA/wD/AP+gvaeTAAAAKElEQVRIiWNgGAXDHjAisf/TwmwmKhs6CgYhGE1Fo4ByMJqKRsEQAADWCQMKYvEFtQAAAABJRU5ErkJggg==" alt="Hamburger Menu"/>
+        <img width="24px" height="24px"
+          src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAABmJLR0QA/wD/AP+gvaeTAAAAKElEQVRIiWNgGAXDHjAisf/TwmwmKhs6CgYhGE1Fo4ByMJqKRsEQAADWCQMKYvEFtQAAAABJRU5ErkJggg=="
+          alt="Hamburger Menu" />
       </button>
     </nav>
   </header>
@@ -119,266 +123,277 @@
   window.busy = busy;
 
   // Add popstate event handler.
-  window.onpopstate = function(event) {
+  window.onpopstate = function (event) {
     if (event.state) {
       window.busy.route(event.state);
     }
   };
 </script>
 <style>
+  /* Set default font and text color (white) */
+  * {
+    font-family: Arial;
+    color: #ffffff;
+    line-height: 1.2em;
+  }
 
-/* Set default font and text color (white) */
-* {
-  font-family: Arial;
-  color: #ffffff; 
-  line-height: 1.2em;
-}
+  body,
+  html {
+    margin: 0;
+    background-color: #303030;
+    height: 100%;
+  }
 
-body, html {
-  margin: 0;
-  background-color: #303030;
-  height: 100%;
-}
+  header {
+    height: 50px;
+  }
 
-header {
-  height: 50px;
-}
+  em {
+    color: #0a9dff;
+  }
 
-em {
-  color: #0a9dff;
-}
+  h1 {
+    text-align: center;
+    color: #0a9dff;
+  }
 
-h1 {
-  text-align: center;
-  color: #0a9dff;
-}
+  h2 {
+    text-align: left;
+    color: #0a9dff;
+  }
 
-h2 {
-  text-align: left;
-  color:#0a9dff;
-}
-
-p {
+  p {
     text-align: left;
   }
-  
-p.center {
-  text-align: center;
-}
 
-p.feedback {
-  padding-top: 5em;
-  text-align: center;
-}
-
-#page {
-  position: absolute;
-  width: 100%;
-  height: calc(100% - 50px);
-}
-
-.nav {
-  background-color: #ff6e00;
-  position: fixed;
-  top: 0;
-  width: 100%;
-  z-index: 2;
-  box-shadow: 0 2px rgba(0, 0, 0, 0.3);
-}
-
-.nav #logo{
-  float: left;
-  border: none;
-  background-color: #ff6e00;
-}
-
-.nav #logo {
-  padding-top: 4px;
-  padding-left: 8px;
-  padding-right: 8px;
-  padding-bottom: 0px;
-}
-
-.nav .tab {
-  float: left;
-  display: block;
-  border: none;
-  color: #000000;
-  background-color: #ff6e00;
-  text-align: center;
-  padding: 11px 16px;
-  text-decoration: none;
-  font-size: 16px;
-}
-
-/* Dropdown container */
-.nav .dropdown {
-  float: left;
-  overflow: hidden;
-}
-
-/* Make project dropdown button fit inside the navbar */
-.nav .dropdown .dropbtn {
-  outline: none;
-  border: none;
-  color: #000000;
-  background: #ff6e00;
-  padding: 11px 16px; 
-  text-decoration: none;
-  font-size: 16px;
-  margin: 0;
-}
-
-.nav .dropdown .dropbtn .arrow {
-  border: solid black;
-  border-width: 0 0.2em 0.2em 0;
-  display: inline-block;
-  padding: 0.25em;
-  margin-left: 1ch;
-}
-
-.nav .dropdown .dropbtn .up {
-  transform: rotate(-135deg);
-  position:relative;
-  top: 0.2em
-}
-
-.nav .dropdown .dropbtn .down {
-  transform: rotate(45deg);
-  position:relative;
-  bottom: 0.2em;
-}
-
-.nav .dropdown-content {
-  display: none;
-  position: absolute;
-  padding: 1px;
-  background-color: #303030;
-  min-width: 10em;
-}
-
-.nav .proj_drop{
-  display: block;
-  width: 100%;
-  color: #000000;
-  background: #ff6e00;
-  border: 1px solid #303030;
-  padding: 0.5em;
-  text-align: left;
-  font-size: 14px;
-}
-
-/* Remove underline from button text. */
-.nav a {
-  text-decoration: none;
-}
-
-.nav .icon {
-  display: none;
-  padding: 6px 16px;
-  border: none;
-  background-color: #ff6e00;
-}
-
-.nav .lock {
-  float: right;
-  height: 11px;
-}
-  
-code {
-  font-family: Consolas,"courier new";
-  background: #202020;
-  color: #04ff04;
-}
-
-pre {
-  background: #202020;
-  border-left: 0.25em solid #ff6e00;
-  page-break-inside: avoid;
-  font-family: monospace;
-  line-height: 1.5;
-  max-width: 100%;
-  overflow: auto;
-  padding: 0em 1.5em;
-  display: block;
-  word-wrap: break-word;
-}
-
-@media screen and (max-width: 600px) {
-  .nav :not(:first-child) {display: none;}
-  .nav button.icon {
-    float: right;
-    display: block;
+  p.center {
+    text-align: center;
   }
-}
 
-@media screen and (max-width: 600px) {
-  .nav.responsive {
+  p.feedback {
+    padding-top: 5em;
+    text-align: center;
+  }
+
+  #page {
+    position: absolute;
+    width: 100%;
+    height: calc(100% - 50px);
+  }
+
+  .nav {
+    background-color: #ff6e00;
     position: fixed;
     top: 0;
     width: 100%;
     z-index: 2;
-  }
-  .nav.responsive .icon {
-    position: absolute;
-    right: 0;
-    top: 0;
-  }
-  .nav.responsive .tab {
-    display: block;
-    width: 100%;
-    padding: 0.5em 1em;
-    text-align: left;
-  }
-  .nav.responsive .dropdown {
-    display: block;
-    width: 100%;
+    box-shadow: 0 2px rgba(0, 0, 0, 0.3);
   }
 
-  .nav.responsive .dropbtn {
-    padding: 0.5em 1em;
-  }
-
-  .nav.responsive .dropdown-content {
-    position: relative;
-    margin-left: 2em;
-    width: 100%;
-    padding: 0px;
-  }
-  .nav.responsive .proj_drop {
+  .nav #logo {
+    float: left;
     border: none;
+    background-color: #ff6e00;
+  }
+
+  .nav #logo {
+    padding-top: 4px;
+    padding-left: 8px;
+    padding-right: 8px;
+    padding-bottom: 0px;
+  }
+
+  .nav .tab {
+    float: left;
+    display: block;
+    border: none;
+    color: #000000;
+    background-color: #ff6e00;
+    text-align: center;
+    padding: 11px 16px;
+    text-decoration: none;
+    font-size: 16px;
+  }
+
+  /* Dropdown container */
+  .nav .dropdown {
+    float: left;
+    overflow: hidden;
+  }
+
+  /* Make project dropdown button fit inside the navbar */
+  .nav .dropdown .dropbtn {
+    outline: none;
+    border: none;
+    color: #000000;
+    background: #ff6e00;
+    padding: 11px 16px;
+    text-decoration: none;
+    font-size: 16px;
+    margin: 0;
+  }
+
+  .nav .dropdown .dropbtn .arrow {
+    border: solid black;
+    border-width: 0 0.2em 0.2em 0;
+    display: inline-block;
+    padding: 0.25em;
+    margin-left: 1ch;
+  }
+
+  .nav .dropdown .dropbtn .up {
+    transform: rotate(-135deg);
+    position: relative;
+    top: 0.2em
+  }
+
+  .nav .dropdown .dropbtn .down {
+    transform: rotate(45deg);
+    position: relative;
+    bottom: 0.2em;
+  }
+
+  .nav .dropdown-content {
+    display: none;
+    position: absolute;
+    padding: 1px;
+    background-color: #303030;
+    min-width: 10em;
+  }
+
+  .nav .proj_drop {
+    display: block;
+    width: 100%;
+    color: #000000;
+    background: #ff6e00;
+    border: 1px solid #303030;
     padding: 0.5em;
+    text-align: left;
+    font-size: 14px;
   }
-  .nav.responsive a {
+
+  /* Remove underline from button text. */
+  .nav a {
+    text-decoration: none;
+  }
+
+  .nav .icon {
+    display: none;
+    padding: 6px 16px;
+    border: none;
+    background-color: #ff6e00;
+  }
+
+  .nav .lock {
+    float: right;
+    height: 11px;
+  }
+
+  code {
+    font-family: Consolas, "courier new";
+    background: #202020;
+    color: #04ff04;
+  }
+
+  pre {
+    background: #202020;
+    border-left: 0.25em solid #ff6e00;
+    page-break-inside: avoid;
+    font-family: monospace;
+    line-height: 1.5;
+    max-width: 100%;
+    overflow: auto;
+    padding: 0em 1.5em;
+    display: block;
+    word-wrap: break-word;
+  }
+
+  @media screen and (max-width: 600px) {
+    .nav :not(:first-child) {
+      display: none;
+    }
+
+    .nav button.icon {
+      float: right;
+      display: block;
+    }
+  }
+
+  @media screen and (max-width: 600px) {
+    .nav.responsive {
+      position: fixed;
+      top: 0;
+      width: 100%;
+      z-index: 2;
+    }
+
+    .nav.responsive .icon {
+      position: absolute;
+      right: 0;
+      top: 0;
+    }
+
+    .nav.responsive .tab {
+      display: block;
+      width: 100%;
+      padding: 0.5em 1em;
+      text-align: left;
+    }
+
+    .nav.responsive .dropdown {
+      display: block;
+      width: 100%;
+    }
+
+    .nav.responsive .dropbtn {
+      padding: 0.5em 1em;
+    }
+
+    .nav.responsive .dropdown-content {
+      position: relative;
+      margin-left: 2em;
+      width: 100%;
+      padding: 0px;
+    }
+
+    .nav.responsive .proj_drop {
+      border: none;
+      padding: 0.5em;
+    }
+
+    .nav.responsive a {
+      display: block;
+    }
+
+    .nav.responsive .lock {
+      float: left;
+      margin-right: 1ch;
+    }
+  }
+
+  .nav button:hover,
+  #logo:hover,
+  #dropbtn:hover {
+    background-color: #0a9dff;
+  }
+
+  .nav .active {
+    background-color: #0a9dff;
+  }
+
+  .nav .dropdown .show {
     display: block;
   }
 
-  .nav.responsive .lock {
-  float: left;
-  margin-right: 1ch;
-}
-}
+  a {
+    color: #ff6e00;
+    cursor: pointer;
+    text-decoration: underline;
+  }
 
-.nav button:hover, #logo:hover, #dropbtn:hover {
-  background-color: #0a9dff;
-}
-
-.nav .active {
-  background-color: #0a9dff;
-}
-
-.nav .dropdown .show {
-    display: block;
-}
-
-a {
-  color: #ff6e00;
-  cursor: pointer;
-  text-decoration: underline;
-}
-
-a:visited {
-  color: #d64500;
-}
+  a:visited {
+    color: #d64500;
+  }
 </style>
+
 </html>

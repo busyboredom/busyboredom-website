@@ -1,0 +1,84 @@
+<div class="acceptxmr-project">
+    <h1>AcceptXMR: Accept Monero in Your Application</h1>
+
+    <div class="acceptxmr">
+        <div class="instruction-container">
+            <p id="instruction">AcceptXMR Demo</p>
+            <button id="new-address-btn" onclick="start()" hidden>New Address</button>
+        </div>
+        <hr />
+        <div id="preperation-content" class="content">
+            <div id="message-container">
+                <label for="message">Message (Optional)</label>
+                <textarea type="text" id="message" name="message" rows="2"
+                    placeholder="Have anything you'd like to say?"></textarea>
+            </div>
+            <button onclick="start()">Next</button>
+        </div>
+        <div id="payment-content" class="content">
+            <div class="qrcode-container" id="qrcode-container">
+                <svg viewBox="0 0 100 100" id="qrcode" src=""></svg>
+            </div>
+            <div class="details">
+                <label>Address</label>
+                <div id="address-container">
+                    <p id="address"></p>
+                    <button id="address-copy-btn" onclick="copyInvoiceAddress()">Copy</button>
+                </div>
+                <label>Status</label>
+                <p class="status">
+                    Paid: <span id="paid">0.00000000</span> / <span id="due">0.00000000</span> XMR<br />
+                    Confirmations:
+                    <span id="confirmations">0</span> / <span id="confirmations-required">0</span><br />
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <h2>Summary</h2>
+
+    <p>
+        Are you a privacy-loving entrepreneur, looking for a way to accept payment in
+        <a href="https://www.getmonero.org/">Monero</a> in an automated fashion? I wrote a rust
+        crate just for you!
+        <br><br>
+        AcceptXMR generates unique subaddresses for each invoice, so you'll know what you're being
+        paid for when a user sends you Monero. It then scans the blockchain for incoming
+        transactions using your private viewkey, so you'll know within seconds when a user pays.
+        Here are some features of my crate:
+    <ul>
+        <li>View pair only, no hot wallet.</li>
+        <li>Subaddress based (as opposed to the older integrated addresses).</li>
+        <li>Pending invoices stored persistently, enabling recovery from power loss.</li>
+        <li>Number of confirmations is configurable per-invoice.</li>
+        <li>Ignores transactions with non-zero timelocks.</li>
+        <li>Minimal, intuitive API (in my totally unbiased opinion).</li>
+    </ul>
+    Check out the <a href="https://docs.rs/acceptxmr">docs</a> if you'd like to use AcceptXMR in
+    your application, stop by the <a href="https://github.com/busyboredom/acceptxmr/">GitHub</a>
+    repository if you'd like to contribute, or continue reading to learn more about how I tackled
+    this project.
+    </p>
+
+    <h2>How it Works</h2>
+    <i>(Last updated for AcceptXMR v0.10.0)</i>
+
+    <h2>Conclusion</h2>
+
+    <p class="feedback">
+        <i>See a bug or typo?</i> <a onclick="window.busy.contact()">Contact Me</a>
+    </p>
+
+</div>
+<link rel="stylesheet" href="/api/projects/acceptxmr/acceptxmr.css">
+<style>
+    .acceptxmr-project {
+        max-width: 80ch;
+        margin: 0 auto;
+        padding: 0 1em;
+    }
+
+    img {
+        max-width: 100%;
+    }
+</style>

@@ -321,6 +321,7 @@ pub fn route(rt: &str) {
         "/projects/industrial-automation" => spawn_local(industrial_automation()),
         "/projects/mnist-tutorial" => spawn_local(mnist_tutorial()),
         "/projects/archviz" => spawn_local(archviz()),
+        "/projects/acceptxmr" => spawn_local(acceptxmr()),
         _ => spawn_local(error_404()),
     };
 }
