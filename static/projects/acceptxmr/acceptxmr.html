@@ -36,6 +36,7 @@
     </div>
 
     <h2>Summary</h2>
+    <i>(Last updated for AcceptXMR v0.10.0)</i>
 
     <p>
         Are you a privacy-loving entrepreneur, looking for a way to accept payment in
@@ -60,18 +61,18 @@
     this project.
     </p>
 
-    <h2>How it Works</h2>
-    <i>(Last updated for AcceptXMR v0.10.0)</i>
+    <h2>Public API</h2>
     <p>
         AcceptXMR's public interface, or API, is deceptively simple. You create a
         <code>PaymentGateway</code> when your application starts up, then create a new
         <code>Invoice</code> when a user goes to checkout, and subscribe to invoice updates with a
-        <code>Subscriber</code> to know when they've paid.
+        <code>Subscriber</code> to know when they've paid. The following bit of code shows a very
+        simple example, just to give you an idea of what the interface looks like.
     <pre>
         <code>
 // Create the payment gateway.
 let payment_gateway = 
-    PaymentGateway::builder(private_viewkey, public_spendkey)
+    PaymentGateway::builder(private_view_key, public_spend_key)
     .build();
 
 // Run the payment gateway.
@@ -100,7 +101,19 @@ if update.is_confirmed() {
     Pretty sweet, right? This simple interface is made possible by a few key components under
     the hood. AcceptXMR contains a "scanning thread" which watches for transactions on
     the blockchain, three caching objects for holding onto relevant information while it scans,
-    and an interface to a very high performance embedded database.
+    and an interface to a very high performance embedded database
+    (<a href="https://docs.rs/sled/latest/sled/">Sled</a>) behind the payment gateway and
+    subscribers you see in the public API. Read the next section for more details on how these
+    pieces work together.
+    </p>
+
+    <h2>Internal Architecture</h2>
+    <div style="width:100%; height:0; padding-top:73.27%; position:relative;">
+        <img alt="Architectural Diagram" src="/api/projects/acceptxmr/diagram.webp"
+            style="position:absolute; top:0; left:0; width:100%;">
+    </div>
+    <p>
+
     </p>
 
     <h2>Conclusion</h2>

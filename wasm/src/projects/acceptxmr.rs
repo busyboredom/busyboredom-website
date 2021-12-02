@@ -10,7 +10,7 @@ pub async fn acceptxmr() {
     // Go to the page.
     goto_page(
         "/projects/acceptxmr",
-        "/api/projects/acceptxmr/acceptxmr.html?ver=6JBP7BHxqj4",
+        "/api/projects/acceptxmr/acceptxmr.html?ver=0zLAcPUVjTw",
         "AcceptXMR",
     )
     .await;
