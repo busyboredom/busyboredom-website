@@ -49,16 +49,16 @@ pub async fn generate_captcha(
 
     // Add captcha solution to private session cookie.
     session
-        .set("captcha", captcha.chars_as_string())
+        .insert("captcha", captcha.chars_as_string())
         .expect("Unable to add captcha solution to session");
 
     // Add captcha id to private session cookie.
     session
-        .set("captcha_id", id)
+        .insert("captcha_id", id)
         .expect("Unable to add captcha id to session");
 
     Ok(HttpResponse::build(StatusCode::OK)
-        .set(CacheControl(vec![CacheDirective::NoStore]))
+        .insert_header(CacheControl(vec![CacheDirective::NoStore]))
         .content_type("image/png")
         .body(img))
 }
@@ -85,7 +85,7 @@ async fn submit_captcha(
     }
 
     Ok(HttpResponse::build(StatusCode::OK)
-        .set(CacheControl(vec![CacheDirective::NoStore]))
+        .insert_header(CacheControl(vec![CacheDirective::NoStore]))
         .content_type("text/plain; charset=utf-8")
         .body(pass_status))
 }

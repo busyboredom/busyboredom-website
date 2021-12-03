@@ -11,7 +11,7 @@
             <div id="message-container">
                 <label for="message">Message (Optional)</label>
                 <textarea type="text" id="message" name="message" rows="2"
-                    placeholder="Have anything you'd like to say?"></textarea>
+                    placeholder="If you type something here, I'll get it as an email after 'payment'."></textarea>
             </div>
             <button onclick="start()">Next</button>
         </div>
@@ -43,9 +43,9 @@
         <a href="https://www.getmonero.org/">Monero</a> in an automated fashion? I wrote a rust
         crate just for you!
         <br><br>
-        AcceptXMR generates unique subaddresses for each invoice, so you'll know what you're being
+        AcceptXMR generates unique subaddresses for each invoice so you'll know what you're being
         paid for when a user sends you Monero. It then scans the blockchain for incoming
-        transactions using your private viewkey, so you'll know within seconds when a user pays.
+        transactions using your private viewkey so you'll know within seconds when a user pays.
         Here are some features of my crate:
     <ul>
         <li>View pair only, no hot wallet.</li>
@@ -64,7 +64,7 @@
     <h2>Public API</h2>
     <p>
         AcceptXMR's public interface, or API, is deceptively simple. You create a
-        <code>PaymentGateway</code> when your application starts up, then create a new
+        <code>PaymentGateway</code> when your application starts up, create a new
         <code>Invoice</code> when a user goes to checkout, and subscribe to invoice updates with a
         <code>Subscriber</code> to know when they've paid. The following bit of code shows a very
         simple example, just to give you an idea of what the interface looks like.
@@ -113,7 +113,7 @@ if update.is_confirmed() {
         other. Aside from the subscribers and payment gateway you see in the public API, AcceptXMR
         contains a "scanning thread" which watches for transactions on the blockchain, three caching
         objects for holding onto relevant information while it scans, and an interface to a very
-        high performance embedded database 
+        high performance embedded database
         (<a href="https://docs.rs/sled/latest/sled/">Sled</a>). I'll step through each component now
         and briefly describe its purpose and operation.
     </p>
@@ -122,9 +122,9 @@ if update.is_confirmed() {
     <hr>
     <p>
         The scanning thread is spawned by the payment gateway when <code>run()</code> is called. It
-        periodically fetches new blocks and transactions from a Monero daemon of your choosing, and
+        periodically fetches new blocks and transactions from a Monero daemon of your choosing and
         caches them in the block cache and txpool cache. It then scans them for any transactions
-        relevant to pending invoices, and updates those invoices in the database.
+        relevant to pending invoices and updates those invoices in the database.
     </p>
     <h3>Block Cache</h3>
     <hr>
@@ -133,16 +133,16 @@ if update.is_confirmed() {
         block is added which does not build on the current highest block in the cache, we know that
         a reorganization has occurred an can begin working our way down the block cache to discover
         how deep the reorganization is. We then re-scan all blocks higher than that reorganization
-        depth, and update pending invoices accordingly.
+        depth and update pending invoices accordingly.
     </p>
     <h3>Txpool Cache</h3>
     <hr>
     <p>
-        The txpool (transaction pool) cache was not originally a part of AcceptXMR, but was added as
+        The txpool (transaction pool) cache was not originally a part of AcceptXMR but was added as
         an optimization after a peculiar influx of very large transactions caused a very noticeable
         decrease in the performance of the scanning thread. Prior to the addition of the txpool
         cache, the full txpool was being fetched and scanned each cycle. This meant we were
-        re-scanning transactions (extra CPU load), and also re-downloading them (extra network
+        re-scanning transactions (extra CPU load) and also re-downloading them (extra network
         load). The addition of a txpool cache allowed AcceptXMR to only fetch and scan <i>new</i>
         transactions each cycle.
     </p>
@@ -155,7 +155,7 @@ if update.is_confirmed() {
         same subaddress at the same time, allowing AcceptXMR to reliably differentiate between
         payments by different customers. Additionally, if there are a large number customers
         checking out at once and the cache begins to run low on available subaddresses, new
-        addresses will be generated in batches to replenish it. 
+        addresses will be generated in batches to replenish it.
     </p>
     <h3>Pending Invoices Database</h3>
     <hr>
@@ -168,10 +168,10 @@ if update.is_confirmed() {
     </p>
     <h2>Conclusion</h2>
     <p>
-        This project was a success. AcceptXMR works, and it was a lot of fun to make. I plan on
+        This project was a success. AcceptXMR works and it was a lot of fun to make. I plan on
         adding a few features in the future (like ZMQ support as an optional replacement for
-        periodic scanning), but everything necessary to accept Monero is present, performant and
-        easy to use. 
+        periodic scanning) but everything necessary to accept Monero is present, performant and
+        easy to use.
     </p>
 
     <p class="feedback">

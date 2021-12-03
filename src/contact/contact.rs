@@ -148,7 +148,7 @@ async fn contact_submitted(
     let autoreply_to = format!("{} {} <{}>", form.firstname, form.lastname, form.email);
     let autoreply_message = format!(
         "Hello {},\n
-        Your message has been recieved and you can expect a response within the next few days.
+        Your message has been received and you can expect a response within the next few days.
         Please have patience if my response time is slow (especially on weekdays).",
         form.firstname
     );

@@ -9,7 +9,7 @@ async function start() {
     // Hide prep stuff, show payment stuff.
     document.getElementById("instruction").innerHTML = "Loading...";
     document.getElementById("preperation-content").style.display = "None";
-    document.getElementById("payment-content").style.display = "inherit"
+    document.getElementById("payment-content").style.display = "inherit";
 
     const checkOutInfo = {
         method: "POST",
@@ -20,10 +20,15 @@ async function start() {
             'content-type': 'application/json'
         }
     }
-    await fetch("/check_out", checkOutInfo);
+    await fetch("/projects/acceptxmr/check_out", checkOutInfo);
 
     // Open websocket.
-    window.acceptxmr_socket = new WebSocket("ws://localhost:8080/ws/");
+    if (location.protocol === 'https:') {
+        var ws_protocol = 'wss:';
+    } else {
+        var ws_protocol = 'ws:';
+    }
+    window.acceptxmr_socket = new WebSocket(ws_protocol + "//" + window.location.host + "/projects/acceptxmr/ws/");
 
     window.acceptxmr_socket.onmessage = function (event) {
         const invoiceUpdate = JSON.parse(event.data);

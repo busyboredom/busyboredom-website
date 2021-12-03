@@ -6,12 +6,10 @@ use std::sync::Mutex;
 use std::{env, io};
 
 use actix_session::{CookieSession, Session};
-use actix_web::body::Body;
+use actix_web::body::AnyBody;
 use actix_web::http::header::{CacheControl, CacheDirective};
 use actix_web::http::StatusCode;
-use actix_web::{
-    cookie, guard, middleware, web, App, HttpRequest, HttpResponse, HttpServer, Result,
-};
+use actix_web::{cookie, middleware, web, App, HttpRequest, HttpResponse, HttpServer, Result};
 use cached::proc_macro::cached;
 use lettre::transport::smtp::authentication::Credentials;
 use lettre::SmtpTransport;
@@ -22,6 +20,7 @@ use rust_embed::RustEmbed;
 
 mod captcha;
 mod contact;
+mod projects;
 use crate::captcha::*;
 use crate::contact::*;
 
@@ -36,10 +35,10 @@ struct Asset;
 fn handle_embedded_file(path: &str) -> HttpResponse {
     match Asset::get(path) {
         Some(content) => {
-            let body: Body = content.data.as_ref().to_owned().into();
+            let body: AnyBody = content.data.as_ref().to_owned().into();
             let content_type = from_path(path).first_or_octet_stream();
             return HttpResponse::Ok()
-                .set(CacheControl(vec![
+                .insert_header(CacheControl(vec![
                     CacheDirective::MaxAge(SECONDS_IN_YEAR.try_into().unwrap()),
                     CacheDirective::Public,
                 ]))
@@ -53,13 +52,13 @@ fn handle_embedded_file(path: &str) -> HttpResponse {
 }
 
 fn dist(path: web::Path<(String,)>) -> HttpResponse {
-    handle_embedded_file(&(path.0).0)
+    handle_embedded_file(&(path.0))
 }
 
 /// Basic templating.
 #[cached(size = 20)]
-fn template_composition(base: &'static str, content: &'static str) -> String {
-    match Asset::get(base) {
+fn template_composition(base_path: &'static str, content: &'static str) -> String {
+    match Asset::get(base_path) {
         Some(base_file) => {
             let base_bytes: Vec<u8> = base_file.data.as_ref().into();
 
@@ -93,7 +92,7 @@ async fn base(session: Session, _req: HttpRequest) -> HttpResponse {
     }
 
     // Set counter to session
-    session.set("counter", counter).unwrap();
+    session.insert("counter", counter).unwrap();
 
     handle_embedded_file("base.html")
 }
@@ -144,6 +143,9 @@ async fn main() -> io::Result<()> {
     thread_rng().fill(&mut key_arr[..]);
     let session_key: [u8; SESSION_KEY_LEN] = key_arr;
 
+    // Start acceptxmr demo payment gateway.
+    let payment_gateway = web::Data::new(projects::acceptxmr::setup().await);
+
     // Make shared application data object.
     let shared_data = web::Data::new(Mutex::new(SharedAppData {
         captcha_cache: LruCache::new(CAPTCHA_CACHE_LEN),
@@ -163,6 +165,7 @@ async fn main() -> io::Result<()> {
             })
             // Build shared application data.
             .app_data(shared_data.clone())
+            .app_data(payment_gateway.clone())
             // Comression middleware
             .wrap(middleware::Compress::default())
             // Cookie session middleware
@@ -175,6 +178,8 @@ async fn main() -> io::Result<()> {
             )
             // Enable logger - always register actix-web Logger middleware last
             .wrap(middleware::Logger::default())
+            // AcceptXMR cookie session
+            .wrap(CookieSession::private(&[0; 32]).name("acceptxmr_session"))
             // Register bindings
             .service(bindings)
             // Register wasm
@@ -189,19 +194,14 @@ async fn main() -> io::Result<()> {
             .service(generate_captcha)
             // Captcha submission
             .service(submit_captcha)
+            // AcceptXMR check out endpoint to submit message and prepare cookie.
+            .service(projects::acceptxmr::check_out)
+            // AcceptXMR websocket to get invoice updates.
+            .service(projects::acceptxmr::websocket)
             // Static directory
             .service(web::resource("/api/{_:.*}").route(web::get().to(dist)))
             // Default
-            .default_service(
-                web::resource("")
-                    .route(web::get().to(base))
-                    // All requests that are not `GET`
-                    .route(
-                        web::route()
-                            .guard(guard::Not(guard::Get()))
-                            .to(HttpResponse::MethodNotAllowed),
-                    ),
-            )
+            .default_service(web::get().to(base))
     })
     .bind("0.0.0.0:8081")?
     .run()

@@ -1,4 +1,5 @@
 /target
+/AcceptXMR_DB
 /wasm/target
 *.swo
 *.swp
