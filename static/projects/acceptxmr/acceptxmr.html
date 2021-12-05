@@ -9,9 +9,11 @@
         <hr />
         <div id="preperation-content" class="content">
             <div id="message-container">
+                <label for="email">Email (Optional)</label>
+                <input type="email" id="email" name="email" placeholder="johnsmith@example.com">
                 <label for="message">Message (Optional)</label>
                 <textarea type="text" id="message" name="message" rows="2"
-                    placeholder="If you type something here, I'll get it as an email after 'payment'."></textarea>
+                    placeholder="If you type something here, we'll both get it as an email after 'payment'."></textarea>
             </div>
             <button onclick="start()">Next</button>
         </div>
@@ -36,7 +38,7 @@
     </div>
 
     <h2>Summary</h2>
-    <i>(Last updated for AcceptXMR v0.10.0)</i>
+    <i>(Last updated for AcceptXMR v0.10.1)</i>
 
     <p>
         Are you a privacy-loving entrepreneur, looking for a way to accept payment in
@@ -189,5 +191,16 @@ if update.is_confirmed() {
 
     img {
         max-width: 100%;
+    }
+
+    .acceptxmr input {
+        box-sizing: border-box;
+        border-radius: 0.5em;
+        border: 0;
+        padding: 0.5em;
+        width: 100%;
+        margin: 0;
+        background-color: #4d4d4d;
+        color: #ffffff;
     }
 </style>

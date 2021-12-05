@@ -9,13 +9,10 @@ use actix_session::Session;
 use actix_web::{get, post, web, HttpRequest, HttpResponse};
 use actix_web_actors::ws;
 use bytestring::ByteString;
-use lettre::SmtpTransport;
-use lettre::{Message, Transport};
+use lettre::{Message, SmtpTransport, Transport};
 use log::{debug, error, info, warn};
 use serde::Deserialize;
 use serde_json::json;
-
-use crate::AppData;
 
 /// Time before lack of client response causes a timeout.
 const CLIENT_TIMEOUT: Duration = Duration::from_secs(10);
@@ -102,7 +99,7 @@ async fn websocket(
     req: HttpRequest,
     stream: web::Payload,
     payment_gateway: web::Data<PaymentGateway>,
-    app_data: web::Data<AppData>,
+    mailer: web::Data<SmtpTransport>,
 ) -> Result<HttpResponse, actix_web::Error> {
     let invoice_id = match session.get::<InvoiceId>("id") {
         Ok(Some(i)) => i,
@@ -112,8 +109,11 @@ async fn websocket(
         Ok(Some(s)) => s,
         _ => return Ok(HttpResponse::NotFound().finish()),
     };
-    let mailer = app_data.mailer.clone();
-    ws::start(WebSocket::new(subscriber, mailer), &req, stream)
+    ws::start(
+        WebSocket::new(subscriber, mailer.get_ref().clone()),
+        &req,
+        stream,
+    )
 }
 
 /// Define websocket HTTP actor
@@ -189,7 +189,7 @@ impl WebSocket {
             .body("Message: ".to_owned() + description)
             .expect("failed to build email");
 
-        // Send the autoreply.
+        // Send the email to me.
         match self.mailer.send(&email) {
             Ok(_) => info!("AcceptXMR Demo email sent successfully!"),
             Err(e) => {

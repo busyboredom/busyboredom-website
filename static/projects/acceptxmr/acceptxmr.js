@@ -5,6 +5,7 @@ async function start() {
     }
 
     const message = document.getElementById("message").value;
+    const email = document.getElementById("email").value;
 
     // Hide prep stuff, show payment stuff.
     document.getElementById("instruction").innerHTML = "Loading...";
@@ -14,6 +15,7 @@ async function start() {
     const checkOutInfo = {
         method: "POST",
         body: JSON.stringify({
+            "email": email,
             "message": message
         }),
         headers: {

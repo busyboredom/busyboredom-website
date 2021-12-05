@@ -10,7 +10,7 @@ pub async fn acceptxmr() {
     // Go to the page.
     goto_page(
         "/projects/acceptxmr",
-        "/api/projects/acceptxmr/acceptxmr.html?ver=_Y2SYCtt4ss",
+        "/api/projects/acceptxmr/acceptxmr.html?ver=88i8c70tpp4",
         "AcceptXMR",
     )
     .await;
@@ -25,7 +25,7 @@ pub async fn acceptxmr() {
     acceptxmr_js
         .set_attribute(
             "src",
-            "/api/projects/acceptxmr/acceptxmr.js?ver=gFLt824zDMI",
+            "/api/projects/acceptxmr/acceptxmr.js?ver=F_RD10LE020",
         )
         .expect("Could not set 'src' attribute for acceptxmr.js.");
     

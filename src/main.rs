@@ -121,10 +121,6 @@ async fn robots_txt() -> Result<HttpResponse> {
         .body(&include_bytes!("../static/robots.txt")[..]))
 }
 
-struct AppData {
-    mailer: SmtpTransport,
-}
-
 pub struct SharedAppData {
     captcha_cache: LruCache<[u8; CAPTCHA_ID_LEN], [char; CAPTCHA_LEN]>,
 }
@@ -151,19 +147,21 @@ async fn main() -> io::Result<()> {
         captcha_cache: LruCache::new(CAPTCHA_CACHE_LEN),
     }));
 
+    // Make mailer.
+    let mailer = web::Data::new(
+        SmtpTransport::relay("mail.privateemail.com")
+            .expect("Could not build mailer")
+            .credentials(Credentials::new(
+                "charlie@busyboredom.com".to_string(),
+                mail_secret.to_owned(),
+            ))
+            .build(),
+    );
+
     HttpServer::new(move || {
         App::new()
             // Build application data.
-            .data(AppData {
-                mailer: SmtpTransport::relay("mail.privateemail.com")
-                    .expect("Could not build mailer")
-                    .credentials(Credentials::new(
-                        "charlie@busyboredom.com".to_string(),
-                        mail_secret.to_owned(),
-                    ))
-                    .build(),
-            })
-            // Build shared application data.
+            .app_data(mailer.clone())
             .app_data(shared_data.clone())
             .app_data(payment_gateway.clone())
             // Comression middleware
@@ -179,7 +177,7 @@ async fn main() -> io::Result<()> {
             // Enable logger - always register actix-web Logger middleware last
             .wrap(middleware::Logger::default())
             // AcceptXMR cookie session
-            .wrap(CookieSession::private(&[0; 32]).name("acceptxmr_session"))
+            .wrap(CookieSession::private(&session_key).name("acceptxmr_session"))
             // Register bindings
             .service(bindings)
             // Register wasm

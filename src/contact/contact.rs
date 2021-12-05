@@ -3,14 +3,15 @@ use std::sync::Mutex;
 use actix_session::Session;
 use actix_web::http::StatusCode;
 use actix_web::{web, HttpResponse, Result};
-use lettre::message::{MultiPart, SinglePart};
-use lettre::{Message, Transport};
+use lettre::{
+    message::{MultiPart, SinglePart},
+    Message, SmtpTransport, Transport,
+};
 use log::{error, info, warn};
 use serde::Deserialize;
 
 use crate::captcha::*;
 use crate::template_composition;
-use crate::AppData;
 use crate::SharedAppData;
 
 #[derive(Deserialize)]
@@ -46,7 +47,7 @@ struct ContactForm {
 /// Contact form handler
 #[post("/contact-submitted")]
 async fn contact_submitted(
-    app_data: web::Data<AppData>,
+    mailer: web::Data<SmtpTransport>,
     shared_data: web::Data<Mutex<SharedAppData>>,
     form: web::Form<ContactForm>,
     session: Session,
@@ -137,7 +138,7 @@ async fn contact_submitted(
         .expect("failed to build email");
 
     // Send the email to myself.
-    match app_data.mailer.send(&email) {
+    match mailer.send(&email) {
         Ok(_) => info!("Email sent successfully!"),
         Err(e) => {
             error!("Could not send email: {:?}", e);
@@ -160,7 +161,7 @@ async fn contact_submitted(
         .expect("failed to build email");
 
     // Send the autoreply.
-    match app_data.mailer.send(&autoreply) {
+    match mailer.send(&autoreply) {
         Ok(_) => info!("Autoreply sent successfully!"),
         Err(e) => {
             error!("Could not send autoreply: {:?}", e);
