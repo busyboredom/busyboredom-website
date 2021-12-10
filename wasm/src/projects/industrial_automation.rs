@@ -10,7 +10,7 @@ pub async fn industrial_automation() {
     // Go to the page.
     goto_page(
         "/projects/industrial-automation",
-        "/api/projects/industrial_automation/industrial_automation.html?ver=TeQyXW4Q1R8",
+        "/api/projects/industrial_automation/industrial_automation.html?ver=F9lcF-nPOes",
         "Industrial Automation",
     )
     .await;

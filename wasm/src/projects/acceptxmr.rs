@@ -10,7 +10,7 @@ pub async fn acceptxmr() {
     // Go to the page.
     goto_page(
         "/projects/acceptxmr",
-        "/api/projects/acceptxmr/acceptxmr.html?ver=88i8c70tpp4",
+        "/api/projects/acceptxmr/acceptxmr.html?ver=I42Vvov2Oms",
         "AcceptXMR",
     )
     .await;
@@ -25,7 +25,7 @@ pub async fn acceptxmr() {
     acceptxmr_js
         .set_attribute(
             "src",
-            "/api/projects/acceptxmr/acceptxmr.js?ver=F_RD10LE020",
+            "/api/projects/acceptxmr/acceptxmr.js?ver=dXAbnvVWbRk",
         )
         .expect("Could not set 'src' attribute for acceptxmr.js.");
     
@@ -36,7 +36,7 @@ pub async fn acceptxmr() {
     qrcode_js
         .set_attribute(
             "src",
-            "/api/projects/acceptxmr/vendor/qrcode.js?ver=ZWNnb_r_P3s",
+            "/api/projects/acceptxmr/vendor/qrcode.js?ver=coflUPkWyMA",
         )
         .expect("Could not set 'src' attribute for qrcode.js.");
 

@@ -10,11 +10,13 @@ const HASH_BUFFER_SIZE: usize = 16384;
 fn main() {
     update_urls().expect("Error while updating URLs.");
 
+    // Prepare wasm path.
+    let wasm_path = Path::new("wasm/").to_string_lossy();
     // Compile the wasm.
     Command::new("wasm-pack")
-        .args(&["build", "wasm/", "--release", "--target", "web"])
+        .args(&["build", &wasm_path, "--release", "--target", "web"])
         .status()
-        .unwrap();
+        .expect("failed to run wasm-pack");
 
     println!("cargo:rerun-if-changed=*");
 }
@@ -62,6 +64,8 @@ fn update_urls() -> Result<(), io::Error> {
 }
 
 fn set_url_hash(resource: &str, hash: &str, directory: &str) -> Result<(), io::Error> {
+    // Replace backslashes with forward slashes (for windows paths).
+    let resource = resource.replace("\\", "/");
     // Define pattern to search for.
     let from_regex = Regex::new(&(resource.replace(".", "\\.") + r"\?ver=[A-Za-z0-9_-]+"))
         .expect("Invalid Regex in URL generation.");

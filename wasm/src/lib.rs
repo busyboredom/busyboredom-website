@@ -206,13 +206,13 @@ pub async fn resume() {
 #[wasm_bindgen]
 pub async fn software_eng_resume() {
     // Go to the page.
-    goto_page("/software-eng-resume", "/api/software_eng_resume.html?ver=6xtvCrp5IGo", "Résumé (Software Engineering)").await;
+    goto_page("/software-eng-resume", "/api/software_eng_resume.html?ver=stro8NynZTE", "Résumé (Software Engineering)").await;
 }
 
 #[wasm_bindgen]
 pub async fn controls_eng_resume() {
     // Go to the page.
-    goto_page("/controls-eng-resume", "/api/controls_eng_resume.html?ver=iTKO2bCo3A4", "Résumé (Controls Engineering)").await;
+    goto_page("/controls-eng-resume", "/api/controls_eng_resume.html?ver=RJYwduGNBOw", "Résumé (Controls Engineering)").await;
 }
 
 #[wasm_bindgen]
@@ -221,7 +221,7 @@ pub async fn welcome() {
     active_tab("");
 
     // Go to the page.
-    goto_page("/", "/api/welcome.html?ver=eNMMjqI2h4s", "Welcome!").await;
+    goto_page("/", "/api/welcome.html?ver=cY37pgcGT8w", "Welcome!").await;
 
     // Show warning if safari is detected.
     let window = web_sys::window().expect("No global `window` exists");
@@ -245,7 +245,7 @@ pub async fn coming_soon() {
     // Go to the page.
     goto_page(
         "/coming-soon",
-        "/api/coming_soon.html?ver=YoSytkd9Ke0",
+        "/api/coming_soon.html?ver=tLWOzWDQb74",
         "Coming Soon!",
     )
     .await;
@@ -262,7 +262,7 @@ pub async fn error_404() {
 
     let mut req = RequestInit::new();
     req.method("GET");
-    let request = Request::new_with_str_and_init("/api/404.html?ver=p9Qlk98fUzE", &req)
+    let request = Request::new_with_str_and_init("/api/404.html?ver=TLn0gzA1Eak", &req)
         .expect("Request could not be created");
     request
         .headers()
