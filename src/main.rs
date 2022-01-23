@@ -6,7 +6,7 @@ use std::sync::Mutex;
 use std::{env, io};
 
 use actix_session::{CookieSession, Session};
-use actix_web::body::AnyBody;
+use actix_web::body::BoxBody;
 use actix_web::http::header::{CacheControl, CacheDirective};
 use actix_web::http::StatusCode;
 use actix_web::{cookie, middleware, web, App, HttpRequest, HttpResponse, HttpServer, Result};
@@ -35,7 +35,7 @@ struct Asset;
 fn handle_embedded_file(path: &str) -> HttpResponse {
     match Asset::get(path) {
         Some(content) => {
-            let body: AnyBody = content.data.as_ref().to_owned().into();
+            let body = BoxBody::new(content.data.as_ref().to_owned());
             let content_type = from_path(path).first_or_octet_stream();
             return HttpResponse::Ok()
                 .insert_header(CacheControl(vec![
