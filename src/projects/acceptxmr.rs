@@ -9,9 +9,9 @@ use actix_session::Session;
 use actix_web::{get, post, web, HttpRequest, HttpResponse};
 use actix_web_actors::ws;
 use bytestring::ByteString;
-use lettre::{Message, SmtpTransport, Transport};
+use lettre::{message::Mailbox, Message, SmtpTransport, Transport};
 use log::{debug, error, info, warn};
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 use serde_json::json;
 
 /// Time before lack of client response causes a timeout.
@@ -72,8 +72,9 @@ pub async fn setup() -> PaymentGateway {
     payment_gateway.clone()
 }
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Serialize)]
 struct CheckoutInfo {
+    email: String,
     message: String,
 }
 
@@ -85,7 +86,7 @@ async fn check_out(
     payment_gateway: web::Data<PaymentGateway>,
 ) -> Result<&'static str, actix_web::Error> {
     let invoice_id = payment_gateway
-        .new_invoice(1, 2, 4, &checkout_info.message)
+        .new_invoice(1, 2, 4, &json!(checkout_info).to_string())
         .await
         .unwrap();
     session.insert("id", invoice_id)?;
@@ -182,18 +183,51 @@ impl WebSocket {
     }
 
     fn send_email(&self, description: &str) {
-        let email = Message::builder()
+        let description_json: CheckoutInfo = serde_json::from_str(description)
+            .expect("failed to parse description as Checkout Info");
+
+        let admin_email = Message::builder()
             .from("AcceptXMR Demo <charlie@busyboredom.com>".parse().unwrap())
             .to("Charlie Wilkin <charlie@busyboredom.com>".parse().unwrap())
-            .subject("AcceptXMR Demo: ".to_owned() + description)
-            .body("Message: ".to_owned() + description)
+            .subject("AcceptXMR Demo: ".to_owned() + &description_json.message)
+            .body(format!(
+                "Email: {}\nMessage: {}",
+                &description_json.email, &description_json.message
+            ))
             .expect("failed to build email");
 
         // Send the email to me.
-        match self.mailer.send(&email) {
-            Ok(_) => info!("AcceptXMR Demo email sent successfully!"),
+        match self.mailer.send(&admin_email) {
+            Ok(_) => info!("AcceptXMR Demo admin email sent successfully!"),
             Err(e) => {
-                error!("Could not send AcceptXMR Demo email: {:?}", e);
+                error!("Could not send AcceptXMR Demo admin email: {:?}", e);
+            }
+        }
+
+        if description_json.email.parse::<Mailbox>().is_err() {
+            error!(
+                "Failed to parse email address of AcceptXMR demo user: {}",
+                description_json.email
+            );
+            return;
+        }
+        let user_email = Message::builder()
+            .from("AcceptXMR Demo <charlie@busyboredom.com>".parse().unwrap())
+            .to(description_json.email.parse().unwrap())
+            .subject("AcceptXMR Demo: ".to_owned() + &description_json.message)
+            .body(
+                format!(
+                    "Thank you for trying the AcceptXMR demo! This is the message you sent: \"{}\"", 
+                    description_json.message
+                ) + "\n\nIf your message was a question, you can expect to hear back from me within a week or so."
+            )
+            .expect("failed to build email");
+
+        // Send the email to user.
+        match self.mailer.send(&user_email) {
+            Ok(_) => info!("AcceptXMR Demo user email sent successfully!"),
+            Err(e) => {
+                error!("Could not send AcceptXMR Demo user email: {:?}", e);
             }
         }
     }
