@@ -177,7 +177,11 @@ async fn main() -> io::Result<()> {
             // Enable logger - always register actix-web Logger middleware last
             .wrap(middleware::Logger::default())
             // AcceptXMR cookie session
-            .wrap(CookieSession::private(&session_key).name("acceptxmr_session"))
+            .wrap(
+                CookieSession::private(&session_key)
+                    .name("acceptxmr_session")
+                    .same_site(cookie::SameSite::Strict),
+            )
             // Register bindings
             .service(bindings)
             // Register wasm
