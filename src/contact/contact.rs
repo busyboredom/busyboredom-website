@@ -4,7 +4,7 @@ use actix_session::Session;
 use actix_web::http::StatusCode;
 use actix_web::{web, HttpResponse, Result};
 use lettre::{
-    message::{MultiPart, SinglePart},
+    message::{Mailbox, MultiPart, SinglePart},
     Message, SmtpTransport, Transport,
 };
 use log::{error, info, warn};
@@ -146,26 +146,34 @@ async fn contact_submitted(
     }
 
     // Build an autoreply.
-    let autoreply_to = format!("{} {} <{}>", form.firstname, form.lastname, form.email);
-    let autoreply_message = format!(
-        "Hello {},\n
+    if let Ok(autoreply_to) =
+        format!("{} {} <{}>", form.firstname, form.lastname, form.email).parse::<Mailbox>()
+    {
+        let autoreply_message = format!(
+            "Hello {},\n
         Your message has been received and you can expect a response within the next few days.
         Please have patience if my response time is slow (especially on weekdays).",
-        form.firstname
-    );
-    let autoreply = Message::builder()
-        .from("Charlie Wilkin <charlie@busyboredom.com>".parse().unwrap())
-        .to(autoreply_to.parse().unwrap())
-        .subject("Auto-Reply for: ".to_owned() + &form.subject)
-        .body(autoreply_message)
-        .expect("failed to build email");
+            form.firstname
+        );
+        let autoreply = Message::builder()
+            .from("Charlie Wilkin <charlie@busyboredom.com>".parse().unwrap())
+            .to(autoreply_to)
+            .subject("Auto-Reply for: ".to_owned() + &form.subject)
+            .body(autoreply_message)
+            .expect("failed to build email");
 
-    // Send the autoreply.
-    match mailer.send(&autoreply) {
-        Ok(_) => info!("Autoreply sent successfully!"),
-        Err(e) => {
-            error!("Could not send autoreply: {:?}", e);
+        // Send the autoreply.
+        match mailer.send(&autoreply) {
+            Ok(_) => info!("Autoreply sent successfully!"),
+            Err(e) => {
+                error!("Could not send autoreply: {:?}", e);
+            }
         }
+    } else {
+        error!(
+            "Failed to parse email address submitted in contact form: {} {} <{}>",
+            form.firstname, form.lastname, form.email
+        )
     }
 
     Ok(HttpResponse::build(StatusCode::OK)
