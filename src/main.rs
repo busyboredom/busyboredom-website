@@ -127,11 +127,12 @@ pub struct SharedAppData {
 
 #[actix_web::main]
 async fn main() -> io::Result<()> {
-    env::set_var("RUST_LOG", "trace");
+    env::set_var("RUST_LOG", "info");
     env_logger::init();
 
     // Retrieve mail password from file
-    let mail_secret = include_str!("../secrets/email.txt").to_string()
+    let mail_secret = include_str!("../secrets/email.txt")
+        .to_string()
         .trim() // Remove line ending.
         .to_owned();
 

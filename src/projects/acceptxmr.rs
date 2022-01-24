@@ -20,9 +20,10 @@ const HEARTBEAT_INTERVAL: Duration = Duration::from_secs(1);
 
 pub async fn setup() -> PaymentGateway {
     // Read view key from file.
-    let private_view_key = include_str!("../../secrets/xmr_private_view_key.txt").to_string()
-            .trim() // Remove line ending.
-            .to_owned();
+    let private_view_key = include_str!("../../secrets/xmr_private_view_key.txt")
+        .to_string()
+        .trim() // Remove line ending.
+        .to_owned();
 
     // No need to keep the public spend key secret.
     let public_spend_key = "dd4c491d53ad6b46cda01ed6cb9bac57615d9eac8d5e4dd1c0363ac8dfd420a7";

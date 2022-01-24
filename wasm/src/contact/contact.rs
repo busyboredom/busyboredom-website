@@ -12,7 +12,7 @@ pub async fn contact() {
     active_tab("contact");
 
     // Go to the page.
-    goto_page("/contact", "/api/contact.html?ver=2kU_V2dwe_s", "Contact").await;
+    goto_page("/contact", "/api/contact.html?ver=LpidCXTXHkc", "Contact").await;
 }
 
 #[wasm_bindgen]
@@ -142,7 +142,7 @@ pub async fn contact_submitted() {
     // Go to the page.
     goto_page(
         "/contact-submitted",
-        "/api/contact_submitted.html?ver=Vn7eZWQGq8A",
+        "/api/contact_submitted.html?ver=ypBIrFi5QPY",
         "Submitted",
     )
     .await;
