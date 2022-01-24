@@ -20,14 +20,14 @@ log = "0"
 captcha = "0"
 rand = "0"
 lru = "0"
-acceptxmr = "0.10"
+acceptxmr = { git = "https://github.com/busyboredom/acceptxmr", branch = "rustls", default-features = false, features = ["rustls-tls"] }
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 
 [dependencies.lettre]
 version = "0.10.0-rc.4"
 default-features = false
-features = ["smtp-transport", "builder", "native-tls"]
+features = ["smtp-transport", "builder", "rustls-tls"]
 
 [build-dependencies]
 walkdir = "2.3"

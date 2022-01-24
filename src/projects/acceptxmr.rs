@@ -1,4 +1,3 @@
-use std::path::Path;
 use std::time::{Duration, Instant};
 
 use acceptxmr::{
@@ -20,10 +19,8 @@ const CLIENT_TIMEOUT: Duration = Duration::from_secs(10);
 const HEARTBEAT_INTERVAL: Duration = Duration::from_secs(1);
 
 pub async fn setup() -> PaymentGateway {
-    // Read view key from file outside of git repository.
-    let private_view_key =
-        std::fs::read_to_string(Path::new("../secrets/xmr_private_view_key.txt"))
-            .expect("Failed to read private view key from file, are you sure it exists?")
+    // Read view key from file.
+    let private_view_key = include_str!("../../secrets/xmr_private_view_key.txt").to_string()
             .trim() // Remove line ending.
             .to_owned();
 

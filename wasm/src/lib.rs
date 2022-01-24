@@ -206,7 +206,7 @@ pub async fn resume() {
 #[wasm_bindgen]
 pub async fn software_eng_resume() {
     // Go to the page.
-    goto_page("/software-eng-resume", "/api/software_eng_resume.html?ver=44cq-iQgsKw", "Résumé (Software Engineering)").await;
+    goto_page("/software-eng-resume", "/api/software_eng_resume.html?ver=EeM_YX8Wg4g", "Résumé (Software Engineering)").await;
 }
 
 #[wasm_bindgen]

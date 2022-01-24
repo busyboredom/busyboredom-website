@@ -10,7 +10,7 @@ pub async fn archviz() {
     // Go to the page.
     goto_page(
         "/projects/archviz",
-        "/api/projects/archviz/archviz.html?ver=gIkkDibIHyE",
+        "/api/projects/archviz/archviz.html?ver=KFo1i_mwCF0",
         "Archviz",
     )
     .await;
@@ -38,7 +38,7 @@ pub async fn archviz() {
     progress
         .set_attribute(
             "src",
-            "/api/projects/archviz/TemplateData/UnityProgress.js?ver=ac6T--xi1Fs",
+            "/api/projects/archviz/TemplateData/UnityProgress.js?ver=4pCl6DfD_LE",
         )
         .expect("Could not set unity progress bar 'src' attribute.");
 
