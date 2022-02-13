@@ -206,13 +206,23 @@ pub async fn resume() {
 #[wasm_bindgen]
 pub async fn software_eng_resume() {
     // Go to the page.
-    goto_page("/software-eng-resume", "/api/software_eng_resume.html?ver=EeM_YX8Wg4g", "Résumé (Software Engineering)").await;
+    goto_page(
+        "/software-eng-resume",
+        "/api/software_eng_resume.html?ver=EeM_YX8Wg4g",
+        "Résumé (Software Engineering)",
+    )
+    .await;
 }
 
 #[wasm_bindgen]
 pub async fn controls_eng_resume() {
     // Go to the page.
-    goto_page("/controls-eng-resume", "/api/controls_eng_resume.html?ver=iTKO2bCo3A4", "Résumé (Controls Engineering)").await;
+    goto_page(
+        "/controls-eng-resume",
+        "/api/controls_eng_resume.html?ver=iTKO2bCo3A4",
+        "Résumé (Controls Engineering)",
+    )
+    .await;
 }
 
 #[wasm_bindgen]
@@ -315,19 +325,19 @@ pub fn route(rt: &str) {
         "/contact" => spawn_local(contact()),
         "/coming-soon" => spawn_local(coming_soon()),
         "/contact-submitted" => spawn_local(contact_submitted()),
-        "/projects/this-website" => spawn_local(this_website()),
-        "/projects/quadcopter" => spawn_local(quadcopter()),
+        "/projects/acceptxmr" => spawn_local(acceptxmr()),
         "/projects/amplifier-optimizer" => spawn_local(amplifier_optimizer()),
+        "/projects/archviz" => spawn_local(archviz()),
         "/projects/industrial-automation" => spawn_local(industrial_automation()),
         "/projects/mnist-tutorial" => spawn_local(mnist_tutorial()),
-        "/projects/archviz" => spawn_local(archviz()),
-        "/projects/acceptxmr" => spawn_local(acceptxmr()),
+        "/projects/quadcopter" => spawn_local(quadcopter()),
+        "/projects/this-website" => spawn_local(this_website()),
         _ => spawn_local(error_404()),
     };
 }
 
 #[wasm_bindgen]
 pub fn init_panic_hook() {
-    #[cfg(debug_assertions)]
+    #[cfg(all(debug_assertions, feature = "console_error_panic_hook"))]
     console_error_panic_hook::set_once();
 }
