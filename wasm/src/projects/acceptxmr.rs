@@ -28,7 +28,7 @@ pub async fn acceptxmr() {
             "/api/projects/acceptxmr/acceptxmr.js?ver=F_RD10LE020",
         )
         .expect("Could not set 'src' attribute for acceptxmr.js.");
-    
+
     // Load qrcode's js.
     let qrcode_js = document
         .create_element("script")
