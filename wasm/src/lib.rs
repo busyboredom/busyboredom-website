@@ -231,7 +231,7 @@ pub async fn welcome() {
     active_tab("");
 
     // Go to the page.
-    goto_page("/", "/api/welcome.html?ver=eNMMjqI2h4s", "Welcome!").await;
+    goto_page("/", "/api/welcome.html?ver=n3_GJy0Bk_E", "Welcome!").await;
 
     // Show warning if safari is detected.
     let window = web_sys::window().expect("No global `window` exists");
@@ -328,7 +328,6 @@ pub fn route(rt: &str) {
         "/projects/acceptxmr" => spawn_local(acceptxmr()),
         "/projects/amplifier-optimizer" => spawn_local(amplifier_optimizer()),
         "/projects/archviz" => spawn_local(archviz()),
-        "/projects/industrial-automation" => spawn_local(industrial_automation()),
         "/projects/mnist-tutorial" => spawn_local(mnist_tutorial()),
         "/projects/quadcopter" => spawn_local(quadcopter()),
         "/projects/this-website" => spawn_local(this_website()),

@@ -5,7 +5,7 @@ authors = ["Charlie Wilkin <cwilkin@protonmail.com>"]
 edition = "2018"
 
 [dependencies]
-acceptxmr = { git = "https://github.com/busyboredom/acceptxmr", default-features = false, features = ["serde"] }
+acceptxmr = { path = "../acceptxmr", features = ["serde"] }
 actix = "0.12"
 actix-files = "0.6.0-beta"
 actix-session = "0.5.0-beta"

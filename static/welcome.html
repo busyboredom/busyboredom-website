@@ -6,9 +6,9 @@
   </p>
   <h1>Welcome</h1>
   <p>
-    Welcome to my project website. I take on random projects ranging from genetic 
-    algorithms to waste oil furnaces, and I write 
-    about them here. Feel free to check out a few of the project pages I've written, 
+    Welcome to my project website. I take on random projects ranging from genetic
+    algorithms to waste oil furnaces, and I write
+    about them here. Feel free to check out a few of the project pages I've written,
     or hop on my <a href="/register/">chat server</a> (if you've got the password).
     <br></br>
     <em>
@@ -18,24 +18,17 @@
   <h2>Featured Projects</h2>
 
   <div class="grid">
-    <div class="card" onclick="window.busy.industrial_automation()">
-      <img src="/api/projects/industrial_automation/sleever.webp?ver=LVcdkawVzGg" alt="Autoinjector Sleever"/>
-      <div class="container">
-        <h3>Industrial Automation</h3>
-        <p>Getting paid to play with robots.</p>
-      </div>
-    </div>
 
     <div class="card" onclick="window.busy.amplifier_optimizer()">
-      <img src="/api/projects/amplifier_optimizer/circuit.webp?ver=qgt-Ddi0qWc" alt="Circuit Schematic"/>
+      <img src="/api/projects/amplifier_optimizer/circuit.webp?ver=qgt-Ddi0qWc" alt="Circuit Schematic" />
       <div class="container">
         <h3>Amplifier Optimizer</h3>
         <p>Doing homework with a genetic algorithm.</p>
       </div>
     </div>
-      
+
     <div class="card" onclick="window.busy.quadcopter()">
-      <img src="/api/projects/quadcopter/closeup_16x9_small.jpg?ver=cye_xRZw4bo" alt="Components Closeup"/>
+      <img src="/api/projects/quadcopter/closeup_16x9_small.jpg?ver=cye_xRZw4bo" alt="Components Closeup" />
       <div class="container">
         <h3>Quadcopter</h3>
         <p>Building a custom quadcopter.</p>
@@ -43,7 +36,7 @@
     </div>
 
     <div class="card" onclick="window.busy.this_website()">
-      <img src="/api/projects/this_website/loading_wasm.webp?ver=Vs6sJysky0A" alt="Loading Wasm"/>
+      <img src="/api/projects/this_website/loading_wasm.webp?ver=Vs6sJysky0A" alt="Loading Wasm" />
       <div class="container">
         <h3>This Website</h3>
         <p>Overusing WebAssembly, and enjoying it.</p>
@@ -53,75 +46,75 @@
 
 </div>
 <style>
-#welcome-text {
-  max-width: 80ch;
-  margin: 0 auto;
-  padding: 0 1em;
-}
+  #welcome-text {
+    max-width: 80ch;
+    margin: 0 auto;
+    padding: 0 1em;
+  }
 
-#welcome-text h1 {
-  color: #0a9dff;
-}
+  #welcome-text h1 {
+    color: #0a9dff;
+  }
 
-.grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(25ch, 1fr));
-  grid-gap: 2em 1em;
-  margin-bottom: 1em;
-}
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(25ch, 1fr));
+    grid-gap: 2em 1em;
+    margin-bottom: 1em;
+  }
 
-.card {
-  /* Add shadows to create the "card" effect */
-  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.3);
-  transition: 0.3s;
-  width: 100%;
-  padding-top: 56%;
-  position: relative;
-}
+  .card {
+    /* Add shadows to create the "card" effect */
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.3);
+    transition: 0.3s;
+    width: 100%;
+    padding-top: 56%;
+    position: relative;
+  }
 
-/* On mouse-over, add a deeper shadow */
-#welcome-text .card:hover {
-  box-shadow: 4px 8px 16px 4px rgba(0, 0, 0, 0.5);
-}
+  /* On mouse-over, add a deeper shadow */
+  #welcome-text .card:hover {
+    box-shadow: 4px 8px 16px 4px rgba(0, 0, 0, 0.5);
+  }
 
-/* Add some padding inside the card container */
-#welcome-text .card .container {
-  padding: 2px 1em;
-}
+  /* Add some padding inside the card container */
+  #welcome-text .card .container {
+    padding: 2px 1em;
+  }
 
-.container h3 {
-  color: #0a9dff;
-  margin: 0.5em 0;
-}
+  .container h3 {
+    color: #0a9dff;
+    margin: 0.5em 0;
+  }
 
-.container p {
-  margin: 0.5em 0;
-}
+  .container p {
+    margin: 0.5em 0;
+  }
 
-.card img {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-}
+  .card img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+  }
 
-.warning {
-  text-align: center;
-  color: red;
-  border: 1px;
-  border-style: solid;
-  border-color: red;
-  padding: 0.5em;
-  display: none;
-}
+  .warning {
+    text-align: center;
+    color: red;
+    border: 1px;
+    border-style: solid;
+    border-color: red;
+    padding: 0.5em;
+    display: none;
+  }
 
-.warning.show {
-  display: block;
-}
+  .warning.show {
+    display: block;
+  }
 
-@media screen and (max-width: 30ch) {
-   .grid {
+  @media screen and (max-width: 30ch) {
+    .grid {
       grid-template-columns: repeat(auto-fill, minmax(100%, 1fr));
-   }
-}
+    }
+  }
 </style>

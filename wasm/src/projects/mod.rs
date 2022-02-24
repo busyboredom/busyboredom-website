@@ -1,7 +1,6 @@
 pub mod acceptxmr;
 pub mod amplifier_optimizer;
 pub mod archviz;
-pub mod industrial_automation;
 pub mod mnist_tutorial;
 pub mod quadcopter;
 pub mod this_website;
@@ -10,7 +9,6 @@ pub mod this_website;
 pub use acceptxmr::*;
 pub use amplifier_optimizer::*;
 pub use archviz::*;
-pub use industrial_automation::*;
 pub use mnist_tutorial::*;
 pub use quadcopter::*;
 pub use this_website::*;

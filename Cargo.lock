@@ -4,8 +4,7 @@ version = 3
 
 [[package]]
 name = "acceptxmr"
-version = "0.11.1"
-source = "git+https://github.com/busyboredom/acceptxmr#004222fd6e7e8890a6d2a39295f5477be868393a"
+version = "0.11.0"
 dependencies = [
  "bincode",
  "hex",

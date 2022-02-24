@@ -51,7 +51,7 @@ fn handle_embedded_file(path: &str) -> HttpResponse {
     }
 }
 
-fn dist(path: web::Path<(String,)>) -> HttpResponse {
+async fn dist(path: web::Path<(String,)>) -> HttpResponse {
     handle_embedded_file(&(path.0))
 }
 
@@ -127,7 +127,7 @@ pub struct SharedAppData {
 
 #[actix_web::main]
 async fn main() -> io::Result<()> {
-    env::set_var("RUST_LOG", "info");
+    env::set_var("RUST_LOG", "debug");
     env_logger::init();
 
     // Retrieve mail password from file
