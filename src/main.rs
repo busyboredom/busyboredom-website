@@ -1,22 +1,26 @@
 #[macro_use]
 extern crate actix_web;
 
-use std::convert::TryInto;
-use std::sync::Mutex;
-use std::{env, io};
-
-use actix_session::{CookieSession, Session};
-use actix_web::body::BoxBody;
-use actix_web::http::header::{CacheControl, CacheDirective};
-use actix_web::http::StatusCode;
-use actix_web::{cookie, middleware, web, App, HttpRequest, HttpResponse, HttpServer, Result};
+use actix_session::{
+    storage::CookieSessionStore, CookieContentSecurity, Session, SessionLength, SessionMiddleware,
+};
+use actix_web::{
+    body::BoxBody,
+    cookie,
+    http::{
+        header::{CacheControl, CacheDirective},
+        StatusCode,
+    },
+    middleware, web, App, HttpRequest, HttpResponse, HttpServer, Result,
+};
 use cached::proc_macro::cached;
-use lettre::transport::smtp::authentication::Credentials;
-use lettre::SmtpTransport;
+use lettre::{transport::smtp::authentication::Credentials, SmtpTransport};
 use lru::LruCache;
 use mime_guess::from_path;
 use rand::{thread_rng, Rng};
 use rust_embed::RustEmbed;
+use std::{convert::TryInto, env, io, sync::Mutex};
+use time::Duration;
 
 mod captcha;
 mod contact;
@@ -139,7 +143,7 @@ async fn main() -> io::Result<()> {
     // Set random session key.
     let mut key_arr = [0u8; SESSION_KEY_LEN];
     thread_rng().fill(&mut key_arr[..]);
-    let session_key: [u8; SESSION_KEY_LEN] = key_arr;
+    let session_key = cookie::Key::generate();
 
     // Start acceptxmr demo payment gateway.
     let payment_gateway = web::Data::new(projects::acceptxmr::setup().await);
@@ -170,19 +174,26 @@ async fn main() -> io::Result<()> {
             .wrap(middleware::Compress::default())
             // Cookie session middleware
             .wrap(
-                CookieSession::private(&session_key)
-                    .name("busyboredom_private")
-                    .secure(true)
-                    .max_age(SECONDS_IN_YEAR.try_into().unwrap())
-                    .same_site(cookie::SameSite::Strict),
+                SessionMiddleware::builder(CookieSessionStore::default(), session_key.clone())
+                    .cookie_content_security(CookieContentSecurity::Private)
+                    .cookie_name("busyboredom_private".to_string())
+                    .cookie_secure(true)
+                    .session_length(SessionLength::Predetermined {
+                        max_session_length: Some(Duration::days(365)),
+                    })
+                    .cookie_same_site(cookie::SameSite::Strict)
+                    .build(),
             )
             // Enable logger - always register actix-web Logger middleware last
             .wrap(middleware::Logger::default())
             // AcceptXMR cookie session
             .wrap(
-                CookieSession::private(&session_key)
-                    .name("acceptxmr_session")
-                    .same_site(cookie::SameSite::Strict),
+                SessionMiddleware::builder(CookieSessionStore::default(), session_key.clone())
+                    .cookie_content_security(CookieContentSecurity::Private)
+                    .cookie_name("acceptxmr_session".to_string())
+                    .cookie_secure(true)
+                    .cookie_same_site(cookie::SameSite::Strict)
+                    .build(),
             )
             // Register bindings
             .service(bindings)

@@ -65,9 +65,9 @@ fn update_urls() -> Result<(), io::Error> {
 
 fn set_url_hash(resource: &str, hash: &str, directory: &str) -> Result<(), io::Error> {
     // Replace backslashes with forward slashes (for windows paths).
-    let resource = resource.replace("\\", "/");
+    let resource = resource.replace('\\', "/");
     // Define pattern to search for.
-    let from_regex = Regex::new(&(resource.replace(".", "\\.") + r"\?ver=[A-Za-z0-9_-]+"))
+    let from_regex = Regex::new(&(resource.replace('.', "\\.") + r"\?ver=[A-Za-z0-9_-]+"))
         .expect("Invalid Regex in URL generation.");
 
     for entry in WalkDir::new(directory)
