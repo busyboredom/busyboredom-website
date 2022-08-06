@@ -2,7 +2,9 @@
 extern crate actix_web;
 
 use actix_session::{
-    storage::CookieSessionStore, CookieContentSecurity, Session, SessionLength, SessionMiddleware,
+    config::{CookieContentSecurity, PersistentSession, SessionLifecycle},
+    storage::CookieSessionStore,
+    Session, SessionMiddleware,
 };
 use actix_web::{
     body::BoxBody,
@@ -34,10 +36,10 @@ const SECONDS_IN_YEAR: usize = 31536000;
 
 #[derive(RustEmbed)]
 #[folder = "static/"]
-struct Asset;
+struct Assets;
 
 fn handle_embedded_file(path: &str) -> HttpResponse {
-    match Asset::get(path) {
+    match Assets::get(path) {
         Some(content) => {
             let body = BoxBody::new(content.data.as_ref().to_owned());
             let content_type = from_path(path).first_or_octet_stream();
@@ -62,11 +64,11 @@ async fn dist(path: web::Path<(String,)>) -> HttpResponse {
 /// Basic templating.
 #[cached(size = 20)]
 fn template_composition(base_path: &'static str, content: &'static str) -> String {
-    match Asset::get(base_path) {
+    match Assets::get(base_path) {
         Some(base_file) => {
             let base_bytes: Vec<u8> = base_file.data.as_ref().into();
 
-            match Asset::get(content) {
+            match Assets::get(content) {
                 Some(content_file) => {
                     let content_bytes: Vec<u8> = content_file.data.as_ref().into();
                     let content_str = std::str::from_utf8(&content_bytes).unwrap();
@@ -131,7 +133,7 @@ pub struct SharedAppData {
 
 #[actix_web::main]
 async fn main() -> io::Result<()> {
-    env::set_var("RUST_LOG", "debug");
+    env::set_var("RUST_LOG", "debug,hyper=info,rustls=info,sled=info");
     env_logger::init();
 
     // Retrieve mail password from file
@@ -178,9 +180,9 @@ async fn main() -> io::Result<()> {
                     .cookie_content_security(CookieContentSecurity::Private)
                     .cookie_name("busyboredom_private".to_string())
                     .cookie_secure(true)
-                    .session_length(SessionLength::Predetermined {
-                        max_session_length: Some(Duration::days(365)),
-                    })
+                    .session_lifecycle(SessionLifecycle::PersistentSession(
+                        PersistentSession::default().session_ttl(Duration::days(365)),
+                    ))
                     .cookie_same_site(cookie::SameSite::Strict)
                     .build(),
             )
@@ -210,7 +212,9 @@ async fn main() -> io::Result<()> {
             // Captcha submission
             .service(submit_captcha)
             // AcceptXMR check out endpoint to submit message and prepare cookie.
-            .service(projects::acceptxmr::check_out)
+            .service(projects::acceptxmr::checkout)
+            // AcceptXMR gateway to get invoice updates.
+            .service(projects::acceptxmr::update)
             // AcceptXMR websocket to get invoice updates.
             .service(projects::acceptxmr::websocket)
             // Static directory
@@ -218,7 +222,7 @@ async fn main() -> io::Result<()> {
             // Default
             .default_service(web::get().to(base))
     })
-    .bind("0.0.0.0:8081")?
+    .bind("[::]:8081")?
     .run()
     .await
 }

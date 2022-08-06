@@ -7,12 +7,12 @@ edition = "2018"
 [dependencies]
 acceptxmr = { path = "../acceptxmr", features = ["serde"] }
 actix = "0.13"
-actix-session = {version = "0.6", features = ["cookie-session"] }
+actix-session = {version = "0.7", features = ["cookie-session"] }
 actix-web = "4"
 actix-web-actors = "4"
 bytestring = "1"
-cached = "0.34"
-captcha = "0.0.8"
+cached = "0.38"
+captcha = "0.0.9"
 cookie = "0.16"
 env_logger = "0.9"
 futures = "0.3"
@@ -26,7 +26,7 @@ serde_json = "1"
 time = "0.3"
 
 [dependencies.lettre]
-version = "0.10.0-rc.4"
+version = "0.10.1"
 default-features = false
 features = ["smtp-transport", "builder", "rustls-tls"]
 

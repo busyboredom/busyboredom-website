@@ -1,17 +1,31 @@
-async function start() {
-    // Close websocket if it already exists.
-    if (typeof window.acceptxmr_socket != 'undefined') {
-        window.acceptxmr_socket.close(1000, "New Address");
+// Try to load existing invoice on page load.
+async function init() {
+    let response = await fetch("/update");
+    if (response.status !== 410 ) {
+        let invoiceUpdate = await response.json();
+        displayInvoiceUpdate(invoiceUpdate);
+        await next(true);
     }
+}
+init()
 
-    const message = document.getElementById("message").value;
-    const email = document.getElementById("email").value;
-
+async function next(hasAddress) {
     // Hide prep stuff, show payment stuff.
-    document.getElementById("instruction").innerHTML = "Loading...";
     document.getElementById("preperation-content").style.display = "None";
     document.getElementById("payment-content").style.display = "inherit";
 
+    // Create invoice.
+    if (!hasAddress) {
+        document.getElementById("instruction").innerHTML = "Loading...";
+        await newAddress();
+    } else {
+        newWebsocket();
+    }
+}
+
+async function newAddress() {
+    const message = document.getElementById("message").value;
+    const email = document.getElementById("email").value;
     const checkOutInfo = {
         method: "POST",
         body: JSON.stringify({
@@ -22,7 +36,74 @@ async function start() {
             'content-type': 'application/json'
         }
     }
-    await fetch("/projects/acceptxmr/check_out", checkOutInfo);
+
+    await fetch("/projects/acceptxmr/checkout", checkOutInfo);
+    newWebsocket()
+
+    let response = await fetch("/update");
+    let invoiceUpdate = await response.json();
+    displayInvoiceUpdate(invoiceUpdate);
+}
+
+function displayInvoiceUpdate(invoiceUpdate) {
+    console.log(invoiceUpdate);
+
+    // Show paid/due.
+    document.getElementById("paid").innerHTML = picoToXMR(invoiceUpdate.amount_paid);
+    document.getElementById("due").innerHTML = picoToXMR(invoiceUpdate.amount_requested);
+
+    // Show confirmations/required.
+    var confirmations = invoiceUpdate.confirmations;
+    document.getElementById("confirmations").innerHTML = Math.max(0, confirmations);
+    document.getElementById("confirmations-required").innerHTML = invoiceUpdate.confirmations_required;
+
+    // Show instructive text depending on invoice state.
+    var instructionString = "Loading...";
+    var instructionClass = "acceptxmr-instruction";
+    var newAddressBtnHidden = true;
+    var closeReason = null;
+    if (confirmations != null && confirmations >= invoiceUpdate.confirmations_required) {
+        instructionString = "Paid! Thank you"
+        closeReason = "Confirmed";
+    } else if (invoiceUpdate.amount_paid >= invoiceUpdate.amount_requested) {
+        instructionString = "Paid! Waiting for Confirmation..."
+    } else if (invoiceUpdate.expiration_in > 2) {
+        instructionString = "Send Monero to Address Below"
+    } else if (invoiceUpdate.expiration_in > 0) {
+        instructionString = "Address Expiring Soon";
+        instructionClass += " warning";
+        newAddressBtnHidden = false;
+    } else {
+        instructionString = "Address Expired!";
+        newAddressBtnHidden = false;
+        closeReason = "Expired";
+    }
+    document.getElementById("instruction").innerHTML = instructionString;
+    document.getElementById("instruction").classList = instructionClass;
+
+    // Hide address if nearing expiration.
+    document.getElementById("new-address-btn").hidden = newAddressBtnHidden;
+    document.getElementById("address-copy-btn").disabled = !newAddressBtnHidden;
+    if (newAddressBtnHidden) {
+        document.getElementById("address").innerHTML = invoiceUpdate.address;
+
+        const qr = qrcode(0, "M");
+        qr.addData(invoiceUpdate.uri);
+        qr.make();
+        document.getElementById('qrcode-container').innerHTML = qr.createSvgTag({ scalable: true });
+    } else {
+        document.getElementById("address").innerHTML = "Expiring or expired...";
+        document.getElementById('qrcode-container').innerHTML = "<svg viewBox=\"0 0 100 100\" src=\"\"></svg>";
+    }
+
+    return closeReason;
+}
+
+function newWebsocket() {
+    // Close websocket if it already exists.
+    if (typeof window.acceptxmrSocket != 'undefined') {
+        window.acceptxmrSocket.close(1000, "New Address");
+    }
 
     // Open websocket.
     if (location.protocol === 'https:') {
@@ -30,63 +111,21 @@ async function start() {
     } else {
         var ws_protocol = 'ws:';
     }
-    window.acceptxmr_socket = new WebSocket(ws_protocol + "//" + window.location.host + "/projects/acceptxmr/ws/");
+    window.acceptxmrSocket = new WebSocket(ws_protocol + "//" + window.location.host + "/projects/acceptxmr/ws/");
+    document.getElementById("payment-pending-loader").style.display = "Block";
 
-    window.acceptxmr_socket.onmessage = function (event) {
-        const invoiceUpdate = JSON.parse(event.data);
-
-        // Show paid/due.
-        document.getElementById("paid").innerHTML = picoToXMR(invoiceUpdate.amount_paid);
-        document.getElementById("due").innerHTML = picoToXMR(invoiceUpdate.amount_requested);
-
-        // Show confirmations/required.
-        const confirmations = Math.max(0, invoiceUpdate.confirmations);
-        document.getElementById("confirmations").innerHTML = confirmations;
-        document.getElementById("confirmations-required").innerHTML = invoiceUpdate.confirmations_required;
-
-        // Show instructive text depending on invoice state.
-        var instructionString = "Loading...";
-        var instructionClass = "acceptxmr-instruction";
-        var newAddressBtnHidden = true;
-        if (confirmations >= invoiceUpdate.confirmations_required) {
-            instructionString = "Paid! Thank you"
-            window.acceptxmr_socket.close(1000, "Confirmed");
-        } else if (invoiceUpdate.amount_paid > invoiceUpdate.amount_requested) {
-            instructionString = "Paid! Waiting for Confirmation..."
-        } else if (invoiceUpdate.expiration_in > 2) {
-            instructionString = "Send Monero to Address Below"
-        } else if (invoiceUpdate.expiration_in > 0) {
-            instructionString = "Address Expiring Soon";
-            instructionClass += " warning";
-            newAddressBtnHidden = false;
-        } else {
-            instructionString = "Address Expired!";
-            newAddressBtnHidden = false;
-            window.acceptxmr_socket.close(1000, "Expired");
+    window.acceptxmrSocket.onmessage = function (event) {
+        let closeReason = displayInvoiceUpdate(JSON.parse(event.data));
+        if (closeReason != null) {
+            window.acceptxmrSocket.close(1000, closeReason);
         }
-        document.getElementById("instruction").innerHTML = instructionString;
-        document.getElementById("instruction").classList = instructionClass;
-
-        // Hide address if nearing expiration.
-        document.getElementById("new-address-btn").hidden = newAddressBtnHidden;
-        document.getElementById("address-copy-btn").disabled = !newAddressBtnHidden;
-        if (newAddressBtnHidden) {
-            const address = invoiceUpdate.address;
-            document.getElementById("address").innerHTML = address;
-
-            const qr = qrcode(0, "M");
-            qr.addData(address);
-            qr.make();
-            document.getElementById('qrcode-container').innerHTML = qr.createSvgTag({ scalable: true });
-        } else {
-            document.getElementById("address").innerHTML = "Expiring or expired...";
-            document.getElementById('qrcode-container').innerHTML = "<svg viewBox=\"0 0 100 100\" src=\"\"></svg>";
-        }
-
-    };
+    }
 
     // If the websocket closes cleanly, log it. Otherwise, alert the user.
-    window.acceptxmr_socket.onclose = function (event) {
+    window.acceptxmrSocket.onclose = function (event) {
+        document.getElementById("address").innerHTML = "";
+        document.getElementById('qrcode-container').innerHTML = "<svg viewBox=\"0 0 100 100\" src=\"\"></svg>";
+        document.getElementById("payment-pending-loader").style.display = "None";
         if (event.code === 1000) {
             console.log(`[close] Connection closed cleanly, code=${event.code} reason=${event.reason}`);
         } else {
@@ -96,7 +135,7 @@ async function start() {
         }
     };
 
-    window.acceptxmr_socket.onerror = function (error) {
+    window.acceptxmrSocket.onerror = function (error) {
         alert(`[error] ${error.message}`);
     };
 }

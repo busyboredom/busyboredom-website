@@ -96,10 +96,11 @@
     margin: 0;
 }
 
-.content {
+.acceptxmr .content {
     width: 100%;
     display: flex;
     flex-flow: row wrap;
+    justify-content: center;
 }
 
 .acceptxmr .qrcode-container {
@@ -160,4 +161,33 @@
 
 .acceptxmr .status span {
     color: #000000;
+}
+
+@keyframes loader-animation {
+    0% {
+        left: -100%;
+    }
+    49% {
+        left: 100%;
+    }
+    50% {
+        left: 100%;
+    }
+    100% {
+        left: -100%;
+    }
+}
+.acceptxmr .loader {
+    width: 90%;
+    overflow: hidden;
+}
+.acceptxmr .loader .bar {
+    position: relative;
+    height: 2px;
+    margin-bottom: 0.5em;
+    background-color: black;
+    animation-name: loader-animation;
+    animation-duration: 3s;
+    animation-iteration-count: infinite;
+    animation-timing-function: ease-in-out;
 }
