@@ -10,7 +10,7 @@ use acceptxmr::{
 };
 use actix::{prelude::Stream, Actor, ActorContext, AsyncContext, StreamHandler};
 use actix_session::Session;
-use actix_web::{get, post, web, HttpRequest, HttpResponse};
+use actix_web::{get, post, web, HttpRequest, HttpResponse, http::header::{CacheControl, CacheDirective}};
 use actix_web_actors::ws;
 use bytestring::ByteString;
 use lettre::{message::Mailbox, Message, SmtpTransport, Transport};
@@ -93,13 +93,13 @@ async fn checkout(
     session: Session,
     checkout_info: web::Json<CheckoutInfo>,
     payment_gateway: web::Data<PaymentGateway>,
-) -> Result<&'static str, actix_web::Error> {
+) -> Result<HttpResponse, actix_web::Error> {
     let invoice_id = payment_gateway
         .new_invoice(1_000_000_000, 2, 5, json!(checkout_info).to_string())
         .await
         .unwrap();
     session.insert("id", invoice_id)?;
-    Ok("Success")
+    Ok(HttpResponse::Ok().append_header(CacheControl(vec![CacheDirective::NoStore])).finish())
 }
 
 // Get invoice update without waiting for websocket.
@@ -110,7 +110,7 @@ async fn update(
 ) -> Result<HttpResponse, actix_web::Error> {
     if let Ok(Some(invoice_id)) = session.get::<InvoiceId>("id") {
         if let Ok(Some(invoice)) = payment_gateway.get_invoice(invoice_id) {
-            return Ok(HttpResponse::Ok().json(json!(
+            return Ok(HttpResponse::Ok().append_header(CacheControl(vec![CacheDirective::NoStore])).json(json!(
                 {
                     "address": invoice.address(),
                     "amount_paid": invoice.amount_paid(),
@@ -123,7 +123,7 @@ async fn update(
             )));
         };
     }
-    Ok(HttpResponse::Gone().finish())
+    Ok(HttpResponse::Gone().append_header(CacheControl(vec![CacheDirective::NoStore])).finish())
 }
 
 /// WebSocket rout.
@@ -137,11 +137,11 @@ async fn websocket(
 ) -> Result<HttpResponse, actix_web::Error> {
     let invoice_id = match session.get::<InvoiceId>("id") {
         Ok(Some(i)) => i,
-        _ => return Ok(HttpResponse::NotFound().finish()),
+        _ => return Ok(HttpResponse::NotFound().append_header(CacheControl(vec![CacheDirective::NoStore])).finish()),
     };
     let subscriber = match payment_gateway.subscribe(invoice_id) {
         Ok(Some(s)) => s,
-        _ => return Ok(HttpResponse::NotFound().finish()),
+        _ => return Ok(HttpResponse::NotFound().append_header(CacheControl(vec![CacheDirective::NoStore])).finish()),
     };
     ws::start(
         WebSocket::new(subscriber, mailer.get_ref().clone()),
