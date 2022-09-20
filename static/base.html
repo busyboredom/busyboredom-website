@@ -75,23 +75,9 @@
           </a>
         </div>
       </div>
-      <div class="dropdown">
-        <button id="resume_dropbtn" class="dropbtn" onclick="window.busy.resume_toggle()">
-          Résumé<i id="resume_drop_symbol" class="arrow down"></i>
-        </button>
-        <div class="dropdown-content" id="resume_dropdown">
-          <a href="/software-eng-resume" onclick="window.busy.software_eng_resume(); return false">
-            <button class="proj_drop">
-              Software Engineering
-            </button>
-          </a>
-          <a href="/controls-eng-resume" onclick="window.busy.controls_eng_resume(); return false">
-            <button class="proj_drop">
-              Controls Engineering
-            </button>
-          </a>
-        </div>
-      </div>
+      <button class="tab" id="resume" onclick="window.busy.resume(); return false">
+        Résumé
+      </button>
       <button class="tab" id="contact" onclick="window.busy.contact()">Contact</button>
       <button class="icon" onclick="window.busy.nav_toggle()">
         <img width="24px" height="24px"
