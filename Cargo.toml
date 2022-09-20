@@ -5,19 +5,19 @@ authors = ["Charlie Wilkin <cwilkin@protonmail.com>"]
 edition = "2018"
 
 [dependencies]
-acceptxmr = { path = "../acceptxmr", features = ["serde"] }
+acceptxmr = { version = "0.11", features = ["serde"] }
 actix = "0.13"
 actix-session = {version = "0.7", features = ["cookie-session"] }
 actix-web = "4"
 actix-web-actors = "4"
 bytestring = "1"
-cached = "0.38"
+cached = "0.39"
 captcha = "0.0.9"
 cookie = "0.16"
 env_logger = "0.9"
 futures = "0.3"
 log = "0.4"
-lru = "0.7"
+lru = "0.8"
 mime_guess = "2"
 rand = "0.8"
 rust-embed = "6"

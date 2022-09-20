@@ -21,7 +21,7 @@ use lru::LruCache;
 use mime_guess::from_path;
 use rand::{thread_rng, Rng};
 use rust_embed::RustEmbed;
-use std::{convert::TryInto, env, io, sync::Mutex};
+use std::{convert::TryInto, env, io, num::NonZeroUsize, sync::Mutex};
 use time::Duration;
 
 mod captcha;
@@ -31,7 +31,9 @@ use crate::captcha::*;
 use crate::contact::*;
 
 const SESSION_KEY_LEN: usize = 64;
-const CAPTCHA_CACHE_LEN: usize = 1000;
+// Safe because we know it's non-zero. Can remove after
+// https://github.com/rust-lang/rust/issues/69329
+const CAPTCHA_CACHE_LEN: NonZeroUsize = unsafe { NonZeroUsize::new_unchecked(1000) };
 const SECONDS_IN_YEAR: usize = 31536000;
 
 #[derive(RustEmbed)]
