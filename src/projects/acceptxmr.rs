@@ -21,13 +21,14 @@ use lettre::{message::Mailbox, Message, SmtpTransport, Transport};
 use log::{debug, error, info, warn};
 use serde::{Deserialize, Serialize};
 use serde_json::json;
+use std::sync::Arc;
 
 /// Time before lack of client response causes a timeout.
 const CLIENT_TIMEOUT: Duration = Duration::from_secs(10);
 /// Time between sending heartbeat pings.
 const HEARTBEAT_INTERVAL: Duration = Duration::from_secs(1);
 
-pub async fn setup() -> PaymentGateway {
+pub async fn setup(mailer: Arc<SmtpTransport>) -> PaymentGateway {
     // Read view key from file.
     let private_view_key = include_str!("../../secrets/xmr_private_view_key.txt")
         .to_string()
@@ -68,6 +69,12 @@ pub async fn setup() -> PaymentGateway {
                     continue;
                 }
             };
+
+            // If it's confirmed, send the confirmation email.
+            if invoice.is_confirmed() {
+                send_email(&mailer, &invoice);
+            }
+
             // If it's confirmed or expired, we probably shouldn't bother tracking it anymore.
             if (invoice.is_confirmed() && invoice.creation_height() < invoice.current_height())
                 || invoice.is_expired()
@@ -83,6 +90,56 @@ pub async fn setup() -> PaymentGateway {
         }
     });
     payment_gateway.clone()
+}
+
+fn send_email(mailer: &SmtpTransport, invoice: &Invoice) {
+    let description_json: CheckoutInfo = serde_json::from_str(invoice.description())
+        .expect("failed to parse description as Checkout Info");
+
+    let admin_email = Message::builder()
+        .from("AcceptXMR Demo <charlie@busyboredom.com>".parse().unwrap())
+        .to("Charlie Wilkin <charlie@busyboredom.com>".parse().unwrap())
+        .subject("AcceptXMR Demo: ".to_owned() + &description_json.message)
+        .body(format!(
+            "Email: {}\nMessage: {}",
+            &description_json.email, &description_json.message
+        ))
+        .expect("failed to build email");
+
+    // Send the email to me.
+    match mailer.send(&admin_email) {
+        Ok(_) => info!("AcceptXMR Demo admin email sent successfully!"),
+        Err(e) => {
+            error!("Could not send AcceptXMR Demo admin email: {:?}", e);
+        }
+    }
+
+    if description_json.email.parse::<Mailbox>().is_err() {
+        error!(
+            "Failed to parse email address of AcceptXMR demo user: {}",
+            description_json.email
+        );
+        return;
+    }
+    let user_email = Message::builder()
+        .from("AcceptXMR Demo <charlie@busyboredom.com>".parse().unwrap())
+        .to(description_json.email.parse().unwrap())
+        .subject("AcceptXMR Demo: ".to_owned() + &description_json.message)
+        .body(
+            format!(
+                "Thank you for trying the AcceptXMR demo! This is the message you sent:\n\"{}\"", 
+                description_json.message
+            ) + "\n\nIf your message was a question, you can expect to hear back from me within\na week or so."
+        )
+        .expect("failed to build email");
+
+    // Send the email to user.
+    match mailer.send(&user_email) {
+        Ok(_) => info!("AcceptXMR Demo user email sent successfully!"),
+        Err(e) => {
+            error!("Could not send AcceptXMR Demo user email: {:?}", e);
+        }
+    }
 }
 
 #[derive(Deserialize, Serialize)]
@@ -143,7 +200,6 @@ async fn websocket(
     req: HttpRequest,
     stream: web::Payload,
     payment_gateway: web::Data<PaymentGateway>,
-    mailer: web::Data<SmtpTransport>,
 ) -> Result<HttpResponse, actix_web::Error> {
     let invoice_id = match session.get::<InvoiceId>("id") {
         Ok(Some(i)) => i,
@@ -161,26 +217,20 @@ async fn websocket(
                 .finish())
         }
     };
-    ws::start(
-        WebSocket::new(subscriber, mailer.get_ref().clone()),
-        &req,
-        stream,
-    )
+    ws::start(WebSocket::new(subscriber), &req, stream)
 }
 
 /// Define websocket HTTP actor
 struct WebSocket {
     last_heartbeat: Instant,
     invoice_subscriber: Option<Subscriber>,
-    mailer: SmtpTransport,
 }
 
 impl WebSocket {
-    fn new(invoice_subscriber: Subscriber, mailer: SmtpTransport) -> Self {
+    fn new(invoice_subscriber: Subscriber) -> Self {
         Self {
             last_heartbeat: Instant::now(),
             invoice_subscriber: Some(invoice_subscriber),
-            mailer,
         }
     }
 
@@ -196,56 +246,6 @@ impl WebSocket {
             }
             ctx.ping(b"");
         });
-    }
-
-    fn send_email(&self, description: &str) {
-        let description_json: CheckoutInfo = serde_json::from_str(description)
-            .expect("failed to parse description as Checkout Info");
-
-        let admin_email = Message::builder()
-            .from("AcceptXMR Demo <charlie@busyboredom.com>".parse().unwrap())
-            .to("Charlie Wilkin <charlie@busyboredom.com>".parse().unwrap())
-            .subject("AcceptXMR Demo: ".to_owned() + &description_json.message)
-            .body(format!(
-                "Email: {}\nMessage: {}",
-                &description_json.email, &description_json.message
-            ))
-            .expect("failed to build email");
-
-        // Send the email to me.
-        match self.mailer.send(&admin_email) {
-            Ok(_) => info!("AcceptXMR Demo admin email sent successfully!"),
-            Err(e) => {
-                error!("Could not send AcceptXMR Demo admin email: {:?}", e);
-            }
-        }
-
-        if description_json.email.parse::<Mailbox>().is_err() {
-            error!(
-                "Failed to parse email address of AcceptXMR demo user: {}",
-                description_json.email
-            );
-            return;
-        }
-        let user_email = Message::builder()
-            .from("AcceptXMR Demo <charlie@busyboredom.com>".parse().unwrap())
-            .to(description_json.email.parse().unwrap())
-            .subject("AcceptXMR Demo: ".to_owned() + &description_json.message)
-            .body(
-                format!(
-                    "Thank you for trying the AcceptXMR demo! This is the message you sent:\n\"{}\"", 
-                    description_json.message
-                ) + "\n\nIf your message was a question, you can expect to hear back from me within\na week or so."
-            )
-            .expect("failed to build email");
-
-        // Send the email to user.
-        match self.mailer.send(&user_email) {
-            Ok(_) => info!("AcceptXMR Demo user email sent successfully!"),
-            Err(e) => {
-                error!("Could not send AcceptXMR Demo user email: {:?}", e);
-            }
-        }
     }
 }
 
@@ -307,7 +307,6 @@ impl StreamHandler<Result<Invoice, AcceptXmrError>> for WebSocket {
                 ));
                 // If the invoice is confirmed or expired, stop checking for updates.
                 if invoice_update.is_confirmed() {
-                    self.send_email(invoice_update.description());
                     ctx.close(Some(ws::CloseReason::from((
                         ws::CloseCode::Normal,
                         "Invoice Complete",

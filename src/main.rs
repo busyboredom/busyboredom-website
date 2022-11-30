@@ -21,7 +21,12 @@ use lru::LruCache;
 use mime_guess::from_path;
 use rand::{thread_rng, Rng};
 use rust_embed::RustEmbed;
-use std::{convert::TryInto, env, io, num::NonZeroUsize, sync::Mutex};
+use std::{
+    convert::TryInto,
+    env, io,
+    num::NonZeroUsize,
+    sync::{Arc, Mutex},
+};
 use time::Duration;
 
 mod captcha;
@@ -149,16 +154,13 @@ async fn main() -> io::Result<()> {
     thread_rng().fill(&mut key_arr[..]);
     let session_key = cookie::Key::generate();
 
-    // Start acceptxmr demo payment gateway.
-    let payment_gateway = web::Data::new(projects::acceptxmr::setup().await);
-
     // Make shared application data object.
     let shared_data = web::Data::new(Mutex::new(SharedAppData {
         captcha_cache: LruCache::new(CAPTCHA_CACHE_LEN),
     }));
 
     // Make mailer.
-    let mailer = web::Data::new(
+    let mailer = Arc::new(
         SmtpTransport::relay("mail.privateemail.com")
             .expect("Could not build mailer")
             .credentials(Credentials::new(
@@ -168,10 +170,16 @@ async fn main() -> io::Result<()> {
             .build(),
     );
 
+    // Start acceptxmr demo payment gateway.
+    let payment_gateway = web::Data::new(projects::acceptxmr::setup(mailer.clone()).await);
+
+    // Wrap mailer for use by actix.
+    let wrapped_mailer = web::Data::new(mailer);
+
     HttpServer::new(move || {
         App::new()
             // Build application data.
-            .app_data(mailer.clone())
+            .app_data(wrapped_mailer.clone())
             .app_data(shared_data.clone())
             .app_data(payment_gateway.clone())
             // Comression middleware
