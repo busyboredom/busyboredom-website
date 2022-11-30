@@ -165,7 +165,7 @@ pub async fn goto_page(route: &str, resource: &str, title: &str) {
 #[wasm_bindgen]
 pub async fn resume() {
     // Go to the page.
-    goto_page("/resume", "/api/resume.html?ver=bApOVl4m4Nk", "Résumé").await;
+    goto_page("/resume", "/api/resume.html?ver=2lPtGRZU09k", "Résumé").await;
 }
 
 #[wasm_bindgen]
