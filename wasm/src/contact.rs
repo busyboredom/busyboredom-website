@@ -39,7 +39,7 @@ pub async fn contact_info() {
     if selected == "Phone" {
         contact_info = "Dude, it's ".to_owned() + &Date::new_0().get_full_year().to_string() + ".";
     } else if selected == "Select" {
-        contact_info = "".to_string();
+        contact_info = String::new();
     } else {
         let mut req = RequestInit::new();
         req.method("GET");
