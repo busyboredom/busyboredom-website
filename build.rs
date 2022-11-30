@@ -14,7 +14,7 @@ fn main() {
     let wasm_path = Path::new("wasm/").to_string_lossy();
     // Compile the wasm.
     Command::new("wasm-pack")
-        .args(&["build", &wasm_path, "--release", "--target", "web"])
+        .args(["build", &wasm_path, "--release", "--target", "web"])
         .status()
         .expect("failed to run wasm-pack");
 
@@ -86,7 +86,7 @@ fn set_url_hash(resource: &str, hash: &str, directory: &str) -> Result<(), io::E
                     let file_path = Path::new(path_str);
 
                     // Open and read the file entirely
-                    let mut src = File::open(&file_path)?;
+                    let mut src = File::open(file_path)?;
                     let mut data = String::new();
                     src.read_to_string(&mut data)?;
                     drop(src); // Close the file early
@@ -95,7 +95,7 @@ fn set_url_hash(resource: &str, hash: &str, directory: &str) -> Result<(), io::E
                         from_regex.replace_all(&data, &*(resource.to_owned() + "?ver=" + hash));
 
                     // Recreate the file and dump the processed contents to it
-                    let mut dst = File::create(&file_path)?;
+                    let mut dst = File::create(file_path)?;
                     dst.write_all(new_data.as_bytes())?;
                 }
             }
