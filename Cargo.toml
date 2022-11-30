@@ -5,19 +5,19 @@ authors = ["Charlie Wilkin <cwilkin@protonmail.com>"]
 edition = "2018"
 
 [dependencies]
-acceptxmr = { version = "0.11", features = ["serde"] }
+acceptxmr = { path = "../acceptxmr/library", features = ["serde", "sqlite"] }
 actix = "0.13"
 actix-session = {version = "0.7", features = ["cookie-session"] }
 actix-web = "4"
 actix-web-actors = "4"
 bytestring = "1"
-cached = "0.39"
+cached = "0.42"
 captcha = "0.0.9"
-cookie = "0.16"
-env_logger = "0.9"
+cookie = "0.17"
+env_logger = "0.10"
 futures = "0.3"
 log = "0.4"
-lru = "0.8"
+lru = "0.10"
 mime_guess = "2"
 rand = "0.8"
 rust-embed = "6"
@@ -31,10 +31,9 @@ default-features = false
 features = ["smtp-transport", "builder", "rustls-tls"]
 
 [build-dependencies]
-base64 = "0.13"
+base64 = "0.21"
 blake3 = "1"
 regex = "1"
-sha-1 = "0.10"
 walkdir = "2"
 
 [profile.release]

@@ -174,7 +174,7 @@ pub async fn welcome() {
     active_tab("");
 
     // Go to the page.
-    goto_page("/", "/api/welcome.html?ver=11ovy6qr6x8", "Welcome!").await;
+    goto_page("/", "/api/welcome.html?ver=2FcUtZS8rxs", "Welcome!").await;
 
     // Show warning if safari is detected.
     let window = web_sys::window().expect("No global `window` exists");

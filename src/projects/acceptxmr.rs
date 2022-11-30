@@ -6,7 +6,7 @@ use std::{
 };
 
 use acceptxmr::{
-    AcceptXmrError, Invoice, InvoiceId, PaymentGateway, PaymentGatewayBuilder, Subscriber,
+    storage::stores::Sqlite, Invoice, InvoiceId, PaymentGateway, PaymentGatewayBuilder, Subscriber,
 };
 use actix::{prelude::Stream, Actor, ActorContext, AsyncContext, StreamHandler};
 use actix_session::Session;
@@ -26,9 +26,9 @@ use std::sync::Arc;
 /// Time before lack of client response causes a timeout.
 const CLIENT_TIMEOUT: Duration = Duration::from_secs(10);
 /// Time between sending heartbeat pings.
-const HEARTBEAT_INTERVAL: Duration = Duration::from_secs(1);
+const HEARTBEAT_INTERVAL: Duration = Duration::from_secs(4);
 
-pub async fn setup(mailer: Arc<SmtpTransport>) -> PaymentGateway {
+pub async fn setup(mailer: Arc<SmtpTransport>) -> PaymentGateway<Sqlite> {
     // Read view key from file.
     let private_view_key = include_str!("../../secrets/xmr_private_view_key.txt")
         .to_string()
@@ -42,11 +42,17 @@ pub async fn setup(mailer: Arc<SmtpTransport>) -> PaymentGateway {
     // No need to keep the public spend key secret.
     let primary_address = "4A1WSBQdCbUCqt3DaGfmqVFchXScF43M6c5r4B6JXT3dUwuALncU9XTEnRPmUMcB3c16kVP9Y7thFLCJ5BaMW3UmSy93w3w";
 
-    let payment_gateway = PaymentGatewayBuilder::new(private_view_key, primary_address.to_string())
-        .daemon_url("https://busyboredom.com:18089".to_string())
-        .daemon_login("busyboredom".to_string(), daemon_password)
-        .build()
-        .expect("failed to build payment gateway");
+    let invoice_storage =
+        Sqlite::new("AcceptXMR_DB/", "invoices").expect("failed to open invoice storage");
+    let payment_gateway = PaymentGatewayBuilder::new(
+        private_view_key,
+        primary_address.to_string(),
+        invoice_storage,
+    )
+    .daemon_url("https://busyboredom.com:18089".to_string())
+    .daemon_login("busyboredom".to_string(), daemon_password)
+    .build()
+    .expect("failed to build payment gateway");
     info!("Payment gateway created.");
 
     payment_gateway
@@ -61,13 +67,10 @@ pub async fn setup(mailer: Arc<SmtpTransport>) -> PaymentGateway {
         // Watch all invoice updates.
         let mut subscriber = gateway_copy.subscribe_all();
         loop {
-            let invoice = match subscriber.recv() {
-                Ok(p) => p,
-                Err(AcceptXmrError::Subscriber(_)) => panic!("Blockchain scanner crashed!"),
-                Err(e) => {
-                    error!("Error retrieving invoice update: {}", e);
-                    continue;
-                }
+            let invoice = match subscriber.blocking_recv() {
+                Some(p) => p,
+                // Global subscriber should never close.
+                None => panic!("Blockchain scanner crashed!"),
             };
 
             // If it's confirmed, send the confirmation email.
@@ -142,7 +145,7 @@ fn send_email(mailer: &SmtpTransport, invoice: &Invoice) {
     }
 }
 
-#[derive(Deserialize, Serialize)]
+#[derive(Deserialize, Serialize, Default)]
 struct CheckoutInfo {
     email: String,
     message: String,
@@ -152,12 +155,22 @@ struct CheckoutInfo {
 #[post("/projects/acceptxmr/checkout")]
 async fn checkout(
     session: Session,
-    checkout_info: web::Json<CheckoutInfo>,
-    payment_gateway: web::Data<PaymentGateway>,
+    checkout_info: Option<web::Json<CheckoutInfo>>,
+    payment_gateway: web::Data<PaymentGateway<Sqlite>>,
 ) -> Result<HttpResponse, actix_web::Error> {
+    let checkout_info = match checkout_info {
+        Some(json_info) => {
+            let info = json_info.into_inner();
+            session.insert("checkout_info", &info)?;
+            info
+        }
+        None => {
+            // If not provided, see if there's one in the session cookie.
+            session.get("checkout_info")?.unwrap_or_default()
+        }
+    };
     let invoice_id = payment_gateway
         .new_invoice(1_000_000_000, 2, 5, json!(checkout_info).to_string())
-        .await
         .unwrap();
     session.insert("id", invoice_id)?;
     Ok(HttpResponse::Ok()
@@ -169,7 +182,7 @@ async fn checkout(
 #[get("/update")]
 async fn update(
     session: Session,
-    payment_gateway: web::Data<PaymentGateway>,
+    payment_gateway: web::Data<PaymentGateway<Sqlite>>,
 ) -> Result<HttpResponse, actix_web::Error> {
     if let Ok(Some(invoice_id)) = session.get::<InvoiceId>("id") {
         if let Ok(Some(invoice)) = payment_gateway.get_invoice(invoice_id) {
@@ -199,7 +212,7 @@ async fn websocket(
     session: Session,
     req: HttpRequest,
     stream: web::Payload,
-    payment_gateway: web::Data<PaymentGateway>,
+    payment_gateway: web::Data<PaymentGateway<Sqlite>>,
 ) -> Result<HttpResponse, actix_web::Error> {
     let invoice_id = match session.get::<InvoiceId>("id") {
         Ok(Some(i)) => i,
@@ -210,7 +223,7 @@ async fn websocket(
         }
     };
     let subscriber = match payment_gateway.subscribe(invoice_id) {
-        Ok(Some(s)) => s,
+        Some(s) => s,
         _ => {
             return Ok(HttpResponse::NotFound()
                 .append_header(CacheControl(vec![CacheDirective::NoStore]))
@@ -255,10 +268,7 @@ impl Actor for WebSocket {
     /// start heartbeat checks as well.
     fn started(&mut self, ctx: &mut Self::Context) {
         if let Some(subscriber) = self.invoice_subscriber.take() {
-            <WebSocket as StreamHandler<Result<Invoice, AcceptXmrError>>>::add_stream(
-                InvoiceStream(subscriber),
-                ctx,
-            );
+            <WebSocket as StreamHandler<Invoice>>::add_stream(InvoiceStream(subscriber), ctx);
         }
         self.heartbeat(ctx);
     }
@@ -270,6 +280,10 @@ impl StreamHandler<Result<ws::Message, ws::ProtocolError>> for WebSocket {
         match msg {
             Ok(ws::Message::Pong(_)) => {
                 self.last_heartbeat = Instant::now();
+            }
+            Ok(ws::Message::Ping(m)) => {
+                self.last_heartbeat = Instant::now();
+                ctx.pong(&m)
             }
             Ok(ws::Message::Close(reason)) => {
                 match &reason {
@@ -286,44 +300,36 @@ impl StreamHandler<Result<ws::Message, ws::ProtocolError>> for WebSocket {
 }
 
 /// Handle incoming invoice updates.
-impl StreamHandler<Result<Invoice, AcceptXmrError>> for WebSocket {
-    fn handle(&mut self, msg: Result<Invoice, AcceptXmrError>, ctx: &mut Self::Context) {
-        match msg {
-            Ok(invoice_update) => {
-                // Send the update to the user.
-                ctx.text(ByteString::from(
-                    json!(
-                        {
-                            "address": invoice_update.address(),
-                            "amount_paid": invoice_update.amount_paid(),
-                            "amount_requested": invoice_update.amount_requested(),
-                            "uri": invoice_update.uri(),
-                            "confirmations": invoice_update.confirmations(),
-                            "confirmations_required": invoice_update.confirmations_required(),
-                            "expiration_in": invoice_update.expiration_in(),
-                        }
-                    )
-                    .to_string(),
-                ));
-                // If the invoice is confirmed or expired, stop checking for updates.
-                if invoice_update.is_confirmed() {
-                    ctx.close(Some(ws::CloseReason::from((
-                        ws::CloseCode::Normal,
-                        "Invoice Complete",
-                    ))));
-                    ctx.stop();
-                } else if invoice_update.is_expired() {
-                    ctx.close(Some(ws::CloseReason::from((
-                        ws::CloseCode::Normal,
-                        "Invoice Expired",
-                    ))));
-                    ctx.stop();
+impl StreamHandler<Invoice> for WebSocket {
+    fn handle(&mut self, msg: Invoice, ctx: &mut Self::Context) {
+        // Send the update to the user.
+        ctx.text(ByteString::from(
+            json!(
+                {
+                    "address": msg.address(),
+                    "amount_paid": msg.amount_paid(),
+                    "amount_requested": msg.amount_requested(),
+                    "uri": msg.uri(),
+                    "confirmations": msg.confirmations(),
+                    "confirmations_required": msg.confirmations_required(),
+                    "expiration_in": msg.expiration_in(),
                 }
-            }
-            Err(e) => {
-                error!("Failed to receive invoice update: {}", e);
-                ctx.stop();
-            }
+            )
+            .to_string(),
+        ));
+        // If the invoice is confirmed or expired, stop checking for updates.
+        if msg.is_confirmed() {
+            ctx.close(Some(ws::CloseReason::from((
+                ws::CloseCode::Normal,
+                "Invoice Complete",
+            ))));
+            ctx.stop();
+        } else if msg.is_expired() {
+            ctx.close(Some(ws::CloseReason::from((
+                ws::CloseCode::Normal,
+                "Invoice Expired",
+            ))));
+            ctx.stop();
         }
     }
 }
@@ -333,7 +339,7 @@ impl StreamHandler<Result<Invoice, AcceptXmrError>> for WebSocket {
 struct InvoiceStream(Subscriber);
 
 impl Stream for InvoiceStream {
-    type Item = Result<Invoice, AcceptXmrError>;
+    type Item = Invoice;
 
     fn poll_next(
         mut self: Pin<&mut Self>,

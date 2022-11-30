@@ -95,12 +95,12 @@ fn template_composition(base_path: &'static str, content: &'static str) -> Strin
 async fn base(session: Session, _req: HttpRequest) -> HttpResponse {
     // Print content of request if compiled with debug profile.
     #[cfg(debug_assertions)]
-    println!("{:?}", _req);
+    println!("{_req:?}");
 
     // Session
     let mut counter = 1;
     if let Some(count) = session.get::<i32>("counter").unwrap() {
-        println!("SESSION value: {}", count);
+        println!("SESSION value: {count}");
         counter = count + 1;
     }
 
@@ -198,15 +198,6 @@ async fn main() -> io::Result<()> {
             )
             // Enable logger - always register actix-web Logger middleware last
             .wrap(middleware::Logger::default())
-            // AcceptXMR cookie session
-            .wrap(
-                SessionMiddleware::builder(CookieSessionStore::default(), session_key.clone())
-                    .cookie_content_security(CookieContentSecurity::Private)
-                    .cookie_name("acceptxmr_session".to_string())
-                    .cookie_secure(true)
-                    .cookie_same_site(cookie::SameSite::Strict)
-                    .build(),
-            )
             // Register bindings
             .service(bindings)
             // Register wasm

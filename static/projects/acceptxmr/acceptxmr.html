@@ -34,51 +34,62 @@
                     <span id="confirmations">0</span> / <span id="confirmations-required">0</span><br />
                 </p>
             </div>
-            <div id = "payment-pending-loader" class="loader">
+            <div id="payment-pending-loader" class="loader">
                 <div class="bar"></div>
             </div>
         </div>
     </div>
 
     <h2>Summary</h2>
-    <i>(Last updated for AcceptXMR v0.11.0)</i>
+    <i>(Last updated for AcceptXMR v0.12.0)</i>
 
     <p>
-        Are you a privacy-loving entrepreneur, looking for a way to accept payment in
-        <a href="https://www.getmonero.org/">Monero</a> in an automated fashion? I wrote a rust
-        crate just for you!
+        Are you a privacy-loving entrepreneur, looking for a way to accept
+        payment in
+        <a href="https://www.getmonero.org/">Monero</a> in an automated fashion?
+        I wrote a rust crate just for you!
         <br><br>
-        AcceptXMR generates unique subaddresses for each invoice so you'll know what you're being
-        paid for when a user sends you Monero. It then scans the blockchain for incoming
-        transactions using your private viewkey so you'll know within seconds when a user pays.
-        Here are some features of my crate:
+        AcceptXMR generates unique subaddresses for each invoice so you'll know
+        what you're being paid for when a user sends you Monero. It then scans
+        the blockchain for incoming transactions using your private viewkey so
+        you'll know within seconds when a user pays. Here are some features of
+        my crate:
     <ul>
         <li>View pair only, no hot wallet.</li>
-        <li>Subaddress based (as opposed to the older integrated addresses).</li>
-        <li>Pending invoices stored persistently, enabling recovery from power loss.</li>
+        <li>Subaddress based (as opposed to the older integrated
+            addresses).</li>
+        <li>Pending invoices can be stored persistently, enabling recovery from
+            power loss.</li>
         <li>Number of confirmations is configurable per-invoice.</li>
-        <li>Ignores transactions with non-zero timelocks.</li>
+        <li>Ignores transactions with timelocks.</li>
         <li>Minimal, intuitive API (in my totally unbiased opinion).</li>
     </ul>
-    Check out the <a href="https://docs.rs/acceptxmr">docs</a> if you'd like to use AcceptXMR in
-    your application, stop by the <a href="https://github.com/busyboredom/acceptxmr/">GitHub</a>
-    repository if you'd like to contribute, or continue reading to learn more about how I tackled
-    this project.
+    Check out the <a href="https://docs.rs/acceptxmr">docs</a> if you'd like to
+    use AcceptXMR in your application, stop by the <a href="https://github.com/busyboredom/acceptxmr/">GitHub</a>
+    repository if you'd like to contribute, or continue reading to learn more
+    about how I tackled this project.
     </p>
 
     <h2>Public API</h2>
     <p>
-        AcceptXMR's public interface, or API, is deceptively simple. You create a
-        <code>PaymentGateway</code> when your application starts up, create a new
-        <code>Invoice</code> when a user goes to checkout, and subscribe to invoice updates with a
-        <code>Subscriber</code> to know when they've paid. The following bit of code shows a very
-        simple example, just to give you an idea of what the interface looks like.
+        AcceptXMR's public interface, or API, is deceptively simple. You create
+        a
+        <code>PaymentGateway</code> when your application starts up, create a
+        new
+        <code>Invoice</code> when a user goes to checkout, and subscribe to
+        invoice updates with a
+        <code>Subscriber</code> to know when they've paid. The following bit of
+        code shows a very simple example, just to give you an idea of what the
+        interface looks like.
     <pre>
         <code>
 // Create the payment gateway.
-let payment_gateway = 
-    PaymentGateway::builder(private_view_key, primary_address)
-    .build();
+let payment_gateway = PaymentGateway::builder(
+    private_view_key, 
+    primary_address,
+    InMemory::new()
+)
+.build()?;
 
 // Run the payment gateway.
 payment_gateway.run()?;
@@ -96,91 +107,107 @@ let subscriber = payment_gateway.subscribe(invoice_id)?
     .expect("invoice doesn't exist");
 
 // Have we been paid yet?
-let update = subscriber.recv()?;
+let update = subscriber.recv().await.expect("channel closed");
+
 if update.is_confirmed() {
     // Great, ship the pizza and stop tracking the invoice.
     println!("Invoice for \"{}\" paid", update.description());
     payment_gateway.remove_invoice(invoice_id)?;
 }       </code>
     </pre>
-    Pretty sweet, right? This simple interface is made possible by a few key components under the
-    hood. Read the next section for more details on what these components are and how they work
-    together.
+    Pretty sweet, right? This simple interface is made possible by a few key
+    components under the hood. Read the next section for more details on what
+    these components are and how they work together.
     </p>
 
     <h2>Internal Architecture</h2>
     <div style="width:100%; height:0; padding-top:73.27%; position:relative;">
-        <img alt="Architectural Diagram" src="/api/projects/acceptxmr/diagram.webp"
-            style="position:absolute; top:0; left:0; width:100%;">
+        <img alt="Architectural Diagram" src="/api/projects/acceptxmr/diagram.webp" style="position:absolute;
+        top:0; left:0; width:100%;">
     </div>
     <p>
-        The image above shows a high-level overview of how the pieces of AcceptXMR talk to each
-        other. Aside from the subscribers and payment gateway you see in the public API, AcceptXMR
-        contains a "scanning thread" which watches for transactions on the blockchain, three caching
-        objects for holding onto relevant information while it scans, and an interface to a very
-        high performance embedded database
-        (<a href="https://docs.rs/sled/latest/sled/">Sled</a>). I'll step through each component now
-        and briefly describe its purpose and operation.
+        The image above shows a high-level overview of how the pieces of
+        AcceptXMR talk to each other. Aside from the subscribers and payment
+        gateway you see in the public API, AcceptXMR contains a "scanning
+        thread" which watches for transactions on the blockchain, three caching
+        objects for holding onto relevant information while it scans, and an
+        interface to any storage layer implementation your heart desires. I'll
+        step through each component now and briefly describe its purpose and
+        operation.
     </p>
 
     <h3>Scanning Thread</h3>
     <hr>
     <p>
-        The scanning thread is spawned by the payment gateway when <code>run()</code> is called. It
-        periodically fetches new blocks and transactions from a Monero daemon of your choosing and
-        caches them in the block cache and txpool cache. It then scans them for any transactions
+        The scanning thread is spawned by the payment gateway when
+        <code>run()</code> is called. It periodically fetches new blocks and
+        transactions from a Monero daemon of your choosing and caches them in
+        the block and txpool caches. It then scans them for any transactions
         relevant to pending invoices and updates those invoices in the database.
     </p>
     <h3>Block Cache</h3>
     <hr>
     <p>
-        The block cache exists to provide some resistance to blockchain reorganizations. If a new
-        block is added which does not build on the current highest block in the cache, we know that
-        a reorganization has occurred an can begin working our way down the block cache to discover
-        how deep the reorganization is. We then re-scan all blocks higher than that reorganization
-        depth and update pending invoices accordingly.
+        The block cache exists to provide some resistance to blockchain
+        reorganizations. If a new block is added which does not build on the
+        current highest block in the cache, we know that a reorganization has
+        occurred an can begin working our way down the block cache to discover
+        how deep the reorganization is. We then re-scan all blocks higher than
+        that reorganization depth and update pending invoices accordingly.
     </p>
     <h3>Txpool Cache</h3>
     <hr>
     <p>
-        The txpool (transaction pool) cache was not originally a part of AcceptXMR but was added as
-        an optimization after a peculiar influx of very large transactions caused a very noticeable
-        decrease in the performance of the scanning thread. Prior to the addition of the txpool
-        cache, the full txpool was being fetched and scanned each cycle. This meant we were
-        re-scanning transactions (extra CPU load) and also re-downloading them (extra network
-        load). The addition of a txpool cache allowed AcceptXMR to only fetch and scan <i>new</i>
+        The txpool (transaction pool) cache was not originally a part of
+        AcceptXMR but was added as an optimization after a peculiar influx of
+        very large transactions caused a very noticeable decrease in the
+        performance of the scanning thread. Prior to the addition of the txpool
+        cache, the full txpool was being fetched and scanned each cycle. This
+        meant we were re-scanning transactions (extra CPU load) and also
+        re-downloading them (extra network load). The addition of a txpool cache
+        allowed AcceptXMR to only fetch and scan <i>new</i>
         transactions each cycle.
     </p>
     <h3>Subaddress Cache</h3>
     <hr>
     <p>
-        The subaddress cache contains pre-generated subaddresses. When a new invoice is created, a
-        random subaddress is removed from the cache and used for that invoice. When the invoice is
-        removed, the subaddress is returned to the cache. This ensures that no two invoices use the
-        same subaddress at the same time, allowing AcceptXMR to reliably differentiate between
-        payments by different customers. Additionally, if there are a large number customers
-        checking out at once and the cache begins to run low on available subaddresses, new
-        addresses will be generated in batches to replenish it.
+        The subaddress cache contains pre-generated subaddresses. When a new
+        invoice is created, a random subaddress is removed from the cache and
+        used for that invoice. When the invoice is removed, the subaddress is
+        returned to the cache. This ensures that no two invoices use the same
+        subaddress at the same time, allowing AcceptXMR to reliably
+        differentiate between payments by different customers. Additionally, if
+        there are a large number customers checking out at once and the cache
+        begins to run low on available subaddresses, new addresses will be
+        generated in batches to replenish it.
     </p>
     <h3>Pending Invoices Database</h3>
     <hr>
     <p>
-        The pending invoices database holds all invoices which have not yet been removed using
-        <code>payment_gateway.remove_invoice(invoice_id)</code>. This was done to enable AcceptXMR
-        to recover from sudden power loss. When AcceptXMR starts up, it checks the database for any
-        pending invoices and resumes scanning where it left off so that no customer's payment will
-        go unprocessed.
+        The pending invoices database holds all invoices which have not yet been
+        removed using
+        <code>payment_gateway.remove_invoice(invoice_id)</code>. This was done
+        to enable AcceptXMR to recover from sudden power loss. When AcceptXMR
+        starts up, it checks the database for any pending invoices and resumes
+        scanning where it left off so that no customer's payment will go
+        unprocessed.
+        <br><br>
+        If the built-in <code>Sqlite</code>, <code>Sled</code> and
+        <code>InMemory</code> storage options don't fit your needs, you are free
+        to implement the <code>InvoiceStorage</code> trait on any storage layer
+        implementation you desire.
     </p>
     <h2>Conclusion</h2>
     <p>
-        This project was a success. AcceptXMR works and it was a lot of fun to make. I plan on
-        adding a few features in the future (like ZMQ support as an optional replacement for
-        periodic scanning) but everything necessary to accept Monero is present, performant and
-        easy to use.
+        This project has been a success. AcceptXMR works and it was a lot of fun
+        to make. I plan on adding a few features in the future (like ZMQ support
+        as an optional replacement for periodic scanning) but everything
+        necessary to accept Monero is present, performant and easy to use.
     </p>
 
     <p class="feedback">
-        <i>See a bug or typo?</i> <a onclick="window.busy.contact()">Contact Me</a>
+        <i>See a bug or typo?</i>
+        <a onclick="window.busy.contact()">Contact Me</a>
     </p>
 
 </div>

@@ -1,3 +1,8 @@
+use base64::{
+    alphabet,
+    engine::{GeneralPurpose, GeneralPurposeConfig},
+    Engine,
+};
 use regex::Regex;
 use std::fs::File;
 use std::io::{self, Read, Write};
@@ -46,10 +51,7 @@ fn update_urls() -> Result<(), io::Error> {
                 if let Ok(mut file) = File::open(entry.path()) {
                     // Hash it.
                     let hash = generate_hash::<_>(&mut file);
-                    println!(
-                        "Setting hash to \"{}\" for all instances of \"{}\".",
-                        hash, f_path,
-                    );
+                    println!("Setting hash to \"{hash}\" for all instances of \"{f_path}\".");
                     // Drop the file now since we no longer need it open.
                     drop(file);
                     // Update its hash in all URLs pointing to it.
@@ -123,5 +125,8 @@ fn generate_hash<R: Read>(reader: &mut R) -> String {
     output_reader.fill(&mut output);
 
     // Convert to unpadded base64 and return.
-    base64::encode_config(output, base64::URL_SAFE.pad(false))
+    let alphabet = alphabet::URL_SAFE;
+    let config = GeneralPurposeConfig::new().with_encode_padding(false);
+    let engine = GeneralPurpose::new(&alphabet, config);
+    engine.encode(output)
 }
