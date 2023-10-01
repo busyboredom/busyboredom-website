@@ -164,7 +164,7 @@ async fn main() -> io::Result<()> {
         SmtpTransport::relay("mail.privateemail.com")
             .expect("Could not build mailer")
             .credentials(Credentials::new(
-                "charlie@busyboredom.com".to_string(),
+                "donotreply@busyboredom.com".to_string(),
                 mail_secret.to_owned(),
             ))
             .build(),

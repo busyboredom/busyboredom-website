@@ -5,7 +5,7 @@ authors = ["Charlie Wilkin <cwilkin@protonmail.com>"]
 edition = "2018"
 
 [dependencies]
-acceptxmr = { path = "../acceptxmr/library", features = ["serde", "sqlite"] }
+acceptxmr = { version = "0.13", features = ["serde", "sqlite"] }
 actix = "0.13"
 actix-session = {version = "0.7", features = ["cookie-session"] }
 actix-web = "4"

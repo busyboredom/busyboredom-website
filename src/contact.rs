@@ -1,4 +1,4 @@
-use std::sync::Mutex;
+use std::sync::{Arc, Mutex};
 
 use actix_session::Session;
 use actix_web::http::StatusCode;
@@ -24,7 +24,7 @@ struct ContactInfoQuery {
 async fn contact_info(web::Query(query): web::Query<ContactInfoQuery>) -> Result<HttpResponse> {
     let info = match &query.method[..] {
         "Email" => "charlie@busyboredom.com",
-        "Mastodon" => "@busyboredom@mastodon.technology",
+        "Matrix" => "@busyboredom:monero.social",
         "Linkedin" => "https://www.linkedin.com/in/charlie-wilkin-7b6027178/",
         _ => "Not found",
     };
@@ -47,7 +47,7 @@ struct ContactForm {
 /// Contact form handler
 #[post("/contact-submitted")]
 async fn contact_submitted(
-    mailer: web::Data<SmtpTransport>,
+    mailer: web::Data<Arc<SmtpTransport>>,
     shared_data: web::Data<Mutex<SharedAppData>>,
     form: web::Form<ContactForm>,
     session: Session,
@@ -125,7 +125,7 @@ async fn contact_submitted(
     );
 
     let email = Message::builder()
-        .from("Contact Form <charlie@busyboredom.com>".parse().unwrap())
+        .from("Contact Form <donotreply@busyboredom.com>".parse().unwrap())
         .to("Charlie Wilkin <charlie@busyboredom.com>".parse().unwrap())
         .subject("Contact Form Submission: ".to_owned() + &form.subject)
         .multipart(
@@ -151,12 +151,17 @@ async fn contact_submitted(
     {
         let autoreply_message = format!(
             "Hello {},\n
-        Your message has been received and you can expect a response within the next few days.
-        Please have patience if my response time is slow (especially on weekdays).",
+        Your message has been received and you can expect a response within
+        the next few days. Please have patience if my response time is slow
+        (especially on weekdays).",
             form.firstname
         );
         let autoreply = Message::builder()
-            .from("Charlie Wilkin <charlie@busyboredom.com>".parse().unwrap())
+            .from(
+                "Charlie Wilkin (Do Not Reply) <donotreply@busyboredom.com>"
+                    .parse()
+                    .unwrap(),
+            )
             .to(autoreply_to)
             .subject("Auto-Reply for: ".to_owned() + &form.subject)
             .body(autoreply_message)

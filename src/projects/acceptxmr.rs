@@ -40,17 +40,18 @@ pub async fn setup(mailer: Arc<SmtpTransport>) -> PaymentGateway<Sqlite> {
         .to_owned();
 
     // No need to keep the public spend key secret.
-    let primary_address = "4A1WSBQdCbUCqt3DaGfmqVFchXScF43M6c5r4B6JXT3dUwuALncU9XTEnRPmUMcB3c16kVP9Y7thFLCJ5BaMW3UmSy93w3w";
+    let primary_address = "49KLp1DYdn8H344GXKDtKs9Aq8GGQBWnACxut4eHtMeYG1GNRhEmbzFCySA8WicJdQ6jVEqCKeSo4hpV6vFd9iXyH9hm4qq";
 
-    let invoice_storage =
-        Sqlite::new("AcceptXMR_DB/", "invoices").expect("failed to open invoice storage");
+    let invoice_storage = Sqlite::new("AcceptXMR_DB/", "invoices", "output keys", "height")
+        .expect("failed to open invoice storage");
     let payment_gateway = PaymentGatewayBuilder::new(
         private_view_key,
         primary_address.to_string(),
         invoice_storage,
     )
-    .daemon_url("https://busyboredom.com:18089".to_string())
-    .daemon_login("busyboredom".to_string(), daemon_password)
+    .daemon_url("http://xmr-node.cakewallet.com:18081".to_string())
+    //.daemon_url("https://node.busyboredom.com:18089".to_string())
+    //.daemon_login("busyboredom".to_string(), daemon_password)
     .build()
     .expect("failed to build payment gateway");
     info!("Payment gateway created.");
@@ -100,7 +101,11 @@ fn send_email(mailer: &SmtpTransport, invoice: &Invoice) {
         .expect("failed to parse description as Checkout Info");
 
     let admin_email = Message::builder()
-        .from("AcceptXMR Demo <charlie@busyboredom.com>".parse().unwrap())
+        .from(
+            "AcceptXMR Demo <donotreply@busyboredom.com>"
+                .parse()
+                .unwrap(),
+        )
         .to("Charlie Wilkin <charlie@busyboredom.com>".parse().unwrap())
         .subject("AcceptXMR Demo: ".to_owned() + &description_json.message)
         .body(format!(
@@ -125,7 +130,7 @@ fn send_email(mailer: &SmtpTransport, invoice: &Invoice) {
         return;
     }
     let user_email = Message::builder()
-        .from("AcceptXMR Demo <charlie@busyboredom.com>".parse().unwrap())
+        .from("AcceptXMR Demo <donotreply@busyboredom.com>".parse().unwrap())
         .to(description_json.email.parse().unwrap())
         .subject("AcceptXMR Demo: ".to_owned() + &description_json.message)
         .body(
