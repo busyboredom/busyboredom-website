@@ -6,4 +6,5 @@
 *.geany
 *.code-workspace
 /static/projects/archviz/Build
-/secrets
+secrets.toml
+/result

@@ -19,7 +19,13 @@ fn main() {
     let wasm_path = Path::new("wasm/").to_string_lossy();
     // Compile the wasm.
     Command::new("wasm-pack")
-        .args(["build", &wasm_path, "--release", "--target", "web"])
+        .args([
+            "build",
+            &wasm_path,
+            "--release",
+            "--target",
+            "web",
+        ])
         .status()
         .expect("failed to run wasm-pack");
 

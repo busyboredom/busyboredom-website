@@ -4,7 +4,7 @@ extern crate actix_web;
 use actix_session::{
     config::{CookieContentSecurity, PersistentSession, SessionLifecycle},
     storage::CookieSessionStore,
-    Session, SessionMiddleware,
+    SessionMiddleware,
 };
 use actix_web::{
     body::BoxBody,
@@ -16,11 +16,14 @@ use actix_web::{
     middleware, web, App, HttpRequest, HttpResponse, HttpServer, Result,
 };
 use cached::proc_macro::cached;
+use clap::Parser;
+use config::Config;
 use lettre::{transport::smtp::authentication::Credentials, SmtpTransport};
 use lru::LruCache;
 use mime_guess::from_path;
 use rand::{thread_rng, Rng};
 use rust_embed::RustEmbed;
+use serde::Deserialize;
 use std::{
     convert::TryInto,
     env, io,
@@ -92,20 +95,10 @@ fn template_composition(base_path: &'static str, content: &'static str) -> Strin
 }
 
 /// Simple index handler
-async fn base(session: Session, _req: HttpRequest) -> HttpResponse {
+async fn base(_req: HttpRequest) -> HttpResponse {
     // Print content of request if compiled with debug profile.
     #[cfg(debug_assertions)]
     println!("{_req:?}");
-
-    // Session
-    let mut counter = 1;
-    if let Some(count) = session.get::<i32>("counter").unwrap() {
-        println!("SESSION value: {count}");
-        counter = count + 1;
-    }
-
-    // Set counter to session
-    session.insert("counter", counter).unwrap();
 
     handle_embedded_file("base.html")
 }
@@ -138,16 +131,33 @@ pub struct SharedAppData {
     captcha_cache: LruCache<[u8; CAPTCHA_ID_LEN], [char; CAPTCHA_LEN]>,
 }
 
+#[derive(Parser, Debug)]
+#[command(author, version, about, long_about = None)]
+struct Args {
+    /// Path to secrets.toml file. Defaults to current directory.
+    #[arg(short, long, default_value_t = String::from("./secrets.toml"))]
+    config_file: String,
+}
+
+#[derive(Deserialize)]
+struct Secrets {
+    email_password: String,
+    xmr_private_viewkey: String,
+    daemon_password: String,
+}
+
 #[actix_web::main]
 async fn main() -> io::Result<()> {
     env::set_var("RUST_LOG", "debug,hyper=info,rustls=info,sled=info");
     env_logger::init();
 
-    // Retrieve mail password from file
-    let mail_secret = include_str!("../secrets/email.txt")
-        .to_string()
-        .trim() // Remove line ending.
-        .to_owned();
+    let args = Args::parse();
+    let secrets = Config::builder()
+        .add_source(config::File::with_name(&args.config_file))
+        .build()
+        .unwrap()
+        .try_deserialize::<Secrets>()
+        .unwrap();
 
     // Set random session key.
     let mut key_arr = [0u8; SESSION_KEY_LEN];
@@ -165,14 +175,13 @@ async fn main() -> io::Result<()> {
             .expect("Could not build mailer")
             .credentials(Credentials::new(
                 "donotreply@busyboredom.com".to_string(),
-                mail_secret.to_owned(),
+                secrets.email_password.clone(),
             ))
             .build(),
     );
 
     // Start acceptxmr demo payment gateway.
-    let payment_gateway = web::Data::new(projects::acceptxmr::setup(mailer.clone()).await);
-
+    let payment_gateway = web::Data::new(projects::acceptxmr::setup(mailer.clone(), secrets).await);
     // Wrap mailer for use by actix.
     let wrapped_mailer = web::Data::new(mailer);
 

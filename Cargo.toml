@@ -1,6 +1,6 @@
 [package]
 name = "busyboredom"
-version = "0.1.0"
+version = "0.1.1"
 authors = ["Charlie Wilkin <cwilkin@protonmail.com>"]
 edition = "2018"
 
@@ -13,6 +13,8 @@ actix-web-actors = "4"
 bytestring = "1"
 cached = "0.46"
 captcha = "0.0.9"
+clap = { version = "4", features = ["derive"] }
+config = "0.13"
 cookie = "0.17"
 env_logger = "0.10"
 futures = "0.3"

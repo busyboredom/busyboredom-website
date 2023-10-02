@@ -23,21 +23,17 @@ use serde::{Deserialize, Serialize};
 use serde_json::json;
 use std::sync::Arc;
 
+use crate::Secrets;
+
 /// Time before lack of client response causes a timeout.
 const CLIENT_TIMEOUT: Duration = Duration::from_secs(10);
 /// Time between sending heartbeat pings.
 const HEARTBEAT_INTERVAL: Duration = Duration::from_secs(4);
 
-pub async fn setup(mailer: Arc<SmtpTransport>) -> PaymentGateway<Sqlite> {
+pub(crate) async fn setup(mailer: Arc<SmtpTransport>, secrets: Secrets) -> PaymentGateway<Sqlite> {
     // Read view key from file.
-    let private_view_key = include_str!("../../secrets/xmr_private_view_key.txt")
-        .to_string()
-        .trim() // Remove line ending.
-        .to_owned();
-    let daemon_password = include_str!("../../secrets/daemon_password.txt")
-        .to_string()
-        .trim() // Remove line ending.
-        .to_owned();
+    let private_view_key = secrets.xmr_private_viewkey;
+    let _daemon_password = secrets.daemon_password;
 
     // No need to keep the public spend key secret.
     let primary_address = "49KLp1DYdn8H344GXKDtKs9Aq8GGQBWnACxut4eHtMeYG1GNRhEmbzFCySA8WicJdQ6jVEqCKeSo4hpV6vFd9iXyH9hm4qq";
