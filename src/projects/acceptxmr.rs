@@ -23,14 +23,14 @@ use serde::{Deserialize, Serialize};
 use serde_json::json;
 use std::sync::Arc;
 
-use crate::Secrets;
+use crate::{Secrets, Settings};
 
 /// Time before lack of client response causes a timeout.
 const CLIENT_TIMEOUT: Duration = Duration::from_secs(10);
 /// Time between sending heartbeat pings.
 const HEARTBEAT_INTERVAL: Duration = Duration::from_secs(4);
 
-pub(crate) async fn setup(mailer: Arc<SmtpTransport>, secrets: Secrets) -> PaymentGateway<Sqlite> {
+pub(crate) async fn setup(mailer: Arc<SmtpTransport>, secrets: Secrets, settings: Settings) -> PaymentGateway<Sqlite> {
     // Read view key from file.
     let private_view_key = secrets.xmr_private_viewkey;
     let _daemon_password = secrets.daemon_password;
@@ -38,7 +38,7 @@ pub(crate) async fn setup(mailer: Arc<SmtpTransport>, secrets: Secrets) -> Payme
     // No need to keep the public spend key secret.
     let primary_address = "49KLp1DYdn8H344GXKDtKs9Aq8GGQBWnACxut4eHtMeYG1GNRhEmbzFCySA8WicJdQ6jVEqCKeSo4hpV6vFd9iXyH9hm4qq";
 
-    let invoice_storage = Sqlite::new("AcceptXMR_DB/", "invoices", "output keys", "height")
+    let invoice_storage = Sqlite::new(&(settings.data_dir + "/AcceptXMR_DB/"), "invoices", "output keys", "height")
         .expect("failed to open invoice storage");
     let payment_gateway = PaymentGatewayBuilder::new(
         private_view_key,

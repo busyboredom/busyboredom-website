@@ -9,7 +9,6 @@
     naersk,
     flake-utils,
   }:
-  #with lib;
     flake-utils.lib.eachDefaultSystem (
       system: let
         pkgs = import nixpkgs {inherit system;};
@@ -34,23 +33,25 @@
           singleStep = true;
         };
 
-        nixosModules.default = {
+        nixosModule = {
           config,
           lib,
           pkgs,
+          ...
         }: let
-          cfg = config.services.busyboredom-website;
+          package = self.packages.${system}.default;
 
-          configFile = with cfg pkgs;
+          cfg = config.services.busyboredom-website;
+          configFile = with cfg;
             pkgs.writeText "config.toml" ''
-              data-dir=${dataDir}
+              data_dir="${dataDir}"
             '';
         in {
           options = with lib; {
             services.busyboredom-website = {
               enable = mkEnableOption (lib.mdDoc "Personal portfolio website");
 
-              dataDir = lib.mkOption {
+              dataDir = mkOption {
                 type = types.str;
                 default = "/var/lib/busyboredom-website";
                 description = lib.mdDoc ''
@@ -58,11 +59,35 @@
                 '';
               };
 
-              secretsFile = lib.mkOption {
+              emailPasswordFile = mkOption {
                 type = types.str;
-                default = "/etc/busyboredom-website/secrets.toml";
+                default = "${cfg.dataDir}/email_password.txt";
                 description = lib.mdDoc ''
-                  Path to file containing secrets for busyboredom-website.
+                  Path to file containing email password for busyboredom-website.
+                '';
+              };
+
+              daemonPasswordFile = mkOption {
+                type = types.str;
+                default = "${cfg.dataDir}/daemon_password.txt";
+                description = lib.mdDoc ''
+                  Path to file containing daemon password for busyboredom-website.
+                '';
+              };
+
+              privateViewkeyFile = mkOption {
+                type = types.str;
+                default = "${cfg.dataDir}/private_viewkey.txt";
+                description = lib.mdDoc ''
+                  Path to private viewkey for busyboredom-website.
+                '';
+              };
+
+              waitFor = mkOption {
+                type = with types; listOf str;
+                default = [];
+                description = lib.mdDoc ''
+                  List of systemd services to wait for.
                 '';
               };
             };
@@ -81,13 +106,19 @@
 
             systemd.services.busyboredomweb = {
               description = "Personal portfolio website";
-              after = ["network.target" "monero.service"];
+              after = ["network.target"] ++ cfg.waitFor;
+              wants = ["network.target"] ++ cfg.waitFor;
               wantedBy = ["multi-user.target"];
+              script = ''
+                export EMAIL_PASSWORD=$(cat ${cfg.emailPasswordFile})
+                export DAEMON_PASSWORD=$(cat ${cfg.daemonPasswordFile})
+                export XMR_PRIVATE_VIEWKEY=$(cat ${cfg.privateViewkeyFile})
+                ${package}/bin/busyboredom --config-file=${configFile}
+              '';
 
               serviceConfig = {
                 User = "busyboredomweb";
                 Group = "busyboredomweb";
-                ExecStart = "${self.packages.default}/bin/busyboredom --config-file=${configFile} --secrets-file=${cfg.secretsFile}";
                 Restart = "always";
                 SuccessExitStatus = [0 1];
               };

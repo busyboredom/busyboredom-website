@@ -134,9 +134,14 @@ pub struct SharedAppData {
 #[derive(Parser, Debug)]
 #[command(author, version, about, long_about = None)]
 struct Args {
-    /// Path to secrets.toml file. Defaults to current directory.
-    #[arg(short, long, default_value_t = String::from("./secrets.toml"))]
+    /// Path to config.toml file. Defaults to current directory.
+    #[arg(short, long, default_value_t = String::from("./config.toml"))]
     config_file: String,
+}
+
+#[derive(Deserialize)]
+struct Settings {
+    data_dir: String,
 }
 
 #[derive(Deserialize)]
@@ -153,10 +158,17 @@ async fn main() -> io::Result<()> {
 
     let args = Args::parse();
     let secrets = Config::builder()
-        .add_source(config::File::with_name(&args.config_file))
+        .add_source(config::Environment::default())
         .build()
         .unwrap()
         .try_deserialize::<Secrets>()
+        .unwrap();
+
+    let settings = Config::builder()
+        .add_source(config::File::with_name(&args.config_file))
+        .build()
+        .unwrap()
+        .try_deserialize::<Settings>()
         .unwrap();
 
     // Set random session key.
@@ -181,7 +193,7 @@ async fn main() -> io::Result<()> {
     );
 
     // Start acceptxmr demo payment gateway.
-    let payment_gateway = web::Data::new(projects::acceptxmr::setup(mailer.clone(), secrets).await);
+    let payment_gateway = web::Data::new(projects::acceptxmr::setup(mailer.clone(), secrets, settings).await);
     // Wrap mailer for use by actix.
     let wrapped_mailer = web::Data::new(mailer);
 
