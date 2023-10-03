@@ -60,10 +60,15 @@ pub(crate) async fn setup(
     .expect("failed to build payment gateway");
     info!("Payment gateway created.");
 
-    payment_gateway
-        .run()
-        .await
-        .expect("failed to run payment gateway");
+    loop {
+        match payment_gateway.run().await {
+            Ok(_) => break,
+            Err(e) => {
+                error!("Failed to run payment gateway: {}", e);
+                std::thread::sleep(Duration::from_secs(5));
+            }
+        }
+    }
     info!("Payment gateway running.");
 
     // Watch for invoice updates and deal with them accordingly.
