@@ -153,7 +153,7 @@ struct Secrets {
 
 #[actix_web::main]
 async fn main() -> io::Result<()> {
-    env::set_var("RUST_LOG", "debug,hyper=info,rustls=info,sled=info");
+    env::set_var("RUST_LOG", "debug,hyper=info,h2=info,rustls=info,sled=info");
     env_logger::init();
 
     let args = Args::parse();
@@ -193,7 +193,8 @@ async fn main() -> io::Result<()> {
     );
 
     // Start acceptxmr demo payment gateway.
-    let payment_gateway = web::Data::new(projects::acceptxmr::setup(mailer.clone(), secrets, settings).await);
+    let payment_gateway =
+        web::Data::new(projects::acceptxmr::setup(mailer.clone(), secrets, settings).await);
     // Wrap mailer for use by actix.
     let wrapped_mailer = web::Data::new(mailer);
 

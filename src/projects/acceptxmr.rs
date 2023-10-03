@@ -30,24 +30,32 @@ const CLIENT_TIMEOUT: Duration = Duration::from_secs(10);
 /// Time between sending heartbeat pings.
 const HEARTBEAT_INTERVAL: Duration = Duration::from_secs(4);
 
-pub(crate) async fn setup(mailer: Arc<SmtpTransport>, secrets: Secrets, settings: Settings) -> PaymentGateway<Sqlite> {
+pub(crate) async fn setup(
+    mailer: Arc<SmtpTransport>,
+    secrets: Secrets,
+    settings: Settings,
+) -> PaymentGateway<Sqlite> {
     // Read view key from file.
     let private_view_key = secrets.xmr_private_viewkey;
-    let _daemon_password = secrets.daemon_password;
+    let daemon_password = secrets.daemon_password;
 
     // No need to keep the public spend key secret.
     let primary_address = "49KLp1DYdn8H344GXKDtKs9Aq8GGQBWnACxut4eHtMeYG1GNRhEmbzFCySA8WicJdQ6jVEqCKeSo4hpV6vFd9iXyH9hm4qq";
 
-    let invoice_storage = Sqlite::new(&(settings.data_dir + "/AcceptXMR_DB/"), "invoices", "output keys", "height")
-        .expect("failed to open invoice storage");
+    let invoice_storage = Sqlite::new(
+        &(settings.data_dir + "/AcceptXMR_DB/"),
+        "invoices",
+        "output keys",
+        "height",
+    )
+    .expect("failed to open invoice storage");
     let payment_gateway = PaymentGatewayBuilder::new(
         private_view_key,
         primary_address.to_string(),
         invoice_storage,
     )
-    .daemon_url("http://xmr-node.cakewallet.com:18081".to_string())
-    //.daemon_url("https://node.busyboredom.com:18089".to_string())
-    //.daemon_login("busyboredom".to_string(), daemon_password)
+    .daemon_url("https://node.busyboredom.com:18089".to_string())
+    .daemon_login("busyboredom".to_string(), daemon_password)
     .build()
     .expect("failed to build payment gateway");
     info!("Payment gateway created.");
