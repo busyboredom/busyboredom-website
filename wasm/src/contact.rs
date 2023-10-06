@@ -43,7 +43,7 @@ pub async fn contact_info() {
     } else {
         let mut req = RequestInit::new();
         req.method("GET");
-        let request_string = format!("/api/contact_info?method={}", selected);
+        let request_string = format!("/api/contact_info?method={selected}");
         let request = Request::new_with_str_and_init(&request_string, &req)
             .expect("Request could not be created");
         request
@@ -170,7 +170,7 @@ pub async fn captcha_submit() {
 
     let mut req = RequestInit::new();
     req.method("GET");
-    let request_string = format!("/api/submit_captcha?captcha={}", guess);
+    let request_string = format!("/api/submit_captcha?captcha={guess}");
     let request = Request::new_with_str_and_init(&request_string, &req)
         .expect("Request could not be created");
     request

@@ -58,7 +58,7 @@ async fn contact_submitted(
         Err(_) => None,
     };
     // Get the local cached solution.
-    let cached_solution: Option<[char; 8]> = match session.get::<[u8; CAPTCHA_ID_LEN]>("captcha_id")
+    let maybe_cached_solution: Option<[char; 8]> = match session.get::<[u8; CAPTCHA_ID_LEN]>("captcha_id")
     {
         Ok(Some(id)) => {
             let cache = &mut shared_data
@@ -91,10 +91,10 @@ async fn contact_submitted(
         }
     };
     // Make sure there IS a local hached solution.
-    if cached_solution.is_some() {
+    if let Some(cached_solution) = maybe_cached_solution {
         // Make sure the guess matches the session cookie solution and the locally cached one.
         if Some(form.captchachars.clone()) != solution
-            || form.captchachars.clone() != cached_solution.unwrap().iter().collect::<String>()
+            || form.captchachars.clone() != cached_solution.iter().collect::<String>()
         {
             // Otherwise, fail it and return.
             error!("Could not send email, captcha not passed");
