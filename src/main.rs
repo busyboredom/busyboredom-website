@@ -162,7 +162,6 @@ async fn main() -> io::Result<()> {
     let args = Args::parse();
     let secrets = Config::builder()
         .add_source(config::Environment::default())
-        .add_source(config::File::with_name("./secrets.toml"))
         .build()
         .unwrap()
         .try_deserialize::<Secrets>()

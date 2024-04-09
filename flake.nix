@@ -1,19 +1,19 @@
 {
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
-    naersk.url = "github:nix-community/naersk";
+    crane.url = "github:ipetkov/crane";
   };
   outputs = {
     self,
     nixpkgs,
-    naersk,
+    crane,
     flake-utils,
   }:
     flake-utils.lib.eachDefaultSystem (
       system: let
         pkgs = import nixpkgs {inherit system;};
         fmtr = nixpkgs.legacyPackages.${system}.alejandra;
-        naersk' = pkgs.callPackage naersk {};
+        craneLib = crane.lib.${system};
         deps = with pkgs; [
           wasm-pack
         ];
@@ -24,8 +24,8 @@
           packages = with pkgs; [rustup] ++ deps;
         };
 
-        packages.default = naersk'.buildPackage {
-          name = "busyboredom-website";
+        packages.default = craneLib.buildPackage {
+          name = "busyboredom";
           version = "0.1.1";
           buildInputs = deps;
           src = ./.;
