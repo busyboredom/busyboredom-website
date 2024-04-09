@@ -153,12 +153,16 @@ struct Secrets {
 
 #[actix_web::main]
 async fn main() -> io::Result<()> {
-    env::set_var("RUST_LOG", "debug,hyper=info,h2=info,rustls=info,sled=info");
+    env::set_var(
+        "RUST_LOG",
+        "debug,hyper=info,h2=info,rustls=info,sled=info,acceptxmr=trace",
+    );
     env_logger::init();
 
     let args = Args::parse();
     let secrets = Config::builder()
         .add_source(config::Environment::default())
+        .add_source(config::File::with_name("./secrets.toml"))
         .build()
         .unwrap()
         .try_deserialize::<Secrets>()

@@ -5,7 +5,7 @@ authors = ["Charlie Wilkin <cwilkin@protonmail.com>"]
 edition = "2018"
 
 [dependencies]
-acceptxmr = { version = "0.13", features = ["serde", "sqlite"] }
+acceptxmr = { git = "https://github.com/busyboredom/acceptxmr", features = ["serde", "sqlite"], rev="f23960e6680a90ce861435f4a661499d869a8935"}
 actix = "0.13"
 actix-session = {version = "0.8", features = ["cookie-session"] }
 actix-web = "4"
@@ -26,6 +26,7 @@ rust-embed = "8"
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 time = "0.3"
+tokio = "1"
 
 [dependencies.lettre]
 version = "0.10.1"

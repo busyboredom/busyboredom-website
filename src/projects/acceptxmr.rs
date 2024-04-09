@@ -57,6 +57,7 @@ pub(crate) async fn setup(
     .daemon_url("https://node.busyboredom.com:18089".to_string())
     .daemon_login("busyboredom".to_string(), daemon_password)
     .build()
+    .await
     .expect("failed to build payment gateway");
     info!("Payment gateway created.");
 
@@ -73,7 +74,7 @@ pub(crate) async fn setup(
 
     // Watch for invoice updates and deal with them accordingly.
     let gateway_copy = payment_gateway.clone();
-    std::thread::spawn(move || {
+    tokio::spawn(async move {
         // Watch all invoice updates.
         let mut subscriber = gateway_copy.subscribe_all();
         loop {
@@ -96,7 +97,7 @@ pub(crate) async fn setup(
                     "Invoice to index {} is either confirmed or expired. Removing invoice now",
                     invoice.index()
                 );
-                if let Err(e) = gateway_copy.remove_invoice(invoice.id()) {
+                if let Err(e) = gateway_copy.remove_invoice(invoice.id()).await {
                     error!("Failed to remove fully confirmed invoice: {}", e);
                 };
             }
@@ -185,6 +186,7 @@ async fn checkout(
     };
     let invoice_id = payment_gateway
         .new_invoice(1_000_000_000, 2, 5, json!(checkout_info).to_string())
+        .await
         .unwrap();
     session.insert("id", invoice_id)?;
     Ok(HttpResponse::Ok()
@@ -199,7 +201,7 @@ async fn update(
     payment_gateway: web::Data<PaymentGateway<Sqlite>>,
 ) -> Result<HttpResponse, actix_web::Error> {
     if let Ok(Some(invoice_id)) = session.get::<InvoiceId>("id") {
-        if let Ok(Some(invoice)) = payment_gateway.get_invoice(invoice_id) {
+        if let Ok(Some(invoice)) = payment_gateway.get_invoice(invoice_id).await {
             return Ok(HttpResponse::Ok()
                 .append_header(CacheControl(vec![CacheDirective::NoStore]))
                 .json(json!(

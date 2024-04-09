@@ -24,7 +24,7 @@ struct ContactInfoQuery {
 async fn contact_info(web::Query(query): web::Query<ContactInfoQuery>) -> Result<HttpResponse> {
     let info = match &query.method[..] {
         "Email" => "charlie@busyboredom.com",
-        "Matrix" => "@busyboredom:monero.social",
+        "Matrix" => "@busyboredom:tchncs.de",
         "Linkedin" => "https://www.linkedin.com/in/charlie-wilkin-7b6027178/",
         _ => "Not found",
     };
@@ -58,38 +58,38 @@ async fn contact_submitted(
         Err(_) => None,
     };
     // Get the local cached solution.
-    let maybe_cached_solution: Option<[char; 8]> = match session.get::<[u8; CAPTCHA_ID_LEN]>("captcha_id")
-    {
-        Ok(Some(id)) => {
-            let cache = &mut shared_data
-                .lock()
-                .expect("Unable to get lock on captcha cache")
-                .captcha_cache;
-            match cache.get(&id) {
-                Some(&chars) => {
-                    info!(
-                        "Got captcha ID = {:?} and solution = {:?} in local cache.",
-                        id, chars
-                    );
-                    // Remove the locally cached solution to prevent double submission.
-                    cache.pop(&id);
-                    Some(chars)
-                }
-                None => {
-                    warn!("No charactars found in captcha cache for ID \"{:?}\"", id);
-                    None
+    let maybe_cached_solution: Option<[char; 8]> =
+        match session.get::<[u8; CAPTCHA_ID_LEN]>("captcha_id") {
+            Ok(Some(id)) => {
+                let cache = &mut shared_data
+                    .lock()
+                    .expect("Unable to get lock on captcha cache")
+                    .captcha_cache;
+                match cache.get(&id) {
+                    Some(&chars) => {
+                        info!(
+                            "Got captcha ID = {:?} and solution = {:?} in local cache.",
+                            id, chars
+                        );
+                        // Remove the locally cached solution to prevent double submission.
+                        cache.pop(&id);
+                        Some(chars)
+                    }
+                    None => {
+                        warn!("No charactars found in captcha cache for ID \"{:?}\"", id);
+                        None
+                    }
                 }
             }
-        }
-        Ok(None) => {
-            warn!("No captcha ID in session.");
-            None
-        }
-        Err(_) => {
-            warn!("Error retrieving captcha ID from session.");
-            None
-        }
-    };
+            Ok(None) => {
+                warn!("No captcha ID in session.");
+                None
+            }
+            Err(_) => {
+                warn!("Error retrieving captcha ID from session.");
+                None
+            }
+        };
     // Make sure there IS a local hached solution.
     if let Some(cached_solution) = maybe_cached_solution {
         // Make sure the guess matches the session cookie solution and the locally cached one.
