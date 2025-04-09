@@ -76,10 +76,7 @@ async fn submit_captcha(
 ) -> Result<HttpResponse> {
     let mut pass_status = "Fail";
 
-    let answer = match session.get("captcha") {
-        Ok(answer) => answer,
-        Err(_) => None,
-    };
+    let answer = session.get("captcha").unwrap_or_default();
     if Some(guess.captcha) == answer {
         pass_status = "Pass";
     }

@@ -41,7 +41,7 @@ use crate::contact::*;
 const SESSION_KEY_LEN: usize = 64;
 // Safe because we know it's non-zero. Can remove after
 // https://github.com/rust-lang/rust/issues/69329
-const CAPTCHA_CACHE_LEN: NonZeroUsize = unsafe { NonZeroUsize::new_unchecked(1000) };
+const CAPTCHA_CACHE_LEN: NonZeroUsize = NonZeroUsize::new(1000).unwrap();
 const SECONDS_IN_YEAR: usize = 31536000;
 
 #[derive(RustEmbed)]
@@ -53,13 +53,13 @@ fn handle_embedded_file(path: &str) -> HttpResponse {
         Some(content) => {
             let body = BoxBody::new(content.data.as_ref().to_owned());
             let content_type = from_path(path).first_or_octet_stream();
-            return HttpResponse::Ok()
+            HttpResponse::Ok()
                 .insert_header(CacheControl(vec![
                     CacheDirective::MaxAge(SECONDS_IN_YEAR.try_into().unwrap()),
                     CacheDirective::Public,
                 ]))
                 .content_type(content_type.as_ref())
-                .body(body);
+                .body(body)
         }
         None => HttpResponse::build(StatusCode::OK)
             .content_type("text/html; charset=utf-8")
@@ -207,7 +207,7 @@ async fn main() -> io::Result<()> {
             .app_data(wrapped_mailer.clone())
             .app_data(shared_data.clone())
             .app_data(payment_gateway.clone())
-            // Comression middleware
+            // Compression middleware
             .wrap(middleware::Compress::default())
             // Cookie session middleware
             .wrap(

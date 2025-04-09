@@ -53,10 +53,7 @@ async fn contact_submitted(
     session: Session,
 ) -> Result<HttpResponse> {
     // Get solution from session cookie.
-    let solution: Option<String> = match session.get("captcha") {
-        Ok(answer) => answer,
-        Err(_) => None,
-    };
+    let solution: Option<String> = session.get("captcha").unwrap_or_default();
     // Get the local cached solution.
     let maybe_cached_solution: Option<[char; 8]> =
         match session.get::<[u8; CAPTCHA_ID_LEN]>("captcha_id") {
