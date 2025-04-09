@@ -2,12 +2,17 @@ use std::convert::TryInto;
 use std::sync::Mutex;
 
 use actix_session::Session;
-use actix_web::http::header::{CacheControl, CacheDirective};
-use actix_web::http::StatusCode;
-use actix_web::{web, HttpResponse, Result};
+use actix_web::{
+    get,
+    http::{
+        header::{CacheControl, CacheDirective},
+        StatusCode,
+    },
+    web, HttpResponse, Result,
+};
 use captcha::{filters, Captcha};
 use log::info;
-use rand::{thread_rng, Rng};
+use rand::{rng, Rng};
 use serde::Deserialize;
 
 use crate::SharedAppData;
@@ -36,16 +41,13 @@ pub async fn generate_captcha(
 
     // Set random captcha ID.
     let mut id = [0u8; CAPTCHA_ID_LEN];
-    thread_rng().fill(&mut id[..]);
+    rng().fill(&mut id[..]);
     app_data
         .lock()
         .expect("Unable to get lock on captcha cache")
         .captcha_cache
         .put(id, solution);
-    info!(
-        "Put captcha ID = {:?} and solution = {:?} in local cache",
-        id, solution
-    );
+    info!("Put captcha ID = {id:?} and solution = {solution:?} in local cache");
 
     // Add captcha solution to private session cookie.
     session
@@ -76,10 +78,7 @@ async fn submit_captcha(
 ) -> Result<HttpResponse> {
     let mut pass_status = "Fail";
 
-    let answer = match session.get("captcha") {
-        Ok(answer) => answer,
-        Err(_) => None,
-    };
+    let answer = session.get("captcha").unwrap_or_default();
     if Some(guess.captcha) == answer {
         pass_status = "Pass";
     }

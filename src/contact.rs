@@ -1,8 +1,7 @@
 use std::sync::{Arc, Mutex};
 
 use actix_session::Session;
-use actix_web::http::StatusCode;
-use actix_web::{web, HttpResponse, Result};
+use actix_web::{get, http::StatusCode, post, web, HttpResponse, Result};
 use lettre::{
     message::{Mailbox, MultiPart, SinglePart},
     Message, SmtpTransport, Transport,
@@ -21,7 +20,7 @@ struct ContactInfoQuery {
 
 /// Captcha submission handler
 #[get("/api/contact_info")]
-async fn contact_info(web::Query(query): web::Query<ContactInfoQuery>) -> Result<HttpResponse> {
+pub async fn contact_info(web::Query(query): web::Query<ContactInfoQuery>) -> Result<HttpResponse> {
     let info = match &query.method[..] {
         "Email" => "charlie@busyboredom.com",
         "Matrix" => "@busyboredom:tchncs.de",
@@ -46,17 +45,14 @@ struct ContactForm {
 
 /// Contact form handler
 #[post("/contact-submitted")]
-async fn contact_submitted(
+pub async fn contact_submitted(
     mailer: web::Data<Arc<SmtpTransport>>,
     shared_data: web::Data<Mutex<SharedAppData>>,
     form: web::Form<ContactForm>,
     session: Session,
 ) -> Result<HttpResponse> {
     // Get solution from session cookie.
-    let solution: Option<String> = match session.get("captcha") {
-        Ok(answer) => answer,
-        Err(_) => None,
-    };
+    let solution: Option<String> = session.get("captcha").unwrap_or_default();
     // Get the local cached solution.
     let maybe_cached_solution: Option<[char; 8]> =
         match session.get::<[u8; CAPTCHA_ID_LEN]>("captcha_id") {
@@ -67,16 +63,13 @@ async fn contact_submitted(
                     .captcha_cache;
                 match cache.get(&id) {
                     Some(&chars) => {
-                        info!(
-                            "Got captcha ID = {:?} and solution = {:?} in local cache.",
-                            id, chars
-                        );
+                        info!("Got captcha ID = {id:?} and solution = {chars:?} in local cache.");
                         // Remove the locally cached solution to prevent double submission.
                         cache.pop(&id);
                         Some(chars)
                     }
                     None => {
-                        warn!("No charactars found in captcha cache for ID \"{:?}\"", id);
+                        warn!("No characters found in captcha cache for ID \"{id:?}\"");
                         None
                     }
                 }
@@ -141,7 +134,7 @@ async fn contact_submitted(
     match mailer.send(&email) {
         Ok(_) => info!("Email sent successfully!"),
         Err(e) => {
-            error!("Could not send email: {:?}", e);
+            error!("Could not send email: {e:?}");
         }
     }
 
@@ -171,7 +164,7 @@ async fn contact_submitted(
         match mailer.send(&autoreply) {
             Ok(_) => info!("Autoreply sent successfully!"),
             Err(e) => {
-                error!("Could not send autoreply: {:?}", e);
+                error!("Could not send autoreply: {e:?}");
             }
         }
     } else {

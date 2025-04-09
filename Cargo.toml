@@ -5,23 +5,23 @@ authors = ["Charlie Wilkin <cwilkin@protonmail.com>"]
 edition = "2018"
 
 [dependencies]
-acceptxmr = { git = "https://github.com/busyboredom/acceptxmr", features = ["serde", "sqlite"], rev="f23960e6680a90ce861435f4a661499d869a8935"}
+acceptxmr = { version = "0.14.0", features = ["serde", "sqlite"] }
 actix = "0.13"
-actix-session = {version = "0.8", features = ["cookie-session"] }
+actix-session = {version = "0.10.1", features = ["cookie-session"] }
 actix-web = "4"
 actix-web-actors = "4"
 bytestring = "1"
-cached = "0.46"
-captcha = "0.0.9"
+cached = "0.55"
+captcha = "1.0.0"
 clap = { version = "4", features = ["derive"] }
-config = "0.13"
-cookie = "0.17"
-env_logger = "0.10"
+config = "0.15.11"
+cookie = "0.18.1"
+env_logger = "0.11.8"
 futures = "0.3"
 log = "0.4"
-lru = "0.12"
+lru = "0.15.0"
 mime_guess = "2"
-rand = "0.8"
+rand = "0.9.1"
 rust-embed = "8"
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
@@ -29,12 +29,12 @@ time = "0.3"
 tokio = "1"
 
 [dependencies.lettre]
-version = "0.10.1"
+version = "0.11.17"
 default-features = false
 features = ["smtp-transport", "builder", "rustls-tls"]
 
 [build-dependencies]
-base64 = "0.21"
+base64 = "0.22.1"
 blake3 = "1"
 regex = "1"
 walkdir = "2"

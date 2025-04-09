@@ -54,8 +54,9 @@ pub(crate) async fn setup(
         primary_address.to_string(),
         invoice_storage,
     )
-    .daemon_url("https://node.busyboredom.com:18089".to_string())
-    .daemon_login("busyboredom".to_string(), daemon_password)
+    //.daemon_url("https://node.busyboredom.com:18089".to_string())
+    .daemon_url("https://node.sethforprivacy.com:443".to_string())
+    //.daemon_login("busyboredom".to_string(), daemon_password)
     .build()
     .await
     .expect("failed to build payment gateway");
@@ -65,7 +66,7 @@ pub(crate) async fn setup(
         match payment_gateway.run().await {
             Ok(_) => break,
             Err(e) => {
-                error!("Failed to run payment gateway: {}", e);
+                error!("Failed to run payment gateway: {e}");
                 std::thread::sleep(Duration::from_secs(5));
             }
         }
@@ -98,7 +99,7 @@ pub(crate) async fn setup(
                     invoice.index()
                 );
                 if let Err(e) = gateway_copy.remove_invoice(invoice.id()).await {
-                    error!("Failed to remove fully confirmed invoice: {}", e);
+                    error!("Failed to remove fully confirmed invoice: {e}");
                 };
             }
         }
@@ -128,7 +129,7 @@ fn send_email(mailer: &SmtpTransport, invoice: &Invoice) {
     match mailer.send(&admin_email) {
         Ok(_) => info!("AcceptXMR Demo admin email sent successfully!"),
         Err(e) => {
-            error!("Could not send AcceptXMR Demo admin email: {:?}", e);
+            error!("Could not send AcceptXMR Demo admin email: {e:?}");
         }
     }
 
@@ -155,7 +156,7 @@ fn send_email(mailer: &SmtpTransport, invoice: &Invoice) {
     match mailer.send(&user_email) {
         Ok(_) => info!("AcceptXMR Demo user email sent successfully!"),
         Err(e) => {
-            error!("Could not send AcceptXMR Demo user email: {:?}", e);
+            error!("Could not send AcceptXMR Demo user email: {e:?}");
         }
     }
 }
@@ -309,8 +310,8 @@ impl StreamHandler<Result<ws::Message, ws::ProtocolError>> for WebSocket {
                 ctx.close(reason);
                 ctx.stop();
             }
-            Ok(m) => debug!("Received unexpected message from websocket client: {:?}", m),
-            Err(e) => warn!("Received error from websocket client: {:?}", e),
+            Ok(m) => debug!("Received unexpected message from websocket client: {m:?}"),
+            Err(e) => warn!("Received error from websocket client: {e:?}"),
         }
     }
 }

@@ -1,6 +1,3 @@
-#[macro_use]
-extern crate actix_web;
-
 use actix_session::{
     config::{CookieContentSecurity, PersistentSession, SessionLifecycle},
     storage::CookieSessionStore,
@@ -8,7 +5,7 @@ use actix_session::{
 };
 use actix_web::{
     body::BoxBody,
-    cookie,
+    cookie, get,
     http::{
         header::{CacheControl, CacheDirective},
         StatusCode,
@@ -21,7 +18,7 @@ use config::Config;
 use lettre::{transport::smtp::authentication::Credentials, SmtpTransport};
 use lru::LruCache;
 use mime_guess::from_path;
-use rand::{thread_rng, Rng};
+use rand::{rng, Rng};
 use rust_embed::RustEmbed;
 use serde::Deserialize;
 use std::{
@@ -36,12 +33,12 @@ mod captcha;
 mod contact;
 mod projects;
 use crate::captcha::*;
-use crate::contact::*;
+use crate::contact::{contact_info, contact_submitted};
 
 const SESSION_KEY_LEN: usize = 64;
 // Safe because we know it's non-zero. Can remove after
 // https://github.com/rust-lang/rust/issues/69329
-const CAPTCHA_CACHE_LEN: NonZeroUsize = unsafe { NonZeroUsize::new_unchecked(1000) };
+const CAPTCHA_CACHE_LEN: NonZeroUsize = NonZeroUsize::new(1000).unwrap();
 const SECONDS_IN_YEAR: usize = 31536000;
 
 #[derive(RustEmbed)]
@@ -53,13 +50,13 @@ fn handle_embedded_file(path: &str) -> HttpResponse {
         Some(content) => {
             let body = BoxBody::new(content.data.as_ref().to_owned());
             let content_type = from_path(path).first_or_octet_stream();
-            return HttpResponse::Ok()
+            HttpResponse::Ok()
                 .insert_header(CacheControl(vec![
                     CacheDirective::MaxAge(SECONDS_IN_YEAR.try_into().unwrap()),
                     CacheDirective::Public,
                 ]))
                 .content_type(content_type.as_ref())
-                .body(body);
+                .body(body)
         }
         None => HttpResponse::build(StatusCode::OK)
             .content_type("text/html; charset=utf-8")
@@ -176,7 +173,7 @@ async fn main() -> io::Result<()> {
 
     // Set random session key.
     let mut key_arr = [0u8; SESSION_KEY_LEN];
-    thread_rng().fill(&mut key_arr[..]);
+    rng().fill(&mut key_arr[..]);
     let session_key = cookie::Key::generate();
 
     // Make shared application data object.
@@ -207,7 +204,7 @@ async fn main() -> io::Result<()> {
             .app_data(wrapped_mailer.clone())
             .app_data(shared_data.clone())
             .app_data(payment_gateway.clone())
-            // Comression middleware
+            // Compression middleware
             .wrap(middleware::Compress::default())
             // Cookie session middleware
             .wrap(

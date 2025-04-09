@@ -1,10 +1,12 @@
 /target
 /AcceptXMR_DB
 /wasm/target
+/wasm/pkg
 *.swo
 *.swp
 *.geany
 *.code-workspace
 /static/projects/archviz/Build
 secrets.toml
+.env
 /result
