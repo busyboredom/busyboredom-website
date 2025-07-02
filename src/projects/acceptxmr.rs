@@ -54,9 +54,9 @@ pub(crate) async fn setup(
         primary_address.to_string(),
         invoice_storage,
     )
-    //.daemon_url("https://node.busyboredom.com:18089".to_string())
-    .daemon_url("https://node.sethforprivacy.com:443".to_string())
-    //.daemon_login("busyboredom".to_string(), daemon_password)
+    .daemon_url("https://node.busyboredom.com:18089".to_string())
+    //.daemon_url("https://node.sethforprivacy.com:443".to_string())
+    .daemon_login("busyboredom".to_string(), daemon_password)
     .build()
     .await
     .expect("failed to build payment gateway");

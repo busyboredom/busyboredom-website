@@ -41,8 +41,8 @@ pub async fn contact_info() {
     } else if selected == "Select" {
         contact_info = String::new();
     } else {
-        let mut req = RequestInit::new();
-        req.method("GET");
+        let req = RequestInit::new();
+        req.set_method("GET");
         let request_string = format!("/api/contact_info?method={selected}");
         let request = Request::new_with_str_and_init(&request_string, &req)
             .expect("Request could not be created");
@@ -90,15 +90,13 @@ pub async fn contact_copy() {
         return;
     }
 
-    let maybe_clipboard = navigator.clipboard();
+    let clipboard = navigator.clipboard();
     let mut feedback = "Error!"; // Default to error.
 
-    if let Some(clipboard) = maybe_clipboard {
-        let copy_promise = clipboard.write_text(&text);
-        // Convert this `Promise` into a rust `Future`.
-        if JsFuture::from(copy_promise).await.is_ok() {
-            feedback = "Copied!";
-        };
+    let copy_promise = clipboard.write_text(&text);
+    // Convert this `Promise` into a rust `Future`.
+    if JsFuture::from(copy_promise).await.is_ok() {
+        feedback = "Copied!";
     }
 
     // Show copied.
@@ -168,8 +166,8 @@ pub async fn captcha_submit() {
     let captcha_input: HtmlInputElement = input_js.into();
     let guess = captcha_input.value();
 
-    let mut req = RequestInit::new();
-    req.method("GET");
+    let req = RequestInit::new();
+    req.set_method("GET");
     let request_string = format!("/api/submit_captcha?captcha={guess}");
     let request = Request::new_with_str_and_init(&request_string, &req)
         .expect("Request could not be created");

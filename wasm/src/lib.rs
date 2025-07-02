@@ -112,8 +112,8 @@ pub async fn goto_page(route: &str, resource: &str, title: &str) {
     let window = web_sys::window().expect("No global `window` exists");
     let document = window.document().expect("Should have a document on window");
 
-    let mut req = RequestInit::new();
-    req.method("GET");
+    let req = RequestInit::new();
+    req.set_method("GET");
     let request =
         Request::new_with_str_and_init(resource, &req).expect("Request could not be created");
     request
@@ -213,8 +213,8 @@ pub async fn error_404() {
     let document = window.document().expect("Should have a document on window");
     let history = window.history().expect("Could not get history");
 
-    let mut req = RequestInit::new();
-    req.method("GET");
+    let req = RequestInit::new();
+    req.set_method("GET");
     let request = Request::new_with_str_and_init("/api/404.html?ver=p9Qlk98fUzE", &req)
         .expect("Request could not be created");
     request
@@ -268,10 +268,10 @@ pub fn route(rt: &str) {
         "/contact-submitted" => spawn_local(contact_submitted()),
         "/projects/acceptxmr" => spawn_local(acceptxmr()),
         "/projects/amplifier-optimizer" => spawn_local(amplifier_optimizer()),
-        "/projects/archviz" => spawn_local(archviz()),
         "/projects/mnist-tutorial" => spawn_local(mnist_tutorial()),
         "/projects/quadcopter" => spawn_local(quadcopter()),
         "/projects/this-website" => spawn_local(this_website()),
+        "/projects/thirty-papers" => spawn_local(thirty_papers()),
         _ => spawn_local(error_404()),
     };
 }

@@ -35,6 +35,12 @@
           Projects<i id="drop_symbol" class="arrow down"></i>
         </button>
         <div class="dropdown-content" id="projects_dropdown">
+
+          <a href="/projects/thirty-papers" onclick="window.busy.thirty_papers(); return false">
+            <button class="proj_drop" id="thirty_papers">
+              30 Papers in 30 Days
+            </button>
+          </a>
           <a href="/projects/acceptxmr" onclick="window.busy.acceptxmr(); return false">
             <button class="proj_drop" id="acceptxmr">
               AcceptXMR
@@ -107,6 +113,25 @@
     if (event.state) {
       window.busy.route(event.state);
     }
+  };
+
+  window.loadScript = function(url) {
+    return new Promise((resolve, reject) => {
+      // Check if the script is already on the page to avoid loading it twice
+      if (document.querySelector(`script[src="${url}"]`)) {
+          resolve();
+          return;
+      }
+      
+      const script = document.createElement('script');
+      script.src = url;
+      script.async = true;
+      
+      script.onload = () => resolve();
+      script.onerror = () => reject(new Error(`Script load error for ${url}`));
+      
+      document.head.appendChild(script);
+    });
   };
 </script>
 <style>
