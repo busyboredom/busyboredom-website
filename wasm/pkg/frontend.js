@@ -200,131 +200,6 @@ function debugString(val) {
 /**
  * @returns {Promise<void>}
  */
-export function contact() {
-    const ret = wasm.contact();
-    return ret;
-}
-
-/**
- * @returns {Promise<void>}
- */
-export function contact_info() {
-    const ret = wasm.contact_info();
-    return ret;
-}
-
-/**
- * @returns {Promise<void>}
- */
-export function contact_copy() {
-    const ret = wasm.contact_copy();
-    return ret;
-}
-
-export function contact_copy_reset() {
-    wasm.contact_copy_reset();
-}
-
-export function contact_submit() {
-    wasm.contact_submit();
-}
-
-/**
- * @returns {Promise<void>}
- */
-export function contact_submitted() {
-    const ret = wasm.contact_submitted();
-    return ret;
-}
-
-/**
- * @returns {Promise<void>}
- */
-export function captcha_submit() {
-    const ret = wasm.captcha_submit();
-    return ret;
-}
-
-export function captcha_refresh() {
-    wasm.captcha_refresh();
-}
-
-/**
- * @returns {Promise<void>}
- */
-export function acceptxmr() {
-    const ret = wasm.acceptxmr();
-    return ret;
-}
-
-/**
- * @returns {Promise<void>}
- */
-export function amplifier_optimizer() {
-    const ret = wasm.amplifier_optimizer();
-    return ret;
-}
-
-/**
- * @returns {Promise<void>}
- */
-export function mnist_tutorial() {
-    const ret = wasm.mnist_tutorial();
-    return ret;
-}
-
-/**
- * @returns {Promise<void>}
- */
-export function quadcopter() {
-    const ret = wasm.quadcopter();
-    return ret;
-}
-
-/**
- * @returns {Promise<void>}
- */
-export function thirty_papers() {
-    const ret = wasm.thirty_papers();
-    return ret;
-}
-
-/**
- * @returns {Promise<void>}
- */
-export function this_website() {
-    const ret = wasm.this_website();
-    return ret;
-}
-
-export function main() {
-    wasm.main();
-}
-
-/**
- * @param {string} tab
- */
-export function active_tab(tab) {
-    const ptr0 = passStringToWasm0(tab, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
-    const len0 = WASM_VECTOR_LEN;
-    wasm.active_tab(ptr0, len0);
-}
-
-export function nav_toggle() {
-    wasm.nav_toggle();
-}
-
-export function close_dropdowns() {
-    wasm.close_dropdowns();
-}
-
-export function proj_toggle() {
-    wasm.proj_toggle();
-}
-
-/**
- * @returns {Promise<void>}
- */
 export function resume() {
     const ret = wasm.resume();
     return ret;
@@ -338,12 +213,37 @@ export function welcome() {
     return ret;
 }
 
+export function proj_toggle() {
+    wasm.proj_toggle();
+}
+
+export function init_panic_hook() {
+    wasm.init_panic_hook();
+}
+
 /**
  * @returns {Promise<void>}
  */
 export function coming_soon() {
     const ret = wasm.coming_soon();
     return ret;
+}
+
+export function close_dropdowns() {
+    wasm.close_dropdowns();
+}
+
+export function nav_toggle() {
+    wasm.nav_toggle();
+}
+
+/**
+ * @param {string} tab
+ */
+export function active_tab(tab) {
+    const ptr0 = passStringToWasm0(tab, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
+    const len0 = WASM_VECTOR_LEN;
+    wasm.active_tab(ptr0, len0);
 }
 
 /**
@@ -364,16 +264,116 @@ export function route(rt) {
     wasm.route(ptr0, len0);
 }
 
-export function init_panic_hook() {
-    wasm.init_panic_hook();
+export function main() {
+    wasm.main();
+}
+
+/**
+ * @returns {Promise<void>}
+ */
+export function contact_submitted() {
+    const ret = wasm.contact_submitted();
+    return ret;
+}
+
+export function contact_submit() {
+    wasm.contact_submit();
+}
+
+/**
+ * @returns {Promise<void>}
+ */
+export function captcha_submit() {
+    const ret = wasm.captcha_submit();
+    return ret;
+}
+
+/**
+ * @returns {Promise<void>}
+ */
+export function contact_info() {
+    const ret = wasm.contact_info();
+    return ret;
+}
+
+export function contact_copy_reset() {
+    wasm.contact_copy_reset();
+}
+
+export function captcha_refresh() {
+    wasm.captcha_refresh();
+}
+
+/**
+ * @returns {Promise<void>}
+ */
+export function contact() {
+    const ret = wasm.contact();
+    return ret;
+}
+
+/**
+ * @returns {Promise<void>}
+ */
+export function contact_copy() {
+    const ret = wasm.contact_copy();
+    return ret;
+}
+
+/**
+ * @returns {Promise<void>}
+ */
+export function quadcopter() {
+    const ret = wasm.quadcopter();
+    return ret;
+}
+
+/**
+ * @returns {Promise<void>}
+ */
+export function this_website() {
+    const ret = wasm.this_website();
+    return ret;
+}
+
+/**
+ * @returns {Promise<void>}
+ */
+export function thirty_papers() {
+    const ret = wasm.thirty_papers();
+    return ret;
+}
+
+/**
+ * @returns {Promise<void>}
+ */
+export function mnist_tutorial() {
+    const ret = wasm.mnist_tutorial();
+    return ret;
+}
+
+/**
+ * @returns {Promise<void>}
+ */
+export function amplifier_optimizer() {
+    const ret = wasm.amplifier_optimizer();
+    return ret;
+}
+
+/**
+ * @returns {Promise<void>}
+ */
+export function acceptxmr() {
+    const ret = wasm.acceptxmr();
+    return ret;
 }
 
 function __wbg_adapter_24(arg0, arg1, arg2) {
-    wasm.closure26_externref_shim(arg0, arg1, arg2);
+    wasm.closure25_externref_shim(arg0, arg1, arg2);
 }
 
 function __wbg_adapter_68(arg0, arg1, arg2, arg3) {
-    wasm.closure17_externref_shim(arg0, arg1, arg2, arg3);
+    wasm.closure18_externref_shim(arg0, arg1, arg2, arg3);
 }
 
 async function __wbg_load(module, imports) {
@@ -680,8 +680,8 @@ function __wbg_get_imports() {
         const ret = false;
         return ret;
     };
-    imports.wbg.__wbindgen_closure_wrapper869 = function(arg0, arg1, arg2) {
-        const ret = makeMutClosure(arg0, arg1, 27, __wbg_adapter_24);
+    imports.wbg.__wbindgen_closure_wrapper839 = function(arg0, arg1, arg2) {
+        const ret = makeMutClosure(arg0, arg1, 26, __wbg_adapter_24);
         return ret;
     };
     imports.wbg.__wbindgen_debug_string = function(arg0, arg1) {

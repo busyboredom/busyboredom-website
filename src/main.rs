@@ -18,7 +18,7 @@ use config::Config;
 use lettre::{transport::smtp::authentication::Credentials, SmtpTransport};
 use lru::LruCache;
 use mime_guess::from_path;
-use rand::{rng, Rng};
+use rand::{rng, RngExt};
 use rust_embed::RustEmbed;
 use serde::Deserialize;
 use std::{

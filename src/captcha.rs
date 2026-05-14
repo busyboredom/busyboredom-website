@@ -12,7 +12,7 @@ use actix_web::{
 };
 use captcha::{filters, Captcha};
 use log::info;
-use rand::{rng, Rng};
+use rand::{rng, RngExt};
 use serde::Deserialize;
 
 use crate::SharedAppData;

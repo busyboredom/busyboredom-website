@@ -7,11 +7,11 @@ edition = "2018"
 [dependencies]
 acceptxmr = { version = "0.14.0", features = ["serde", "sqlite"] }
 actix = "0.13"
-actix-session = {version = "0.10.1", features = ["cookie-session"] }
+actix-session = {version = "0.11.0", features = ["cookie-session"] }
 actix-web = "4"
 actix-web-actors = "4"
 bytestring = "1"
-cached = "0.55"
+cached = "0.59"
 captcha = "1.0.0"
 clap = { version = "4", features = ["derive"] }
 config = "0.15.11"
@@ -19,9 +19,9 @@ cookie = "0.18.1"
 env_logger = "0.11.8"
 futures = "0.3"
 log = "0.4"
-lru = "0.15.0"
+lru = "0.18.0"
 mime_guess = "2"
-rand = "0.9.1"
+rand = "0.10.1"
 rust-embed = "8"
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
